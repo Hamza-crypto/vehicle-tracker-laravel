@@ -1,0 +1,38 @@
+<?php
+
+namespace Tests\Controllers;
+
+use App\Models\User;
+use App\Models\UserMeta;
+use Illuminate\Http\Response;
+use Tests\TestCase;
+
+
+class MyCustomTest extends TestCase {
+
+    /** @test*/
+
+    public function test_multiplication_result_is_ok(){
+
+
+
+        $user = User::factory()->create(['role' => 'admin']);
+        $user_meta = UserMeta::create([
+            'user_id' => $user->id,
+            'meta_key' => 'paxful_token',
+            'meta_value' => 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjE2NDFiMDNhLTgwZTAtNGI0MC1iODJhLWVkZDVkMWEyNjY4ZCIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2MzQxODM4MzIsImlhdCI6MTYzNDE4MzgzMiwiZXhwIjoxNjM1MDQ3ODMyLCJpc3MiOiJodHRwczovL2FjY291bnRzLnBheGZ1bC5jb20vIiwiYXVkIjoicHgiLCJqdGkiOiJOMFB4R0dha3hVR1BjeW5ZVENmZDhUOTVOVG9jVnY3RyIsImNsaWVudF9pZCI6IjkyNHRZaVA0VktDUFRGcVpZYWJlZ2pVTmVuZG1idzQ0ODJSWWRhb0VsVGVwamlUMyIsInN1YiI6IjAxMzZhNzc5LWE3ZmYtNGUzMC1hZjlhLWNiYzY5ZTkyNjljNSIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgcGhvbmUgYWRkcmVzcyBjaXRpemVuc2hpcCBzdGF0dXMgc3RhZmYgcGF4ZnVsOndhbGxldDpuZXctYWRkcmVzcyBwYXhmdWw6d2FsbGV0Omxpc3QtYWRkcmVzc2VzIHBheGZ1bDp3YWxsZXQ6Y29udmVydCBwYXhmdWw6d2FsbGV0OmNvbnZlcnNpb24tcXVvdGVzIHBheGZ1bDp3YWxsZXQ6YmFsYW5jZSBwYXhmdWw6dXNlcjp1bnRydXN0IHBheGZ1bDp1c2VyOnVuYmxvY2sgcGF4ZnVsOnVzZXI6dHlwZXMgcGF4ZnVsOnVzZXI6dHJ1c3QgcGF4ZnVsOnVzZXI6dG91Y2ggcGF4ZnVsOnVzZXI6bWUgcGF4ZnVsOnVzZXI6aW5mbyBwYXhmdWw6dXNlcjpibG9ja2VkLWxpc3QgcGF4ZnVsOnVzZXI6YmxvY2sgcGF4ZnVsOnRyYW5zYWN0aW9uczphbGwgcGF4ZnVsOnRyYWRlOnN0YXJ0IHBheGZ1bDp0cmFkZTpyZW9wZW4gcGF4ZnVsOnRyYWRlOnJlbGVhc2UgcGF4ZnVsOnRyYWRlOnBhaWQgcGF4ZnVsOnRyYWRlOmxvY2F0aW9ucyBwYXhmdWw6dHJhZGU6bGlzdCBwYXhmdWw6dHJhZGU6Z2V0IHBheGZ1bDp0cmFkZTpmdW5kIHBheGZ1bDp0cmFkZTpkaXNwdXRlLXJlYXNvbnMgcGF4ZnVsOnRyYWRlOmRpc3B1dGUgcGF4ZnVsOnRyYWRlOmNvbXBsZXRlZCBwYXhmdWw6dHJhZGUtY2hhdDpwb3N0IHBheGZ1bDp0cmFkZS1jaGF0OmxhdGVzdCBwYXhmdWw6dHJhZGUtY2hhdDppbWFnZTp1cGxvYWQgcGF4ZnVsOnRyYWRlLWNoYXQ6aW1hZ2U6YWRkIHBheGZ1bDp0cmFkZS1jaGF0OmltYWdlIHBheGZ1bDp0cmFkZS1jaGF0OmdldCBwYXhmdWw6dHJhZGU6Y2FuY2VsIHBheGZ1bDpwYXltZW50LW1ldGhvZDpsaXN0IHBheGZ1bDpwYXltZW50LW1ldGhvZC1ncm91cDpsaXN0IHBheGZ1bDpwYXltZW50LW1ldGhvZDpmZWUgcGF4ZnVsOm9mZmVyOnVwZGF0ZS1wcmljZSBwYXhmdWw6b2ZmZXI6dXBkYXRlIHBheGZ1bDpvZmZlcjp0dXJuLW9uIHBheGZ1bDpvZmZlcjp0dXJuLW9mZiBwYXhmdWw6b2ZmZXItdGFnOmxpc3QgcGF4ZnVsOm9mZmVyOnByaWNlcyBwYXhmdWw6b2ZmZXI6cHJpY2UgcGF4ZnVsOm9mZmVyOmxpc3QgcGF4ZnVsOm9mZmVyOmdldCBwYXhmdWw6b2ZmZXI6ZGVsZXRlIHBheGZ1bDpvZmZlcjpkZWFjdGl2YXRlIHBheGZ1bDpvZmZlcjpjcmVhdGUgcGF4ZnVsOm9mZmVyOmFsbCBwYXhmdWw6b2ZmZXI6YWN0aXZhdGUgcGF4ZnVsOm5vdGlmaWNhdGlvbnM6dW5yZWFkLWNvdW50IHBheGZ1bDpub3RpZmljYXRpb25zOnVucmVhZCBwYXhmdWw6bm90aWZpY2F0aW9uczptYXJrLXJlYWQgcGF4ZnVsOm5vdGlmaWNhdGlvbnM6bGlzdCBwYXhmdWw6bm90aWZpY2F0aW9uczpsYXN0IHBheGZ1bDpraW9zazp0cmFuc2FjdGlvbnMgcGF4ZnVsOmZlZWRiYWNrOnJlcGx5IHBheGZ1bDpmZWVkYmFjazpsaXN0IHBheGZ1bDpmZWVkYmFjazpnaXZlIHBheGZ1bDpjdXJyZW5jeTpyYXRlcyBwYXhmdWw6Y3VycmVuY3k6bGlzdCBwYXhmdWw6Y3VycmVuY3k6YnRjIHBheGZ1bDpjcnlwdG86bGlzdCIsInJ0bCI6dHJ1ZSwiYXV0aF9kZWxlZ2F0ZWQiOmZhbHNlfQ.PWsaA1XveDPlCIlGmQsCtBYA3fs5GQcqCQx1B8sEoBOphw7oJMQLt_hDWW_vDJW8OIPrh_7xtcmiL7UJNoxy2ew0JFGQvYB3Y32NkDW3ZwJgJzl-zd3BsWMhPxiqalP1-pI-TBEy5tWVMNSg_-vK0nxiAME_rRGk1VAmrK-1daulkDpvLFOIlklWBDkZ435BmGolYoAYpRZm_sA3qLfiwu_9E6xQu5mrwKWMJg82Hr_8duqDG8-mM7SC0v2ciN8ysAkM2W-Yvb4pehyG91yJTcu1TAfq8OqBTT1ZqKv2RXrjhttwolhAIcpQtAbEMGWKSL1tILhIw9j2-3BwQkk_9w'
+        ]);
+
+//        dd($user);
+        $response = $this->actingAs($user)
+            ->get(route('api.trades_completed'));
+
+//                $response = $this->actingAs($user)
+//            ->get('/dashboard');
+
+
+        $response->dump();
+        $response->assertStatus(200);
+    }
+
+}
