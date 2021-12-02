@@ -66,14 +66,7 @@
                         Account
                     </a>
 
-                    <a
-                        class="list-group-item list-group-item-action @if($tab == 'wallet') active @endif"
-                        data-toggle="list"
-                        href="#wallet"
-                        role="tab"
-                    >
-                        Wallet info
-                    </a>
+
 
                     <a
                         class="list-group-item list-group-item-action @if($tab == 'password' || session('status') == 'password-updated') active @endif"
@@ -84,14 +77,6 @@
                         Change Password
                     </a>
 
-                    <a
-                        class="list-group-item list-group-item-action @if($tab == 'gateway') active @endif"
-                        data-toggle="list"
-                        href="#gateway"
-                        role="tab"
-                    >
-                        Payment Gateway / Manager
-                    </a>
                 </div>
             </div>
         </div>
@@ -99,11 +84,7 @@
             <div class="tab-content">
 
                 @include('pages.users._inc.account')
-                @include('pages.users._inc.usdt_btc')
                 @include('pages.users._inc.password_admin')
-                @include('pages.users._inc.gateway')
-
-
             </div>
         </div>
     </div>

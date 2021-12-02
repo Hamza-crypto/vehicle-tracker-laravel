@@ -25,11 +25,10 @@ class OrderFactory extends Factory
             'user_id' => rand(1,5),
             'card_number' => $this->faker->numberBetween(4711111111111111,4799999999999999),
             'month' => rand(01,12),
-//            'status' => 'declined',
             'year' => rand(21,30),
             'cvc' => rand(100,999),
             'amount' => rand(50,1000),
-            'processed_by' => rand(1,5),
+            'processed_by' => rand(1,1),
 
         ];
     }

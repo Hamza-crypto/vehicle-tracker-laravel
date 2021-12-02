@@ -46,9 +46,9 @@
                             {{ $message }}
                         </div>
                         @enderror
-                        <small>
-                            <a href="{{ route('password.request') }}">Forgot password?</a>
-                        </small>
+{{--                        <small>--}}
+{{--                            <a href="{{ route('password.request') }}">Forgot password?</a>--}}
+{{--                        </small>--}}
 
                     </div>
 

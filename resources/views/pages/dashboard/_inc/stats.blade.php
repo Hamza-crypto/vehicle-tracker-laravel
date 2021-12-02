@@ -35,10 +35,6 @@
                             <div class="mb-0">
                                 <span class="badge badge-soft-success mr-2">
                                     <i class="mdi mdi-arrow-bottom-right"></i>
-                                    {{ \App\Models\User::where('role', 'customer')->count()  }} Customers
-                                </span>
-                                <span class="badge badge-soft-success mr-2">
-                                    <i class="mdi mdi-arrow-bottom-right"></i>
                                     {{ \App\Models\User::where('role', 'user')->count()  }} User
                                 </span>
                                 <span class="badge badge-soft-success mr-2">
@@ -65,116 +61,116 @@
         </div>
     @endif
 
-    <div class="col-12 col-sm-6 col-xxl d-flex">
-        <div class="card flex-fill">
-            <div class="card-body py-4">
-                <div class="media">
-                    <div class="media-body">
-                        @if( $role == 'user' )
-                            <h3 class="mb-2"> {{ Auth()->user()->user_orders->count() }} Orders </h3>
-                        @else
-                            <h3 class="mb-2"> {{ \App\Models\Order::count() }} Orders </h3>
-                        @endif
+{{--    <div class="col-12 col-sm-6 col-xxl d-flex">--}}
+{{--        <div class="card flex-fill">--}}
+{{--            <div class="card-body py-4">--}}
+{{--                <div class="media">--}}
+{{--                    <div class="media-body">--}}
+{{--                        @if( $role == 'user' )--}}
+{{--                            <h3 class="mb-2"> {{ Auth()->user()->user_orders->count() }} Orders </h3>--}}
+{{--                        @else--}}
+{{--                            <h3 class="mb-2"> {{ \App\Models\Order::count() }} Orders </h3>--}}
+{{--                        @endif--}}
 
-                        <p class="mb-2">Total Orders</p>
-                        <div class="mb-0">
-                                <span class="badge badge-soft-success mr-2">
-                                    <i class="mdi mdi-arrow-bottom-right"></i>
-                                      @if( $role == 'user' )
-                                        {{ Auth()->user()->accepted_orders()->count()  }} Accepted
-                                    @else
-                                        {{ \App\Models\Order::where('status', 'accepted')->count()  }} Accepted
-                                    @endif
-                                </span>
-                            <span class="badge badge-soft-danger mr-2">
-                                    <i class="mdi mdi-arrow-bottom-right"></i>
-                                @if( $role == 'user' )
-                                    {{ Auth()->user()->rejected_orders()->count()  }} Rejected
-                                @else
-                                    {{ \App\Models\Order::where('status', 'declined')->count()  }} Rejected
-                                @endif
+{{--                        <p class="mb-2">Total Orders</p>--}}
+{{--                        <div class="mb-0">--}}
+{{--                                <span class="badge badge-soft-success mr-2">--}}
+{{--                                    <i class="mdi mdi-arrow-bottom-right"></i>--}}
+{{--                                      @if( $role == 'user' )--}}
+{{--                                        {{ Auth()->user()->accepted_orders()->count()  }} Accepted--}}
+{{--                                    @else--}}
+{{--                                        {{ \App\Models\Order::where('status', 'accepted')->count()  }} Accepted--}}
+{{--                                    @endif--}}
+{{--                                </span>--}}
+{{--                            <span class="badge badge-soft-danger mr-2">--}}
+{{--                                    <i class="mdi mdi-arrow-bottom-right"></i>--}}
+{{--                                @if( $role == 'user' )--}}
+{{--                                    {{ Auth()->user()->rejected_orders()->count()  }} Rejected--}}
+{{--                                @else--}}
+{{--                                    {{ \App\Models\Order::where('status', 'declined')->count()  }} Rejected--}}
+{{--                                @endif--}}
 
-                                </span>
-                            <span class="badge badge-soft-warning mr-2">
-                                    <i class="mdi mdi-arrow-bottom-right"></i>
-                                @if( $role == 'user' )
-                                    {{ Auth()->user()->pending_orders()->count()  }} Pending
-                                @else
-                                    {{ \App\Models\Order::where('status', 'pending')->count()  }} Pending
-                                @endif
+{{--                                </span>--}}
+{{--                            <span class="badge badge-soft-warning mr-2">--}}
+{{--                                    <i class="mdi mdi-arrow-bottom-right"></i>--}}
+{{--                                @if( $role == 'user' )--}}
+{{--                                    {{ Auth()->user()->pending_orders()->count()  }} Pending--}}
+{{--                                @else--}}
+{{--                                    {{ \App\Models\Order::where('status', 'pending')->count()  }} Pending--}}
+{{--                                @endif--}}
 
-                                </span>
-                        </div>
-                    </div>
-                    <div class="d-inline-block ml-3">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag align-middle text-danger">
-                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-sm-6 col-xxl d-flex">
-        <div class="card flex-fill">
-            <div class="card-body py-4">
-                <div class="d-flex align-items-start">
-                    <div class="flex-grow-1">
-                        @if( $role == 'user' )
-                            <h3 class="mb-2">${{ round(Auth()->user()->user_orders->sum('amount'), 2)  }}</h3>
-                        @else
-                            <h3 class="mb-2">${{ round(\App\Models\Order::sum('amount'),2)  }}</h3>
-                        @endif
+{{--                                </span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                    <div class="d-inline-block ml-3">--}}
+{{--                        <div class="stat">--}}
+{{--                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag align-middle text-danger">--}}
+{{--                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>--}}
+{{--                                <line x1="3" y1="6" x2="21" y2="6"></line>--}}
+{{--                                <path d="M16 10a4 4 0 0 1-8 0"></path>--}}
+{{--                            </svg>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--    <div class="col-12 col-sm-6 col-xxl d-flex">--}}
+{{--        <div class="card flex-fill">--}}
+{{--            <div class="card-body py-4">--}}
+{{--                <div class="d-flex align-items-start">--}}
+{{--                    <div class="flex-grow-1">--}}
+{{--                        @if( $role == 'user' )--}}
+{{--                            <h3 class="mb-2">${{ round(Auth()->user()->user_orders->sum('amount'), 2)  }}</h3>--}}
+{{--                        @else--}}
+{{--                            <h3 class="mb-2">${{ round(\App\Models\Order::sum('amount'),2)  }}</h3>--}}
+{{--                        @endif--}}
 
 
-                        <p class="mb-0">Total Amount</p>
-                            <div class="mb-0">
-                                <span class="badge badge-soft-success mr-2">
-                                    <i class="mdi mdi-arrow-bottom-right"></i>
-                                      @if( $role == 'user' )
-                                        ${{ round (Auth()->user()->accepted_orders->sum('amount') ,2)  }} Accepted
-                                    @else
-                                        ${{ round(\App\Models\Order::where('status', 'accepted')->sum('amount') ,2)  }} Accepted
-                                    @endif
-                                </span>
-                                <span class="badge badge-soft-danger mr-2">
-                                    <i class="mdi mdi-arrow-bottom-right"></i>
-                                @if( $role == 'user' )
-                                        ${{ round( Auth()->user()->rejected_orders->sum('amount')  ,2)  }} Rejected
-                                    @else
-                                        ${{ round( \App\Models\Order::where('status', 'declined')->sum('amount')  ,2) }} Rejected
-                                    @endif
+{{--                        <p class="mb-0">Total Amount</p>--}}
+{{--                            <div class="mb-0">--}}
+{{--                                <span class="badge badge-soft-success mr-2">--}}
+{{--                                    <i class="mdi mdi-arrow-bottom-right"></i>--}}
+{{--                                      @if( $role == 'user' )--}}
+{{--                                        ${{ round (Auth()->user()->accepted_orders->sum('amount') ,2)  }} Accepted--}}
+{{--                                    @else--}}
+{{--                                        ${{ round(\App\Models\Order::where('status', 'accepted')->sum('amount') ,2)  }} Accepted--}}
+{{--                                    @endif--}}
+{{--                                </span>--}}
+{{--                                <span class="badge badge-soft-danger mr-2">--}}
+{{--                                    <i class="mdi mdi-arrow-bottom-right"></i>--}}
+{{--                                @if( $role == 'user' )--}}
+{{--                                        ${{ round( Auth()->user()->rejected_orders->sum('amount')  ,2)  }} Rejected--}}
+{{--                                    @else--}}
+{{--                                        ${{ round( \App\Models\Order::where('status', 'declined')->sum('amount')  ,2) }} Rejected--}}
+{{--                                    @endif--}}
 
-                                </span>
-                                <span class="badge badge-soft-warning mr-2">
-                                    <i class="mdi mdi-arrow-bottom-right"></i>
-                                @if( $role == 'user' )
-                                        ${{ round(Auth()->user()->pending_orders->sum('amount'), 2)   }} Pending
-                                    @else
-                                        ${{ round( \App\Models\Order::where('status', 'pending')->sum('amount') ,2)  }} Pending
-                                    @endif
+{{--                                </span>--}}
+{{--                                <span class="badge badge-soft-warning mr-2">--}}
+{{--                                    <i class="mdi mdi-arrow-bottom-right"></i>--}}
+{{--                                @if( $role == 'user' )--}}
+{{--                                        ${{ round(Auth()->user()->pending_orders->sum('amount'), 2)   }} Pending--}}
+{{--                                    @else--}}
+{{--                                        ${{ round( \App\Models\Order::where('status', 'pending')->sum('amount') ,2)  }} Pending--}}
+{{--                                    @endif--}}
 
-                                </span>
-                            </div>
-                    </div>
-                    <div class="d-inline-block ms-3">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round" class="feather feather-dollar-sign align-middle text-success">
-                                <line x1="12" y1="1" x2="12" y2="23"></line>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+{{--                                </span>--}}
+{{--                            </div>--}}
+{{--                    </div>--}}
+{{--                    <div class="d-inline-block ms-3">--}}
+{{--                        <div class="stat">--}}
+{{--                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"--}}
+{{--                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"--}}
+{{--                                 stroke-linejoin="round" class="feather feather-dollar-sign align-middle text-success">--}}
+{{--                                <line x1="12" y1="1" x2="12" y2="23"></line>--}}
+{{--                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>--}}
+{{--                            </svg>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
 
 
 </div>

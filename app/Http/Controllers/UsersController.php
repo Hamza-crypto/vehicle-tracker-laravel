@@ -48,7 +48,6 @@ class UsersController extends Controller
                 'password' => Hash::make($request->password),
                 'email' => $request->email,
                 'role' => $request->role,
-                'parent_id' => $request->parent
             ]);
 
         Session::flash('success', 'User successfully added.');
@@ -58,31 +57,10 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
-        $categories = OrderCategory::all();
-        $gateways = Gateway::all();
-        $user_order_category = $user->order_category();
-        $payable_section_status = $user->payable_section_visibility_status();
-        $user_gateway = $user->gateway();
-        $managers = User::where('role' , 'manager')->get();
-        $parent = $managers->where('id' , $user->parent_id)->first();
-
-        if ($parent){
-            $parent_id = $parent->id;
-        }
-        else{
-            $parent_id = null;
-        }
         return view('pages.users.edit',
             [
                 'user' => $user,
                 'tab' => 'account',
-                'categories' => $categories,
-                'user_category' => $user_order_category,
-                'payable_section_status' => $payable_section_status,
-                'gateways' => $gateways,
-                'user_gateway' => $user_gateway,
-                'managers' => $managers,
-                'parent_id' => $parent_id,
             ]);
     }
 

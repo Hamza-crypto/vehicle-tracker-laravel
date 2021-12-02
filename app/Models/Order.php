@@ -41,12 +41,12 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class)
-            ->select(['id', 'name', 'email', 'role', 'parent_id']);
+            ->select(['id', 'name', 'email', 'role']);
     }
 
     public function gateway()
     {
-        return $this->belongsTo(Gateway::class, 'processed_by');
+        return $this->belongsTo(Gateway::class, 'processed_by') ?? 'dsds';
     }
 
     public function screenshot()
