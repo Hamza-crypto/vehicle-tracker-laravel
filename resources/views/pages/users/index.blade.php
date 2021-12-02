@@ -80,10 +80,8 @@
                                         <span class="badge badge-success">{{$user->role}}</span>
                                     @elseif($user->role == 'user')
                                         <span class="badge badge-secondary">{{$user->role}}</span>
-                                    @elseif($user->role == 'customer')
+                                    @elseif($user->role == 'assistant')
                                         <span class="badge badge-info">{{$user->role}}</span>
-                                    @elseif($user->role == 'manager')
-                                        <span class="badge badge-warning">{{$user->role}}</span>
                                     @endif
                                 </td>
 

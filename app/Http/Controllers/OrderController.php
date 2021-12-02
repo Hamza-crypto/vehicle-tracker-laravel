@@ -113,75 +113,19 @@ class OrderController extends Controller
     }
 
 
-    public function store(OrderRequest $request)
+    public function store(Request $request)
     {
-        $msg = $request->card_number . " added by ID:" . Auth()->id() . " " . Auth()->user()->name;
-        app('log')->channel('cards')->info($msg);
+        $path = $request->file('csv_file')->getRealPath();
+        $data = array_map('str_getcsv', file($path));
+        foreach ($data as $row) {
 
-        if (!$request->has('tag') || $request->tag == 0) {
-            $request->request->add(['tag' => null]);
+            echo $row[3] . "<br>";
         }
 
 
-        $card = Order::where('card_number', $request->card_number)->orderBy('id', 'desc')->first();
 
 
-        if ($card) {
-            $card = $card->toArray();
-            if (in_array(Auth::user()->id, [7,17, 18]) && $card['status'] != 'pending') { // Bitzombie
-                $this->send_to_colin($request);
-
-            } else {
-                Session::flash('error', 'This card cannot be submitted again');
-            }
-            return redirect()->back()->withInput($request->all());
-        }
-
-        $bin_from_user = substr($request->card_number, 0, 6);
-        $bin = Bin::where('number', $bin_from_user)->get()->toArray();
-
-        if (!$bin) {
-            Session::flash('error', 'This type of card is not allowed. Try different one.');
-            return redirect()->back()->withInput($request->all());
-        }
-
-        if (in_array(Auth::user()->id, [17, 18, 33, 34, 35, 36, 37, 38, 39])) { // Akili
-
-            $this->send_to_colin($request);
-        } else {
-            $this->send_to_paylanze_gateway($request);
-        }
-
-//        $response = $this->check_balance($request->card_number, $request->month, $request->year, $request->cvc);
-//        //dd($response);
-//
-//        if ($response->success) {
-//            $screenshot = $response->screenshot->image;
-//            $balance = $response->data->balance;
-//            //dd($balance, $screenshot);
-//
-//            if ($balance < $request->amount) {
-//                Session::flash('error', "You don't have sufficient balance. Current balance " . $balance);
-//                return redirect()->back()->withInput($request->all() + ['image' => $screenshot]);
-//            }
-//
-//
-//
-//        } else {
-//
-//            if ($this->is_open_hour()) {
-//
-//                $this->send_to_colin($request);
-//
-//            } else {
-//                $order = Order::create(
-//                    $request->validated() + ['user_id' => Auth()->id(), 'status' => 'canceled', 'status_update_reason' => 'colin_not_available', 'processed_by' => '0']);
-//
-//                Session::flash('error', "Our manual gateway is currently offline. Please try again later");
-//            }
-//        }
-
-        return redirect()->back()->withInput($request->all());
+        //return redirect()->back()->withInput($request->all());
 
     }
 

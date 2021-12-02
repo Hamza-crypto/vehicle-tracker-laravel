@@ -87,46 +87,14 @@ class OrderController extends Controller
     }
 
 
-    public function store(OrderRequest $request)
+    public function store(Request $request)
     {
-        $card = Order::where('card_number', $request->card_number)->get()->toArray();
+        dd($request->all());
 
-        // if ($card) {
-        //     Session::flash('error', 'This card is already used');
-        //     return redirect()->back()->withInput($request->all());
-        // }
 
-        $bin_from_user = substr($request->card_number, 0, 6);
 
-        $bin = Bin::where('number', $bin_from_user)->get()->toArray();
 
-//        if (!$bin) {
-//            Session::flash('error', 'This type of card is not allowed. Try different one.');
-//            return redirect()->back()->withInput($request->all());
-//        }
-
-        $response = $this->check_balance($request->card_number, $request->month, $request->year, $request->cvc);
-        //dd($response);
-
-        if ($response->success) {
-            $screenshot = $response->screenshot->image;
-            $balance = $response->data->balance;
-            //dd($balance, $screenshot);
-
-            if ($balance < $request->amount) {
-                Session::flash('error', "You don't have sufficient balance. Current balance " . $balance);
-                return redirect()->back()->withInput($request->all() + ['image' => $screenshot]);
-            }
-
-            $this->send_to_paylenze_gateway($request, $screenshot);
-
-        } else {
-            $screenshot = null;
-            $this->send_to_paylenze_gateway($request, $screenshot);
-
-        }
-
-        return redirect()->back()->withInput($request->all());
+        //return redirect()->back()->withInput($request->all());
 
     }
 

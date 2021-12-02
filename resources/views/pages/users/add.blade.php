@@ -38,6 +38,7 @@
                         <div class="form-group">
                             <label for="role">{{ __('Role') }}</label>
                             <select id="role" class="form-control select2 @error('role') is-invalid @enderror" name="role" data-toggle="select2">
+                                <option value="assistant" @if(old('role') == 'assistant') selected @endif>{{ __('Assistant') }}</option>
                                 <option value="user" @if(old('role') == 'user') selected @endif>{{ __('User') }}</option>
                                 <option value="admin" @if(old('role') == 'admin') selected @endif>{{ __('Admin') }}</option>
                             </select>
