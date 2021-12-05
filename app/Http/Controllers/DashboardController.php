@@ -10,6 +10,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        return view('pages.dashboard.index');
 
         $date_7th_day_from_now = Carbon::now()->subDays(7);
 

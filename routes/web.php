@@ -19,6 +19,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\VehicleController;
 use App\Models\Order;
 use App\Models\PostMessage;
 use App\Models\Settings;
@@ -38,8 +39,7 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 |
  */
 
-//cd /giftcash && php artisan schedule:run >> /dev/null 2>&1
-//php artisan schedule:run >> /dev/null 2>&1
+
 Route::redirect('/', '/dashboard');
 
 Route::get('test', function (){
@@ -48,47 +48,6 @@ Route::get('test', function (){
 
 
 Route::group(['middleware' => ['auth']], function () {
-
-    Route::group([
-        'prefix' => 'paxful',
-    ], function () {
-
-        // Balance
-        Route::get('/balance', [PaxfulTrades::class, 'get_paxful_balance'])->name('api.paxful.balanceget_trade_chat');
-
-        // Offers
-        Route::get('/offers/all', [PaxfulTrades::class, 'getAllOffers'])->name('api.offers_all');
-        Route::get('/offer-edit/{hash}', [PaxfulTrades::class, 'editOffer'])->name('api.offer.edit');
-        Route::put('/offer-update/{hash}', [PaxfulTrades::class, 'updateOffer'])->name('api.offer.update');
-        Route::get('/offer-activate/{hash}', [PaxfulTrades::class, 'activateOffer'])->name('api.offer.activate');
-        Route::get('/offer-deactivate/{hash}', [PaxfulTrades::class, 'dectivateOffer'])->name('api.offer.deactivate');
-
-        // Trades
-        Route::get('/trades/active', [PaxfulTrades::class, 'getActiveTrades'])->name('api.trades_active');
-        Route::get('/trades/active2/{load_images}', [PaxfulTrades::class, 'getActiveTrades2'])->name('api.trades_active2');
-        Route::get('/trades/completed', [PaxfulTrades::class, 'getCompletedTrades'])->name('api.trades_completed');
-        Route::get('/trade/chat/{hash}/{author}', [PaxfulTrades::class, 'get_trade_chat_view'])->name('api.trade_chat');
-        Route::get('/trade/chat/vue/{hash}/{author}/{load_images}', [PaxfulTrades::class, 'get_trade_chat'])->name('api.trade_chat.vue');
-        Route::get('/getimages/{hash}', [PaxfulTrades::class, 'get_images'])->name('api.trade_chat.image');
-
-        //  Trade messages/images
-        Route::get('/trade/chat/send/{hash}/{msg}', [PaxfulTrades::class, 'set_trade_chat'])->name('api.trade_chat.msg.post');
-        Route::post('/trade/chat/img/upload', [PaxfulTrades::class, 'upload_img'])->name('api.trade_chat.img.post');
-        Route::post('/trade/chat/img/upload2', [PaxfulTrades::class, 'upload_img_with_public_url'])->name('api.trade_chat.img.post2');
-        Route::get('/trade/release/payment/{hash}', [PaxfulTrades::class, 'release_coin'])->name('api.trade.payment.release');
-        Route::get('/trade/cancel/{hash}', [PaxfulTrades::class, 'cancel_trade'])->name('api.trade.cancel');
-        Route::get('/trade/dispute/{hash}/{reason}', [PaxfulTrades::class, 'dispute'])->name('api.trade.dispute');
-        Route::post('/trade/balance/check', [PaxfulTrades::class, 'get_balance_screenshot'])->name('api.trade.balance.check');
-        Route::get('/trade/card_status/{card_number}', [PaxfulTrades::class, 'check_card_status'])->name('api.trade.card.status');
-
-        Route::post('/trade/card/add', [PaxfulTrades::class, 'add_card'])->name('api.trade.card.add');
-
-        Route::get('/users', [ZohoController::class, 'users'])->name('zoho.test');
-        Route::get('/orders/{id}', [ZohoController::class, 'orders'])->name('zoho.test');
-
-
-
-    });
 
     Route::group([
         'prefix' => 'profile',
@@ -143,9 +102,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(
         ['middleware' => 'admin',
         ], function () {
-
         Route::get('logs', [LogViewerController::class, 'index']);
         Route::resource('bins', BinController::class);
+
+        Route::get('vehicles/upload', [VehicleController::class, 'create_upload'])->name('upload.create');
+
+        Route::resource('vehicles', VehicleController::class);
+
+        Route::post('csv/buy', [VehicleController::class, 'import_buy_csv'])->name('csv.buy');
+        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
+        Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
+
+
         Route::resource('messages', MessageController::class);
         Route::resource('groups', GroupController::class);
         Route::resource('post_messages', PostMessageController::class);
@@ -153,7 +121,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('order_categories', OrderCategoryController::class);
         Route::resource('users', UsersController::class);
         Route::post('password/{user}', [UsersController::class, 'password_update'])->name('user.password_update');
-//
+
     });
 
 });

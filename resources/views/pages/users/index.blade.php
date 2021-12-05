@@ -58,8 +58,6 @@
                             <th>{{ 'Name' }}</th>
                             <th>{{ 'Email' }}</th>
                             <th>{{ 'Role' }}</th>
-                            <th>{{ 'Parent' }}</th>
-                            <th>{{ 'Gateway' }}</th>
                             <th>{{ 'Created at' }}</th>
                             <th>{{ 'Actions' }}</th>
                         </tr>
@@ -74,7 +72,6 @@
                                 </td>
                                 <td>{{  $user->email }}</td>
 
-
                                 <td>
                                     @if ($user->role == 'admin')
                                         <span class="badge badge-success">{{$user->role}}</span>
@@ -85,14 +82,6 @@
                                     @endif
                                 </td>
 
-                                <td>
-                                    @if (isset($user->parent_id))
-                                        {{ $users->where('id', $user->parent_id)->first()->name ?? '----' }}
-                                    @endif
-
-                                </td>
-
-                                <td>{{ $user->gateway_name() }}</td>
 
                                 <td data-sort="{{ strtotime($user->created_at) }}">{{ $user->created_at->diffForHumans() }}</td>
                                 <td class="table-action">

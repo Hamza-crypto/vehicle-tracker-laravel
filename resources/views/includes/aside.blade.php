@@ -21,22 +21,27 @@
             <li class="sidebar-header">
                 Vehicles
             </li>
-            <li class="sidebar-item {{ request()->is('orders') ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ route('orders.index') }}">
+            <li class="sidebar-item {{ request()->is('vehicles') ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ route('vehicles.index') }}">
                     <i class="align-middle" data-feather="truck"></i>
                     <span class="align-middle">All Vehicles</span>
                 </a>
             </li>
             @if( $role != 'user')
                 <li class="sidebar-item {{ request()->is('orders/create') ? 'active' : '' }}">
-                    <a class="sidebar-link" href="{{ route('orders.create') }}">
+                    <a class="sidebar-link" href="{{ route('upload.create') }}">
+                        <i class="align-middle" data-feather="plus-square"></i>
+                        <span class="align-middle">Upload CSV file(s)</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item {{ request()->is('orders/create') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('vehicles.create') }}">
                         <i class="align-middle" data-feather="plus-square"></i>
                         <span class="align-middle">Add New Vehicle</span>
                     </a>
                 </li>
             @endif
-
-
 
             @if( $role == 'assistant')
 

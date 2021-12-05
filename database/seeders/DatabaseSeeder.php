@@ -26,9 +26,5 @@ class DatabaseSeeder extends Seeder
        \App\Models\User::factory(5)->create();
 
 
-        if (env('APP_ENV') == 'local') {
-             \App\Models\Order::factory(50)->create();
-        }
-
     }
 }
