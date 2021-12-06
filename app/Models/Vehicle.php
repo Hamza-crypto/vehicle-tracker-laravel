@@ -39,30 +39,11 @@ class Vehicle extends Model
 
         }
 
-
-
-
         if (isset($request['daterange'])) {
             $dateRange = explode(' - ', $request['daterange']);
             $query->whereBetween('created_at', [Carbon::parse($dateRange[0])->format('Y-m-d'), Carbon::parse($dateRange[1])->format('Y-m-d')]);
         }
 
-        if (isset($request['user']) && $request['user'] != -100 && $request['user'] != 'undefined') {
-            $query->where('user_id', '=', $request['user']);
-        }
-
-        if (isset($request['used_status']) && $request['used_status'] != -100 && $request['used_status'] != 'undefined') {
-            $query->where('used_status', $request['used_status']);
-        }
-
-        if (isset($request['gateway']) && $request['gateway'] != '999' && $request['gateway'] != 'undefined') {
-            if ($request['gateway'] == 0) {
-                $query->whereIn('processed_by', ['0', '']);
-            } else {
-                $query->where('processed_by', $request['gateway']);
-            }
-
-        }
 
         $query->orderBy('created_at', 'desc');
     }

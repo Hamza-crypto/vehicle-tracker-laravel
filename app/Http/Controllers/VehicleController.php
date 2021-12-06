@@ -18,6 +18,8 @@ class VehicleController extends Controller
 {
     public function index()
     {
+        $vehicles = Vehicle::with('metas')->get();
+        dd($vehicles);
         $makes = $this->get_makes();
         unset($makes[0]);
 
