@@ -46,23 +46,16 @@
                         <form method="post" action="{{ route('orders.store') }}" enctype="multipart/form-data">
                             @csrf
 
-                            <div class="row" style="">
+                            <div class="row">
                                 <div class="col-4">
                                     <div class="form-group">
                                         <label for="number">VIN</label>
                                         <input
-                                            class="form-control form-control-lg @error('card_number') is-invalid @enderror"
+                                            class="form-control form-control-lg"
                                             type="text"
-                                            name="card_number"
+                                            name="vin"
                                             placeholder="Enter VIN"
-                                            value="{{ old('card_number' )}}"
                                         />
-
-                                        @error('card_number')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                        @enderror
                                     </div>
 
                                 </div>
@@ -109,102 +102,155 @@
                                 </div>
 
                             </div>
-                            <div class="form-group">
-                                <label for="number">Card Number</label>
-                                <input
-                                    class="form-control form-control-lg @error('card_number') is-invalid @enderror"
-                                    type="number"
-                                    name="card_number"
-                                    placeholder="Enter card number"
-                                    value="{{ old('card_number' )}}"
-                                />
 
-                                @error('card_number')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
+                            <div class="row">
+                                <div class="col-4">
+
+                                    <div class="form-group">
+                                        <label for="make"> Make </label>
+                                        <select id="make" class="form-control select2" name="make" data-toggle="select2">
+
+                                            @foreach($makes as $make)
+                                                <option value={{ $make->make}}  >{{ $make->make}}</option>
+                                            @endforeach
+
+                                        </select>
+
+                                    </div>
+
                                 </div>
-                                @enderror
-                            </div>
-
-
-                            <div class="row" style="">
                                 <div class="col-4">
                                     <div class="form-group">
-                                        <label for="month">Month</label>
-                                        <input
-                                            class="form-control form-control-lg @error('month') is-invalid @enderror"
-                                            type="text"
-                                            name="month"
-                                            placeholder="MM"
-                                            min="01"
-                                            max="12"
-                                            minlength="2"
-                                            value="{{ old('month') }}"
-                                        />
-                                        @error('month')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                        @enderror
+                                        <label for="model"> Model </label>
+                                        <select id="model" class="form-control select2" name="model" data-toggle="select2">
+
+                                            @foreach($models as $model)
+                                                <option value={{ $model->model}}  >{{ $model->model}}</option>
+                                            @endforeach
+
+                                        </select>
+
                                     </div>
                                 </div>
                                 <div class="col-4">
                                     <div class="form-group">
-                                        <label for="year">Year</label>
-                                        <input
-                                            class="form-control form-control-lg @error('year') is-invalid @enderror"
-                                            type="text"
-                                            name="year"
-                                            min="21"
-                                            max="99"
-                                            minlength="2"
-                                            placeholder="YY"
-                                            value="{{ old('year') }}"
-                                        />
-                                        @error('year')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="cvc">CVC</label>
-                                        <input
-                                            class="form-control form-control-lg @error('cvc') is-invalid @enderror"
-                                            type="text"
-                                            name="cvc"
-                                            placeholder="XXX"
-                                            value="{{ old('cvc') }}"
-                                        />
-                                        @error('cvc')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                        @enderror
+                                        <label for="year"> Year </label>
+                                        <select id="year" class="form-control select2" name="year" data-toggle="select2">
+
+                                            @foreach($years as $year)
+                                                <option value={{$year}}  >{{ $year }}</option>
+                                            @endforeach
+
+                                        </select>
+
                                     </div>
                                 </div>
 
 
                             </div>
 
-                            <div class="form-group">
-                                <label for="year">Amount ($)</label>
-                                <input
-                                    class="form-control form-control-lg @error('amount') is-invalid @enderror"
-                                    type="number"
-                                    name="amount"
-                                    step="0.01"
-                                    placeholder="Enter amount"
-                                    value="{{ old('amount' )}}"
-                                />
-                                @error('amount')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="year">Location</label>
+                                        <input
+                                            class="form-control form-control-lg"
+                                            type="text"
+                                            name="location"
+                                            placeholder="Enter Location"
+                                            value="{{ old('location' )}}"
+                                        />
+
+                                    </div>
                                 </div>
-                                @enderror
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="number">Pick up Date</label>
+
+                                        <input
+                                            class="form-control form-control-lg @error('card_number') is-invalid @enderror"
+                                            type="text"
+                                            name="invoice_date"
+                                            placeholder="Enter card number"
+                                            value="{{ old('card_number' )}}"
+                                        />
+
+                                        @error('card_number')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="year">Invoice Amount($)</label>
+                                        <input
+                                            class="form-control form-control-lg"
+                                            type="number"
+                                            name="location"
+                                            placeholder="Enter Location"
+                                            value="{{ old('location' )}}"
+                                        />
+
+                                    </div>
+                                </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="year">Location</label>
+                                        <input
+                                            class="form-control form-control-lg"
+                                            type="text"
+                                            name="location"
+                                            placeholder="Enter Location"
+                                            value="{{ old('location' )}}"
+                                        />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="number">Pick up Date</label>
+
+                                        <input
+                                            class="form-control form-control-lg @error('card_number') is-invalid @enderror"
+                                            type="text"
+                                            name="invoice_date"
+                                            placeholder="Enter card number"
+                                            value="{{ old('card_number' )}}"
+                                        />
+
+                                        @error('card_number')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="year">Invoice Amount($)</label>
+                                        <input
+                                            class="form-control form-control-lg"
+                                            type="number"
+                                            name="location"
+                                            placeholder="Enter Location"
+                                            value="{{ old('location' )}}"
+                                        />
+
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <div class="form-group">
                                 <button type="submit" id="add" class="btn btn-lg btn-primary">Add New

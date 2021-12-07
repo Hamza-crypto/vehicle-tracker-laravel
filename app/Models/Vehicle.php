@@ -14,9 +14,25 @@ class Vehicle extends Model
 
     ];
 
+    protected $casts = [
+        'invoice_date' => 'date'
+    ];
+
+    public function getInvoiceDateAttribute($date)
+    {
+        $date = Carbon::parse($date);
+        return $date->format('Y-m-d');
+    }
+
     public function metas()
     {
         return $this->hasMany(VehicleMetas::class);
+    }
+
+    public function invoice_amount()
+    {
+        return $this->hasOne(VehicleMetas::class)
+            ->where('meta_key', 'invoice_amount');
     }
 
 

@@ -38,35 +38,36 @@ class DatatableController extends Controller
         $start = $request->length == -1 ? 0 : $request->start;
         $limit = $request->length == -1 ? $totalData : $request->length;
 
-        $vehicles = Vehicle::with('metas')->filters($request->all());
+
 
         if (empty($request->input('search.value'))) {
+            $vehicles = Vehicle::filters($request->all());
 
-            $totalOrders = $vehicles->get(); //if any filter is selected , then count according to that filter
+            //$totalOrders = $vehicles->get(); //if any filter is selected , then count according to that filter
 
             $vehicles = $vehicles->offset($start)->limit($limit)->get();
 
         } else {
             $search = $request->input('search.value');
-            $vehicles = $vehicles->filters($request->all());
+            $vehicles = Vehicle::filters($request->all());
             $vehicles = $vehicles->where(function ($q1) use ($search) {
                 $q1->where('id', 'LIKE', "%$search%")
                     ->orWhere('vin', 'LIKE', "%$search%")
                     ->orWhere('lot', 'LIKE', "%$search%");
             })
-                ->get();
+            ->get();
 
             $totalOrders = $vehicles; //if any filter is selected , then count according to that filter
-            $total_sum = $totalOrders->sum('amount');
+
 
             $totalFiltered = count($vehicles);
             $vehicles = $vehicles->skip($start)->take($limit);
         }
 
         //dd($vehicles->toArray());
-        foreach ($totalOrders as $vehicle) {
-            $totalOrderCount[$vehicle->status] = ($totalOrderCount[$vehicle->status] ?? 0) + 1;
-        }
+//        foreach ($totalOrders as $vehicle) {
+//            $totalOrderCount[$vehicle->status] = ($totalOrderCount[$vehicle->status] ?? 0) + 1;
+//        }
 
         $data = [];
 
@@ -74,8 +75,9 @@ class DatatableController extends Controller
             $vehicle->DT_RowId = $vehicle->id;
             $vehicle->null = "";
 
-            $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
+            //$vehicle->invoice_date = $vehicle->invoice_date;
 
+            $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
 
             $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline"><i class="fa fa-edit text-info"></i></a>';
             $alertTitle = __("Are you sure you want to delete vehicle with VIN ") . ' ' . $vehicle->vin;

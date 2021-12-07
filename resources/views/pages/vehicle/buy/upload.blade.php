@@ -28,12 +28,12 @@
             <div class="col-4">
                 <div class="card">
                     <div class="card-body">
-                        <form method="post" action="{{ route('csv.buy') }}" enctype="multipart/form-data">
+                        <form method="post" action="{{ route('buy.copart') }}" enctype="multipart/form-data">
                             @csrf
 
                             <div class="form-group">
                             <div class="mb-3">
-                                <label class="form-label w-100">Buyer</label>
+                                <label class="form-label w-100">Copart</label>
                                 <input type="file" name="csv_file" required>
                             </div>
                             </div>
@@ -52,12 +52,12 @@
             <div class="col-4">
                 <div class="card">
                     <div class="card-body">
-                        <form method="post" action="{{ route('csv.sale') }}" enctype="multipart/form-data">
+                        <form method="post" action="{{ route('buy.iaai') }}" enctype="multipart/form-data">
                             @csrf
 
                             <div class="form-group">
                                 <div class="mb-3">
-                                    <label class="form-label w-100">Seller</label>
+                                    <label class="form-label w-100">IAAI</label>
                                     <input type="file" name="csv_file" required>
                                 </div>
                             </div>
@@ -73,29 +73,6 @@
                 </div>
             </div>
 
-            <div class="col-4">
-                <div class="card">
-                    <div class="card-body">
-                        <form method="post" action="{{ route('csv.inventory') }}" enctype="multipart/form-data">
-                            @csrf
-
-                            <div class="form-group">
-                                <div class="mb-3">
-                                    <label class="form-label w-100">Inventory</label>
-                                    <input type="file" name="csv_file" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <button type="submit" id="add" class="btn btn-lg btn-primary">Add New File
-                                </button>
-                            </div>
-
-
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
 
 

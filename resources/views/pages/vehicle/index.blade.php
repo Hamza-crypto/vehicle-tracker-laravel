@@ -87,7 +87,7 @@
                 'columns': [
                     {"data": "null"},
                     {"data": "id"},
-                    {"data": "invoice"},
+                    {"data": "invoice_date"},
                     {"data": "lot"},
                     {"data": "vin"},
                     {"data": "year"},

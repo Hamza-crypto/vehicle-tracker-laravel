@@ -102,23 +102,22 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(
         ['middleware' => 'admin',
         ], function () {
-        Route::get('logs', [LogViewerController::class, 'index']);
-        Route::resource('bins', BinController::class);
 
-        Route::get('vehicles/upload', [VehicleController::class, 'create_upload'])->name('upload.create');
+        Route::get('vehicles/upload/buy', [VehicleController::class, 'create_upload_buy'])->name('upload.create.buy');
+        Route::get('vehicles/upload/inventory', [VehicleController::class, 'create_upload_inventory'])->name('upload.create.inventory');
+        Route::get('vehicles/upload/sold', [VehicleController::class, 'create_upload_sold'])->name('upload.create.sold');
 
         Route::resource('vehicles', VehicleController::class);
 
-        Route::post('csv/buy', [VehicleController::class, 'import_buy_csv'])->name('csv.buy');
+        Route::post('buy/copart', [VehicleController::class, 'import_buy_copart_csv'])->name('buy.copart');
+        Route::post('buy/iaai', [VehicleController::class, 'import_buy_iaai_csv'])->name('buy.iaai');
+        Route::post('inventory/copart', [VehicleController::class, 'import_inventory_copart_csv'])->name('inventory.copart');
+        Route::post('sold/copart', [VehicleController::class, 'import_sold_copart_csv'])->name('sold.copart');
+
         Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
         Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
 
 
-        Route::resource('messages', MessageController::class);
-        Route::resource('groups', GroupController::class);
-        Route::resource('post_messages', PostMessageController::class);
-        Route::resource('gateways', GatewayController::class);
-        Route::resource('order_categories', OrderCategoryController::class);
         Route::resource('users', UsersController::class);
         Route::post('password/{user}', [UsersController::class, 'password_update'])->name('user.password_update');
 
