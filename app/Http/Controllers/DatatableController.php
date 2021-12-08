@@ -90,7 +90,7 @@ class DatatableController extends Controller
                     </form>
                     ';
 
-          // $vehicle->actions .= $edit;
+           $vehicle->actions .= $edit;
            $vehicle->actions .= $delete;
 
            $data[] = $vehicle;

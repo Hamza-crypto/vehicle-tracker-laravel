@@ -59,7 +59,11 @@ class VehicleController extends Controller
 
     public function store(Request $request)
     {
+        $this->insert_in_db($request);
 
+
+        Session::flash('success', "Vehicle inserted successfully");
+        return back();
     }
 
 
@@ -105,6 +109,9 @@ class VehicleController extends Controller
             $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $location]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'date_picked_up'], ['meta_value' => $date_picked_up]);
         }
+
+        Session::flash('success', "Successfully inserted");
+
         return back();
     }
 
@@ -151,6 +158,9 @@ class VehicleController extends Controller
             $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $location]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'date_picked_up'], ['meta_value' => $date_picked_up]);
         }
+
+        Session::flash('success', "Successfully inserted");
+
         return back();
     }
 
@@ -200,6 +210,8 @@ class VehicleController extends Controller
             $vehicle->metas()->updateOrCreate(['meta_key' => 'number_of_runs'], ['meta_value' => $number_of_runs]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'days_in_yard'], ['meta_value' => $days_in_yard]);
         }
+
+        Session::flash('success', "Successfully inserted");
         return back();
     }
 
@@ -237,7 +249,11 @@ class VehicleController extends Controller
             }
 
         }
+
+        Session::flash('success', "Successfully updated");
+
         return back();
+
     }
 
 
@@ -249,13 +265,20 @@ class VehicleController extends Controller
 
     public function edit(Vehicle $vehicle)
     {
-        //
+        $makes = $this->get_makes();
+        $models = $this->get_models();
+        $years = $this->get_years();
+
+        return view('pages.vehicle.edit', get_defined_vars());
     }
 
 
     public function update(Request $request, Vehicle $vehicle)
     {
-        //
+        $this->insert_in_db($request, $vehicle);
+
+        Session::flash('success', "Vehicle updated successfully");
+        return back();
     }
 
     public function destroy(Vehicle $vehicle)
@@ -301,5 +324,24 @@ class VehicleController extends Controller
         $invoice_amount = str_replace('USD', '', $invoice_amount);
         $invoice_amount = str_replace(',', '', $invoice_amount);
         return $invoice_amount;
+    }
+
+    public function insert_in_db($request, $vehicle = null)
+    {
+        if(!$vehicle){
+            $vehicle = new Vehicle();
+        }
+
+        $vehicle->invoice_date = $request->invoice_date;
+        $vehicle->lot = $request->lot;
+        $vehicle->vin = $request->vin;
+        $vehicle->year = $request->year;
+        $vehicle->make = $request->make;
+        $vehicle->model = $request->model;
+        $vehicle->save();
+
+        $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $request->location]);
+        $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $request->pickup_date]);
+        $vehicle->metas()->updateOrCreate(['meta_key' => 'invoice_amount'], ['meta_value' => $request->invoice_amount]);
     }
 }

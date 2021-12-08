@@ -107,7 +107,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('vehicles/upload/inventory', [VehicleController::class, 'create_upload_inventory'])->name('upload.create.inventory');
         Route::get('vehicles/upload/sold', [VehicleController::class, 'create_upload_sold'])->name('upload.create.sold');
 
-        Route::resource('vehicles', VehicleController::class);
 
         Route::post('buy/copart', [VehicleController::class, 'import_buy_copart_csv'])->name('buy.copart');
         Route::post('buy/iaai', [VehicleController::class, 'import_buy_iaai_csv'])->name('buy.iaai');
@@ -116,6 +115,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
         Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
+
+        Route::resource('vehicles', VehicleController::class);
 
 
         Route::resource('users', UsersController::class);

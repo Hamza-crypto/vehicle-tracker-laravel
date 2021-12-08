@@ -35,6 +35,18 @@ class Vehicle extends Model
             ->where('meta_key', 'invoice_amount');
     }
 
+    public function location()
+    {
+        return $this->hasOne(VehicleMetas::class)
+            ->where('meta_key', 'location');
+    }
+
+    public function date_pickup()
+    {
+        return $this->hasOne(VehicleMetas::class)
+            ->where('meta_key', 'date_picked_up');
+    }
+
 
     public function scopeFilters($query, $request)
     {
