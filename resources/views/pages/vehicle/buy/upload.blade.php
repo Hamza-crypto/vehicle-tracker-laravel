@@ -5,7 +5,10 @@
 @section('scripts')
     <script>
         $('#add').click(function(){
-            // alert('sss');
+             $('#loader').toggleClass('d-none');
+        });
+
+        $('#add2').click(function(){
              $('#loader').toggleClass('d-none');
         });
     </script>
@@ -63,7 +66,7 @@
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" id="add" class="btn btn-lg btn-primary">Add New File
+                                <button type="submit" id="add2" class="btn btn-lg btn-primary">Add New File
                                 </button>
                             </div>
 
@@ -96,9 +99,5 @@
             </div>
         </div>
     </div>
-
-
-
-
 
 @endsection

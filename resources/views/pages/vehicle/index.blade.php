@@ -35,7 +35,6 @@
             });
 
             var table = $('#orders-table').DataTable({
-
                 "ordering": false,
                 'processing': true,
                 'serverSide': true,
@@ -121,7 +120,7 @@
                 // ],
 
                 columnDefs: [
-                    // {targets: [7], orderable: false, searchable: false},
+                    // {targets: [0], orderable: true, searchable: false},
                     // {targets: [1,2,3,4, 5, 9], orderable: false},
                     // {targets: [0], className: 'select-checkbox'},
 

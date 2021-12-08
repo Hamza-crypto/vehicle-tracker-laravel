@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Add Gateway')
+@section('title', 'Add Location')
 
 @section('content')
 
-    <h1 class="h3 mb-3">Add New Gateway</h1>
+    <h1 class="h3 mb-3">Add New Location</h1>
 
     <div class="row">
         <div class="col-12">
@@ -19,16 +19,14 @@
                     @endif
 
 
-                    <form method="post" action="{{ route('gateways.store') }}">
+                    <form method="post" action="{{ route('locations.store') }}">
                         @csrf
 
-                        <x-input type="text" label="Title" placeholder="Enter gateway title"></x-input>
-                        <x-input type="text" label="API Key" name="api_key" placeholder="Enter API Key"></x-input>
-                        <x-input type="text" label="API Secret" name="api_secret" placeholder="Enter API Secret"></x-input>
+                        <x-input type="text" label="Location" placeholder="Enter Location"></x-input>
 
                         <div class="form-group">
 
-                            <button type="submit" class="btn btn-lg btn-primary">Add New Gateway</button>
+                            <button type="submit" class="btn btn-lg btn-primary">Add New Location</button>
                         </div>
 
                     </form>

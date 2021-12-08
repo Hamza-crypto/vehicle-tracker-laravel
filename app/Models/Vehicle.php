@@ -44,8 +44,9 @@ class Vehicle extends Model
     public function date_pickup()
     {
         return $this->hasOne(VehicleMetas::class)
-            ->where('meta_key', 'date_picked_up');
+            ->where('meta_key', 'pickup_date');
     }
+
 
 
     public function scopeFilters($query, $request)

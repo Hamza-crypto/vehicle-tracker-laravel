@@ -2,18 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Gateway;
-use App\Models\Order;
-use App\Models\Screenshot;
-use App\Models\Tag;
-use App\Models\User;
+use App\Models\Location;
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Maatwebsite\Excel\Facades\Excel;
+
 
 class VehicleController extends Controller
 {
@@ -54,6 +49,8 @@ class VehicleController extends Controller
         $makes = $this->get_makes();
         $models = $this->get_models();
         $years = $this->get_years();
+        $locations = $this->get_locations();
+        $locations2 = Location::all();
         return view('pages.vehicle.add', get_defined_vars());
     }
 
@@ -91,6 +88,7 @@ class VehicleController extends Controller
             $location = $row[array_search("Location", $csv_header_fields)];
             $date_picked_up = $row[array_search("Left Location", $csv_header_fields)];
 
+
             if (!in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
                 $vehicle->invoice_date = $row[array_search("Invoice Date", $csv_header_fields)];
@@ -105,9 +103,10 @@ class VehicleController extends Controller
                 $vehicle = Vehicle::where('vin', $vin)->first();
             }
 
+            $date_picked_up = Carbon::parse($date_picked_up)->format('Y-m-d');
             $vehicle->metas()->updateOrCreate(['meta_key' => 'invoice_amount'], ['meta_value' => $invoice_amount]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $location]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'date_picked_up'], ['meta_value' => $date_picked_up]);
+            $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $date_picked_up]);
         }
 
         Session::flash('success', "Successfully inserted");
@@ -154,9 +153,10 @@ class VehicleController extends Controller
                 $vehicle = Vehicle::where('vin', $vin)->first();
             }
 
+            $date_picked_up = Carbon::parse($date_picked_up)->format('Y-m-d');
             $vehicle->metas()->updateOrCreate(['meta_key' => 'invoice_amount'], ['meta_value' => $invoice_amount]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $location]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'date_picked_up'], ['meta_value' => $date_picked_up]);
+            $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $date_picked_up]);
         }
 
         Session::flash('success', "Successfully inserted");
@@ -204,6 +204,7 @@ class VehicleController extends Controller
                 $vehicle = Vehicle::where('vin', $vin)->first();
             }
 
+            $auction_date = Carbon::parse($auction_date)->format('Y-m-d');
             $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $location]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'claim_number'], ['meta_value' => $claim_number]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'auction_date'], ['meta_value' => $auction_date]);
@@ -269,6 +270,9 @@ class VehicleController extends Controller
         $models = $this->get_models();
         $years = $this->get_years();
 
+        $locations = $this->get_locations();
+        $locations2 = Location::all();
+
         return view('pages.vehicle.edit', get_defined_vars());
     }
 
@@ -304,7 +308,14 @@ class VehicleController extends Controller
         return Vehicle::select('model')
             ->where('model', '!=', '')
             ->groupBy('model')->get();
+    }
 
+    public function get_locations()
+    {
+        return VehicleMetas::select('meta_value')
+            ->where('meta_key', 'location')
+            ->where('meta_value',  '!=', '')
+            ->groupBy('meta_value')->get();
     }
 
     public function get_years()
@@ -331,6 +342,7 @@ class VehicleController extends Controller
         if(!$vehicle){
             $vehicle = new Vehicle();
         }
+
 
         $vehicle->invoice_date = $request->invoice_date;
         $vehicle->lot = $request->lot;

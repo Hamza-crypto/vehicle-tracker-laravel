@@ -6,7 +6,7 @@
     <script>
         $('#add').click(function(){
             // alert('sss');
-             $('#loader').toggleClass('d-none');
+            $('#loader').toggleClass('d-none');
         });
     </script>
 @endsection
@@ -53,7 +53,27 @@
         </div>
 
 
+    <div id="loader" class="row text-center d-none">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Checking CSV File</h5>
+                    <h6 class="card-subtitle text-muted">Please wait while we check your file and save in system</h6>
+                </div>
+                <div class="card-body">
 
+                    <div class="mb-2">
+
+                        <div class="spinner-border text-primary me-2" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 @endsection

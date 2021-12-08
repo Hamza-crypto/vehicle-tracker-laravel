@@ -6,7 +6,7 @@
     <script>
         $('#add').click(function(){
             // alert('sss');
-             $('#loader').toggleClass('d-none');
+            $('#loader').toggleClass('d-none');
         });
     </script>
 @endsection

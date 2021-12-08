@@ -10,11 +10,13 @@
     </script>
 @endsection
 
+
+
 @section('content')
     @if(session('success'))
         <x-alert type="success">{{ session('success') }}</x-alert>
     @endif
-    <h1 class="h3 mb-3">All Gateways</h1>
+    <h1 class="h3 mb-3">All Locations</h1>
 
 
     <div class="row">
@@ -26,39 +28,51 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Title</th>
+                            <th>Location</th>
                             <th>Created at</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
-
-                        <active-trades/>
-                        @foreach($gateways as $gateway)
+                        @php  $count = 1 @endphp
+                        @foreach($locations as $location)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $count++ }} </td>
 
 
-                                <td>{{ $gateway->title }}</td>
+                                <td>{{ $location->location }}</td>
 
-                                <td>{{ $gateway->created_at->diffForHumans() }}</td>
+                                <td>{{ $location->created_at->diffForHumans() }}</td>
                                 <td class="table-action">
-                                    <a href="{{ route('gateways.edit', $gateway->id) }}" class="btn" style="display: inline">
-                                        <i class="fa fa-edit text-info"></i>
-                                    </a>
-                                    <form method="post" action="{{ route('gateways.destroy', $gateway->id) }}"
-                                          onsubmit="return confirmSubmission(this, 'Are you sure you want to delete gateway ' + '{{ "$gateway->title"  }}')"
+
+                                    <form method="post" action="{{ route('locations.destroy', $location->id) }}"
+                                          onsubmit="return confirmSubmission(this, 'Are you sure you want to delete location ' + '{{ "$location->location"  }}')"
 
                                           style="display: inline">
                                         @csrf
                                         @method('DELETE')
 
                                         <button class="btn text-danger"
-                                                href="{{ route('gateways.destroy', $gateway->id) }}">
+                                                href="{{ route('locations.destroy', $location->id) }}">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </form>
 
                                 </td>
+                            </tr>
+
+                        @endforeach
+
+
+                        @foreach($locations2 as $location)
+                            <tr>
+                                <td>{{ $count++ }} </td>
+
+                                <td>{{ $location->meta_value }}</td>
+
+                                <td>  Added from CSV</td>
+
+                                <td> can not be deleted </td>
+
                             </tr>
                         @endforeach
 

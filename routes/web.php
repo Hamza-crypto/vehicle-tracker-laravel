@@ -8,6 +8,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\GatewayController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\ManualFeedbackController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderCategoryController;
@@ -42,10 +43,6 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 
 Route::redirect('/', '/dashboard');
 
-Route::get('test', function (){
-
-});
-
 
 Route::group(['middleware' => ['auth']], function () {
 
@@ -76,21 +73,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('order/used/{order}', [OrderController::class, 'change_used_status'])->name('order.used');
     Route::get('api/v1/orders_update', [DatatableController::class, 'orders'])->name('orders.ajax');
 
-    Route::patch('user/wallet/{user}', [UsersController::class, 'update_wallet_info'])->name('wallet.update');
-    Route::patch('user/gateway/{user}', [UsersController::class, 'update_gateway'])->name('gateway.update');
-    Route::patch('user/parent/{user}', [UsersController::class, 'update_parent'])->name('parent.update');
-    Route::patch('user/paxful_api/{user}', [ProfileController::class, 'update_paxful_api'])->name('api.store');
-    Route::patch('user/availability_status', [ProfileController::class, 'update_availability_status'])->name('available.status');
-    Route::patch('user/payable_visibility_status/{user}', [UsersController::class, 'update_payable_section'])->name('payable.visibility');
-    Route::patch('user/assign_category/{user}', [UsersController::class, 'update_order_category'])->name('user.category.assign');
-
     // Report
     Route::get('reports/payable', [ReportController::class, 'payable'])->name('report.payable');
     Route::get('reports/daily', [ReportController::class, 'daily'])->name('report.daily');
     Route::get('manager/subuser/{id}', [ReportController::class, 'get_sub_users'])->name('manager.users');
 
-    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::post('settings', [SettingsController::class, 'update_settings'])->name('settings.update');
 
     Route::group([], function () {
 
@@ -116,7 +103,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
         Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
 
+        Route::get('vehicle/location/{location}', [LocationsController::class, 'add_new_location'])->name('location.add');
+
         Route::resource('vehicles', VehicleController::class);
+        Route::resource('locations', LocationsController::class);
 
 
         Route::resource('users', UsersController::class);

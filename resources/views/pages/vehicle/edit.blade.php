@@ -96,7 +96,7 @@
                                 <div class="form-group">
                                     <label for="make"> Make </label>
                                     <select id="make" class="form-control select2" name="make" data-toggle="select2">
-
+                                        <option value="" > Select </option>
                                         @foreach($makes as $make)
                                             <option value={{ $make->make}} @if(old('make', $vehicle->make) == $make->make) selected @endif  >{{ $make->make}}</option>
                                         @endforeach
@@ -110,7 +110,7 @@
                                 <div class="form-group">
                                     <label for="model"> Model </label>
                                     <select id="model" class="form-control select2" name="model" data-toggle="select2">
-
+                                        <option value="" > Select </option>
                                         @foreach($models as $model)
                                             <option value={{ $model->model}} @if(old('model', $vehicle->model) == $model->model) selected @endif >{{ $model->model}}</option>
                                         @endforeach
@@ -138,16 +138,21 @@
 
                         <div class="row">
                             <div class="col-4">
-                                <div class="form-group">
-                                    <label for="year">Location</label>
-                                    <input
-                                        class="form-control form-control-lg"
-                                        type="text"
-                                        name="location"
-                                        placeholder="Enter Location"
-                                        value="{{ old('location' , $vehicle->location->meta_value ?? '')}}"
 
-                                    />
+                                <div class="form-group">
+                                    <label for="location"> Location </label>
+                                    <select id="location" class="form-control select2" name="location" data-toggle="select2">
+
+                                        @foreach($locations as $location)
+                                            <option value="{{ $location->meta_value }}" @if(old('location' , $vehicle->location->meta_value ?? '') == $location->meta_value) selected @endif >{{ $location->meta_value }}</option>
+                                        @endforeach
+
+                                            @foreach($locations2 as $location)
+                                            <option value="{{ $location->location }}" @if(old('location' , $vehicle->location->meta_value ?? '') == $location->location) selected @endif >{{ $location->location }}</option>
+                                        @endforeach
+
+
+                                    </select>
 
                                 </div>
                             </div>
@@ -194,6 +199,7 @@
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 
