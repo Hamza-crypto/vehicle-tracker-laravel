@@ -100,6 +100,10 @@
                 "initComplete": function () {
                     var api = this.api();
                     var role = "<?php echo Auth()->user()->role ?>";
+
+                    if (role == 'user') {
+                        api.columns([8,9]).visible(false);
+                    }
                 },
                 // buttons: [
                 //     {

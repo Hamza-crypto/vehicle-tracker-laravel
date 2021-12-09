@@ -13,20 +13,6 @@ class DatatableController extends Controller
 
     public function orders(Request $request)
     {
-        $request_user_id = $request->user;
-
-        if ($request_user_id != -100 && $request_user_id != null) {
-            $request_user_rate = User::find($request_user_id)->rate();
-        } else {
-            $request_user_rate = 89;
-        }
-
-        $user = Auth()->user();
-        $role = Auth()->user()->role;
-
-        if ($role != 'admin') {
-            $request_user_rate = $user->rate();
-        }
 
         $totalData = Vehicle::filters($request->all())->count();
 
@@ -64,10 +50,6 @@ class DatatableController extends Controller
             $vehicles = $vehicles->skip($start)->take($limit);
         }
 
-        //dd($vehicles->toArray());
-//        foreach ($totalOrders as $vehicle) {
-//            $totalOrderCount[$vehicle->status] = ($totalOrderCount[$vehicle->status] ?? 0) + 1;
-//        }
 
         $data = [];
 
@@ -102,7 +84,7 @@ class DatatableController extends Controller
             'orders_status_accepted' => $totalOrderCount['accepted'],
             'orders_status_pending' => $totalOrderCount['pending'],
             'orders_status_declined' => $totalOrderCount['declined'],
-            'user_rate' => $request_user_rate
+            'user_rate' => ''
         ];
 
 

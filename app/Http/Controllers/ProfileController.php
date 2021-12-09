@@ -19,14 +19,11 @@ class ProfileController extends Controller
         }
 
         $user = Auth::user();
-        $user_order_category = $user->order_category();
-        $availability_status = $user->availability_status();
+
 
         return view('pages.profile.index', [
             'user' => $user,
             'tab' => $tab,
-            'user_category' => $user_order_category,
-            'status' => $availability_status,
         ]);
     }
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add Order')
+@section('title', 'Edit Vehicle')
 
 @section('scripts')
     <script>
@@ -19,7 +19,7 @@
 @endsection
 @section('content')
 
-    <h1 class="h3 mb-3">Add New Order </h1>
+    <h1 class="h3 mb-3">Edit Vehicle </h1>
 
     <div class="row">
 
@@ -191,7 +191,7 @@
 
                         <div class="form-group">
                             <button type="submit" id="add" class="btn btn-lg btn-primary">Update
-                                Card
+                                Vehicle
                             </button>
                         </div>
 

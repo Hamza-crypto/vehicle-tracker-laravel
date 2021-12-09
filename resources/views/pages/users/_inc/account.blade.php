@@ -118,7 +118,3 @@
         border-radius: 50%;
     }
 </style>
-
-@include('pages.users._inc.usdt_btc')
-
-

@@ -86,6 +86,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::impersonate();
 
+
     Route::group(
         ['middleware' => 'admin',
         ], function () {
@@ -105,7 +106,7 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('vehicle/location/{location}', [LocationsController::class, 'add_new_location'])->name('location.add');
 
-        Route::resource('vehicles', VehicleController::class);
+        Route::resource('vehicles', VehicleController::class)->except('index');
         Route::resource('locations', LocationsController::class);
 
 
@@ -113,5 +114,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('password/{user}', [UsersController::class, 'password_update'])->name('user.password_update');
 
     });
+
+    Route::resource('vehicles', VehicleController::class)->only('index');
 
 });
