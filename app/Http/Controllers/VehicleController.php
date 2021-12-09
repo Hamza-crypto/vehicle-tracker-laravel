@@ -288,6 +288,7 @@ class VehicleController extends Controller
     public function destroy(Vehicle $vehicle)
     {
         foreach ($vehicle->metas as $meta) {
+
             $meta->delete();
         }
 

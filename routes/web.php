@@ -90,6 +90,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(
         ['middleware' => 'admin',
         ], function () {
+        Route::get('logs', [LogViewerController::class, 'index']);
 
         Route::get('vehicles/upload/buy', [VehicleController::class, 'create_upload_buy'])->name('upload.create.buy');
         Route::get('vehicles/upload/inventory', [VehicleController::class, 'create_upload_inventory'])->name('upload.create.inventory');
