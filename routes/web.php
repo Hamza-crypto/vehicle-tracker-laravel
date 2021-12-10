@@ -25,6 +25,7 @@ use App\Models\Order;
 use App\Models\PostMessage;
 use App\Models\Settings;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
@@ -42,6 +43,13 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 
 
 Route::redirect('/', '/dashboard');
+
+
+Route::get('/reset', function (){
+    DB::table('vehicles')->truncate();
+    DB::table('vehicle_metas')->truncate();
+    dd('Database cleared');
+});
 
 
 Route::group(['middleware' => ['auth']], function () {

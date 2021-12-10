@@ -50,7 +50,7 @@ class DatatableController extends Controller
             $vehicles = $vehicles->skip($start)->take($limit);
         }
 
-
+//
         $data = [];
 
         foreach ($vehicles as &$vehicle) {
