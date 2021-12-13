@@ -39,7 +39,9 @@ class DatatableController extends Controller
             $vehicles = $vehicles->where(function ($q1) use ($search) {
                 $q1->where('id', 'LIKE', "%$search%")
                     ->orWhere('vin', 'LIKE', "%$search%")
-                    ->orWhere('lot', 'LIKE', "%$search%");
+                    ->orWhere('lot', 'LIKE', "%$search%")
+                    ->orWhere('description', 'LIKE', "%$search%");
+
             })
             ->get();
 

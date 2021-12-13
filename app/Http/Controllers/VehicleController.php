@@ -22,7 +22,7 @@ class VehicleController extends Controller
 //        unset($makes[0]);
 
         $models = $this->get_models();
- //       unset($models[0]);
+        //       unset($models[0]);
         $statuses = VehicleMetas::select('meta_value')->where('meta_key', 'status')->groupBy('meta_value')->get()->toArray();
 
         return view('pages.vehicle.index', compact('models', 'makes', 'statuses'));
@@ -76,6 +76,29 @@ class VehicleController extends Controller
 
         unset($data[0]);
 
+        $expected_header = [
+            0 => "﻿Invoice Date",
+            1 => "Bidder",
+            2 => "Item#",
+            3 => "Lot/Inv #",
+            4 => "Year",
+            5 => "Make",
+            6 => "Model",
+            7 => "VIN",
+            8 => "Location",
+            9 => "Sale Type",
+            10 => "Description",
+            11 => "Left Location",
+            12 => "Date paid",
+            13 => "Invoice Amount",
+        ];
+
+
+        if ($csv_header_fields != $expected_header) {
+            Session::flash('error', "File is not matching with criteria");
+            return back()->withInput($request->all() + ['invalid' => $expected_header]);
+        }
+
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
         foreach ($data as $row) {
@@ -94,9 +117,7 @@ class VehicleController extends Controller
                 $vehicle->invoice_date = $row[array_search("Invoice Date", $csv_header_fields)];
                 $vehicle->lot = $row[array_search("Lot/Inv #", $csv_header_fields)];
                 $vehicle->vin = $vin;
-                $vehicle->year = $row[array_search("Year", $csv_header_fields)];
-                $vehicle->make = explode(' ', $row[array_search("Description", $csv_header_fields)])[1];
-                $vehicle->model = $row[array_search("Model", $csv_header_fields)];
+                $vehicle->description = $row[array_search("Description", $csv_header_fields)]; //year_make_model
                 $vehicle->save();
 
             } else {
@@ -126,6 +147,39 @@ class VehicleController extends Controller
 
         unset($data[0]);
 
+        $expected_header = [
+            0 => "Stock",
+            1 => "Branch",
+            2 => "VIN",
+            3 => "Year",
+            4 => "Make",
+            5 => "Model",
+            6 => "Date Won",
+            7 => "Date Paid",
+            8 => "Date Picked Up",
+            9 => "Bid Amount",
+            10 => "Buyer Fee",
+            11 => "Internet Fee",
+            12 => "Premium Vehicle Report Fee",
+            13 => "Fedex Fee",
+            14 => "Late Fee",
+            15 => "Yard Fee",
+            16 => "Other Fees",
+            17 => "Service Fee",
+            18 => "Sales Tax",
+            19 => "Storage Fee",
+            20 => "Tow Fee",
+            21 => "Total Amount",
+            22 => "Series",
+            23 => "Color",
+            24 => "Transportation & Shipping Fee"
+        ];
+
+        if ($csv_header_fields != $expected_header) {
+            Session::flash('error', "File is not matching with criteria");
+            return back()->withInput($request->all() + ['invalid' => $expected_header]);
+        }
+
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
         foreach ($data as $row) {
@@ -144,9 +198,12 @@ class VehicleController extends Controller
                 $vehicle->invoice_date = $row[array_search("Date Won", $csv_header_fields)]; //Invoice Date = Date Won
                 $vehicle->lot = $row[array_search("Stock", $csv_header_fields)]; // Lot/Inv #  = Stock
                 $vehicle->vin = $vin;
-                $vehicle->year = $row[array_search("Year", $csv_header_fields)];
-                $vehicle->make = $row[array_search("Make", $csv_header_fields)];
-                $vehicle->model = $row[array_search("Model", $csv_header_fields)];
+
+                $year = $row[array_search("Year", $csv_header_fields)];
+                $make = $row[array_search("Make", $csv_header_fields)];
+                $model = $row[array_search("Model", $csv_header_fields)];
+
+                $vehicle->description = sprintf('%s %s %s', $year, $make, $model);
                 $vehicle->save();
 
             } else {
@@ -164,7 +221,7 @@ class VehicleController extends Controller
         return back();
     }
 
-    public function import_inventory_copart_csv(Request $request)
+    public function import_inventory_copart_csv(Request $request) //step 2
     {
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
@@ -175,6 +232,54 @@ class VehicleController extends Controller
         }
 
         unset($data[0]); // Remove header
+
+        //dd($csv_header_fields);
+
+
+        $expected_header = [
+            0 => "Lot #",
+            1 => "Claim #",
+            2 => "Status",
+            3 => "Description",
+            4 => "VIN",
+            5 => "Primary Damage",
+            6 => "Secondary Damage",
+            7 => "Keys",
+            8 => "Drivability Rating",
+            9 => "Engine",
+            10 => "Drive",
+            11 => "Missing Parts",
+            12 => "Seller",
+            13 => "Adjuster",
+            14 => "Cert Received Date",
+            15 => "Odometer",
+            16 => "Odometer Brand",
+            17 => "Original Title State",
+            18 => "Original Title Type",
+            19 => "Sale Title State",
+            20 => "Sale Title Type",
+            21 => "Title Reviewed",
+            22 => "Location",
+            23 => "Auction Date",
+            24 => "Item # ",
+            25 => "Row Location",
+            26 => "# of Runs",
+            27 => "Days in Yard",
+            28 => "Advance Charges",
+            29 => "ACV",
+            30 => "Repair Cost",
+            31 => "Current Bid",
+            32 => "Reserve",
+            33 => "Reserve Amount",
+            34 => "Reserve %",
+            35 => "Reviewed",
+        ];
+
+        if ($csv_header_fields != $expected_header) {
+            Session::flash('error', "File is not matching with criteria");
+            return back()->withInput($request->all() + ['invalid' => $expected_header]);
+        }
+
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
@@ -195,9 +300,7 @@ class VehicleController extends Controller
                 $vehicle = new Vehicle();
                 $vehicle->lot = $lot;
                 $vehicle->vin = $vin;
-                $vehicle->year = explode(' ', $row[array_search("Description", $csv_header_fields)])[0];
-                $vehicle->make = explode(' ', $row[array_search("Description", $csv_header_fields)])[1];
-
+                $vehicle->description = $row[array_search("Description", $csv_header_fields)];
                 $vehicle->save();
 
             } else {
@@ -228,6 +331,32 @@ class VehicleController extends Controller
 
         unset($data[0]); // Remove header
 
+        $expected_header = [
+            0 => "Lot #",
+            1 => "Claim #",
+            2 => "Status",
+            3 => "Location",
+            4 => "Sale Date",
+            5 => "Description",
+            6 => "Title State ",
+            7 => "Title Type",
+            8 => "Odometer",
+            9 => "Odometer Brand",
+            10 => "Primary Damage",
+            11 => "Loss Type",
+            12 => "Keys",
+            13 => "Drivability Rating",
+            14 => "ACV",
+            15 => "Repair Cost",
+            16 => "Sale Price",
+            17 => "Return %",
+        ];
+
+        if ($csv_header_fields != $expected_header) {
+            Session::flash('error', "File is not matching with criteria");
+            return back()->withInput($request->all() + ['invalid' => $expected_header]);
+        }
+
         $vehicles_lot = Vehicle::pluck('lot')->toArray();
 
         foreach ($data as $row) {
@@ -255,12 +384,6 @@ class VehicleController extends Controller
 
         return back();
 
-    }
-
-
-    public function show(Vehicle $vehicle)
-    {
-        //
     }
 
 
@@ -315,18 +438,18 @@ class VehicleController extends Controller
     {
         return VehicleMetas::select('meta_value')
             ->where('meta_key', 'location')
-            ->where('meta_value',  '!=', '')
+            ->where('meta_value', '!=', '')
             ->groupBy('meta_value')->get();
     }
 
     public function get_years()
     {
         $year = [];
-       for ($i = 1950; $i<2023; $i++){
-           $year[] = $i;
-       }
+        for ($i = 1950; $i < 2023; $i++) {
+            $year[] = $i;
+        }
 
-       return $year;
+        return $year;
 
     }
 
@@ -340,7 +463,7 @@ class VehicleController extends Controller
 
     public function insert_in_db($request, $vehicle = null)
     {
-        if(!$vehicle){
+        if (!$vehicle) {
             $vehicle = new Vehicle();
         }
 

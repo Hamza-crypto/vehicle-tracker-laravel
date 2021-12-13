@@ -89,9 +89,7 @@
                     {"data": "invoice_date"},
                     {"data": "lot"},
                     {"data": "vin"},
-                    {"data": "year"},
-                    {"data": "make"},
-                    {"data": "model"},
+                    {"data": "description"},
                     {"data": "created_at_new"},
                     {"data": "actions", "className": 'table-action'},
 
@@ -306,9 +304,7 @@
                             <th>Invoice Date</th>
                             <th>Lot</th>
                             <th>VIN</th>
-                            <th>Year</th>
-                            <th>Make</th>
-                            <th>Model</th>
+                            <th>Description</th>
                             <th>Created at</th>
                             <th>Actions</th>
 

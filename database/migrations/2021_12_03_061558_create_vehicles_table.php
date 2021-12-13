@@ -18,6 +18,7 @@ class CreateVehiclesTable extends Migration
             $table->date('invoice_date')->nullable();
             $table->string('lot')->nullable();
             $table->string('vin')->nullable();
+            $table->string('description')->nullable();
             $table->string('year')->nullable();
             $table->string('make')->nullable();
             $table->string('model')->nullable();
