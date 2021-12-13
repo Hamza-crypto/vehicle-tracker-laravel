@@ -53,7 +53,14 @@
         </div>
 
 
+    @if(old('invalid'))
+        <h1>Expected header for this file</h1>
+        @foreach(old('invalid') as $header)
 
+            <p> {{ $header }}</p>
+        @endforeach
+
+    @endif
 
 
 @endsection

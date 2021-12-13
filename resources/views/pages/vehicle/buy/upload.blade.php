@@ -13,6 +13,7 @@
         });
     </script>
 @endsection
+
 @section('content')
     @if(session('success'))
         <x-alert type="success">{{ session('success') }}</x-alert>
@@ -23,6 +24,7 @@
     @if(session('warning'))
         <x-alert type="warning">{{ session('warning') }}</x-alert>
     @endif
+
 
         <h1 class="h3 mb-3">Add New File </h1>
 
@@ -99,5 +101,14 @@
             </div>
         </div>
     </div>
+
+    @if(old('invalid'))
+        <h1>Expected header for this file</h1>
+        @foreach(old('invalid') as $header)
+
+            <p> {{ $header }}</p>
+        @endforeach
+
+    @endif
 
 @endsection
