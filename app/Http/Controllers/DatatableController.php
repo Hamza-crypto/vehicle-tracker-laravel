@@ -53,7 +53,7 @@ class DatatableController extends Controller
                 $q1->where('id', 'LIKE', "%$search%")
                     ->orWhere('vin', 'LIKE', "%$search%")
                     ->orWhere('lot', 'LIKE', "%$search%")
-                    ->orWhere('description', 'ILIKE', "%$search%"); // ILIKE only used for Postgress
+                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
 
             })
                 ->get();

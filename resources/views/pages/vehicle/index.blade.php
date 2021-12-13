@@ -100,7 +100,7 @@
                     var role = "<?php echo Auth()->user()->role ?>";
 
                     if (role == 'user') {
-                        api.columns([8,9]).visible(false);
+                        api.columns([6]).visible(false);
                     }
                 },
                 // buttons: [
