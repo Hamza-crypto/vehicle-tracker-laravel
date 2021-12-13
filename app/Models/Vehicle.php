@@ -47,6 +47,36 @@ class Vehicle extends Model
             ->where('meta_key', 'pickup_date');
     }
 
+    public function auction_stk()
+    {
+        return $this->hasOne(VehicleMetas::class)
+            ->where('meta_key', 'auction_stk');
+    }
+
+    public function auction_date()
+    {
+        return $this->hasOne(VehicleMetas::class)
+            ->where('meta_key', 'auction_date');
+    }
+
+    public function sale_price()
+    {
+        return $this->hasOne(VehicleMetas::class)
+            ->where('meta_key', 'sale_price');
+    }
+
+    public function days_in_yard()
+    {
+        return $this->hasOne(VehicleMetas::class)
+            ->where('meta_key', 'days_in_yard');
+    }
+
+    public function number_of_runs()
+    {
+        return $this->hasOne(VehicleMetas::class)
+            ->where('meta_key', 'number_of_runs');
+    }
+
 
 
     public function scopeFilters($query, $request)

@@ -204,6 +204,88 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="number">Auction STK</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="auction_stk"
+                                        placeholder="Enter VIN"
+                                        value="{{ old('auction_stk',  $vehicle->auction_stk->meta_value ?? '') }}"
+                                    />
+                                </div>
+
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="number">Auction Date</label>
+
+                                    <input
+                                        class="form-control form-control-lg daterange"
+                                        type="text"
+                                        name="auction_date"
+                                        placeholder="Enter auction date"
+                                        value="{{ old('auction_date', $vehicle->auction_date->meta_value ?? '') }}"
+                                    />
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="number">Sale Price($)</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="sale_price"
+                                        placeholder="Enter sale price"
+                                        value="{{ old('sale_price', $vehicle->sale_price->meta_value ?? '') }}"
+
+                                    />
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="number"> Days in Yard</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="days_in_yard"
+                                        placeholder="Enter days in yard"
+                                        value="{{ old('vin',  $vehicle->days_in_yard->meta_value ?? '') }}"
+                                    />
+                                </div>
+
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="number">No. of Runs</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="number_of_runs"
+                                        placeholder="Enter number of runs"
+                                        value="{{ old('lot',  $vehicle->number_of_runs->meta_value ?? '') }}"
+                                    />
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
                         <div class="form-group">
                             <button type="submit" id="add" class="btn btn-lg btn-primary">Update
                                 Vehicle

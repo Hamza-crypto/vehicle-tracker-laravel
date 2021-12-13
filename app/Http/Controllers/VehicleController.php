@@ -233,9 +233,6 @@ class VehicleController extends Controller
 
         unset($data[0]); // Remove header
 
-        //dd($csv_header_fields);
-
-
         $expected_header = [
             0 => "Lot #",
             1 => "Claim #",
@@ -279,7 +276,6 @@ class VehicleController extends Controller
             Session::flash('error', "File is not matching with criteria");
             return back()->withInput($request->all() + ['invalid' => $expected_header]);
         }
-
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
@@ -369,15 +365,15 @@ class VehicleController extends Controller
             $lot = $row[array_search("Lot #", $csv_header_fields)];
 
             $sale_price = $row[array_search("Sale Price", $csv_header_fields)];
-            $sale_date = $row[array_search("Sale Date", $csv_header_fields)];
-            $sale_date = Carbon::parse($sale_date)->format('Y-m-d');
+            $auction_date = $row[array_search("Sale Date", $csv_header_fields)];
+            $auction_date = Carbon::parse($auction_date)->format('Y-m-d');
 
             if (in_array($lot, $vehicles_lot)) {
                 $vehicle = Vehicle::where('lot', $lot)->first();
 
                 $vehicle->metas()->updateOrCreate(['meta_key' => 'status'], ['meta_value' => 'sold']);
                 $vehicle->metas()->updateOrCreate(['meta_key' => 'sale_price'], ['meta_value' => $sale_price]);
-                $vehicle->metas()->updateOrCreate(['meta_key' => 'sold_at'], ['meta_value' => $sale_date]);
+                $vehicle->metas()->updateOrCreate(['meta_key' => 'auction_date'], ['meta_value' => $auction_date]);
 
             }
 
@@ -469,7 +465,6 @@ class VehicleController extends Controller
         if (!$vehicle) {
             $vehicle = new Vehicle();
         }
-
 
         $vehicle->invoice_date = $request->invoice_date;
         $vehicle->lot = $request->lot;
