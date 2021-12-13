@@ -212,35 +212,35 @@
 
 
 
-                                <div class="col-sm">
-                                    <div class="form-group">
-                                        <label class="form-label" for="status"> Make </label>
-                                        <select name="makes" id="make"
-                                                class="form-control form-select custom-select select2"
-                                                data-toggle="select2">
-                                            <option value="-100"> Select Make </option>
-                                            @foreach($makes as $make)
-                                                <option
-                                                    value="{{ $make['make'] }}" {{ request()->user == $make['make'] ? 'selected' : '' }}>{{ $make['make'] }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+{{--                                <div class="col-sm">--}}
+{{--                                    <div class="form-group">--}}
+{{--                                        <label class="form-label" for="status"> Make </label>--}}
+{{--                                        <select name="makes" id="make"--}}
+{{--                                                class="form-control form-select custom-select select2"--}}
+{{--                                                data-toggle="select2">--}}
+{{--                                            <option value="-100"> Select Make </option>--}}
+{{--                                            @foreach($makes as $make)--}}
+{{--                                                <option--}}
+{{--                                                    value="{{ $make['make'] }}" {{ request()->user == $make['make'] ? 'selected' : '' }}>{{ $make['make'] }}</option>--}}
+{{--                                            @endforeach--}}
+{{--                                        </select>--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
 
-                            <div class="col-sm">
-                                    <div class="form-group">
-                                        <label class="form-label" for="status"> Model </label>
-                                        <select name="models" id="model"
-                                                class="form-control form-select custom-select select2"
-                                                data-toggle="select2">
-                                            <option value="-100"> Select Model </option>
-                                            @foreach($models as $model)
-                                                <option
-                                                    value="{{ $model['model'] }}" {{ request()->user == $model['model'] ? 'selected' : '' }}>{{ $model['model'] }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+{{--                            <div class="col-sm">--}}
+{{--                                    <div class="form-group">--}}
+{{--                                        <label class="form-label" for="status"> Model </label>--}}
+{{--                                        <select name="models" id="model"--}}
+{{--                                                class="form-control form-select custom-select select2"--}}
+{{--                                                data-toggle="select2">--}}
+{{--                                            <option value="-100"> Select Model </option>--}}
+{{--                                            @foreach($models as $model)--}}
+{{--                                                <option--}}
+{{--                                                    value="{{ $model['model'] }}" {{ request()->user == $model['model'] ? 'selected' : '' }}>{{ $model['model'] }}</option>--}}
+{{--                                            @endforeach--}}
+{{--                                        </select>--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
 
                             <div class="col-sm">
                                 <div class="form-group">
