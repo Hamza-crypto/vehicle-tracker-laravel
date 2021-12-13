@@ -74,6 +74,6 @@ class Vehicle extends Model
         }
 
 
-        $query->orderBy('created_at', 'desc');
+        //$query->orderBy('created_at', 'desc');
     }
 }

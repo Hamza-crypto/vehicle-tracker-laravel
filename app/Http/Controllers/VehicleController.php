@@ -298,13 +298,13 @@ class VehicleController extends Controller
 
             if (!in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
-                $vehicle->lot = $lot;
                 $vehicle->vin = $vin;
                 $vehicle->description = $row[array_search("Description", $csv_header_fields)];
                 $vehicle->save();
 
             } else {
                 $vehicle = Vehicle::where('vin', $vin)->first();
+
             }
 
             $auction_date = Carbon::parse($auction_date)->format('Y-m-d');
@@ -313,6 +313,9 @@ class VehicleController extends Controller
             $vehicle->metas()->updateOrCreate(['meta_key' => 'auction_date'], ['meta_value' => $auction_date]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'number_of_runs'], ['meta_value' => $number_of_runs]);
             $vehicle->metas()->updateOrCreate(['meta_key' => 'days_in_yard'], ['meta_value' => $days_in_yard]);
+
+            $vehicle->metas()->updateOrCreate(['meta_key' => 'auction_stk'], ['meta_value' => $lot]);
+
         }
 
         Session::flash('success', "Successfully inserted");
