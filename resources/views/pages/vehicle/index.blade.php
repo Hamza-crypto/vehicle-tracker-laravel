@@ -35,7 +35,7 @@
             });
 
             var table = $('#orders-table').DataTable({
-                "ordering": false,
+                "ordering": true,
                 'processing': true,
                 'serverSide': true,
                 'ajax': {
@@ -84,7 +84,7 @@
                     }
                 },
                 'columns': [
-                    {"data": "null"},
+                    //{"data": "null"},
                     {"data": "id"},
                     {"data": "invoice_date"},
                     {"data": "lot"},
@@ -100,7 +100,7 @@
                     var role = "<?php echo Auth()->user()->role ?>";
 
                     if (role == 'user') {
-                        api.columns([8,9]).visible(false);
+                        api.columns([6]).visible(false);
                     }
                 },
                 // buttons: [
@@ -122,9 +122,7 @@
                 // ],
 
                 columnDefs: [
-                    // {targets: [0], orderable: true, searchable: false},
-                    // {targets: [1,2,3,4, 5, 9], orderable: false},
-                    // {targets: [0], className: 'select-checkbox'},
+                    {targets: [4,6], orderable: false},
 
                 ],
                 // select: {
@@ -299,7 +297,7 @@
                     <table id="orders-table" class="table table-striped" style="width:100%">
                         <thead>
                         <tr>
-                            <th></th>
+{{--                            <th></th>--}}
                             <th>ID</th>
                             <th>Invoice Date</th>
                             <th>Lot</th>

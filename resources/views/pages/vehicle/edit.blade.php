@@ -91,48 +91,63 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-4">
+{{--                            <div class="col-4">--}}
 
+{{--                                <div class="form-group">--}}
+{{--                                    <label for="make"> Make </label>--}}
+{{--                                    <select id="make" class="form-control select2" name="make" data-toggle="select2">--}}
+{{--                                        <option value="" > Select </option>--}}
+{{--                                        @foreach($makes as $make)--}}
+{{--                                            <option value={{ $make->make}} @if(old('make', $vehicle->make) == $make->make) selected @endif  >{{ $make->make}}</option>--}}
+{{--                                        @endforeach--}}
+
+{{--                                    </select>--}}
+
+{{--                                </div>--}}
+
+{{--                            </div>--}}
+{{--                            <div class="col-4">--}}
+{{--                                <div class="form-group">--}}
+{{--                                    <label for="model"> Model </label>--}}
+{{--                                    <select id="model" class="form-control select2" name="model" data-toggle="select2">--}}
+{{--                                        <option value="" > Select </option>--}}
+{{--                                        @foreach($models as $model)--}}
+{{--                                            <option value={{ $model->model}} @if(old('model', $vehicle->model) == $model->model) selected @endif >{{ $model->model}}</option>--}}
+{{--                                        @endforeach--}}
+
+{{--                                    </select>--}}
+
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                            --}}
+
+{{--                            <div class="col-4">--}}
+{{--                                <div class="form-group">--}}
+{{--                                    <label for="year"> Year </label>--}}
+{{--                                    <select id="year" class="form-control select2" name="year" data-toggle="select2">--}}
+
+{{--                                        @foreach($years as $year)--}}
+{{--                                            <option value={{$year}} @if(old('year', $vehicle->year) == $year) selected @endif >{{ $year }}</option>--}}
+{{--                                        @endforeach--}}
+
+{{--                                    </select>--}}
+
+{{--                                </div>--}}
+{{--                            </div>--}}
+
+                            <div class="col-12">
                                 <div class="form-group">
-                                    <label for="make"> Make </label>
-                                    <select id="make" class="form-control select2" name="make" data-toggle="select2">
-                                        <option value="" > Select </option>
-                                        @foreach($makes as $make)
-                                            <option value={{ $make->make}} @if(old('make', $vehicle->make) == $make->make) selected @endif  >{{ $make->make}}</option>
-                                        @endforeach
-
-                                    </select>
+                                    <label for="year">Year - Make - Model</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="make"
+                                        placeholder="Enter Year - Make - Model"
+                                        value="{{ old('description' , $vehicle->description ?? '')}}"
+                                    />
 
                                 </div>
-
                             </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="model"> Model </label>
-                                    <select id="model" class="form-control select2" name="model" data-toggle="select2">
-                                        <option value="" > Select </option>
-                                        @foreach($models as $model)
-                                            <option value={{ $model->model}} @if(old('model', $vehicle->model) == $model->model) selected @endif >{{ $model->model}}</option>
-                                        @endforeach
-
-                                    </select>
-
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="year"> Year </label>
-                                    <select id="year" class="form-control select2" name="year" data-toggle="select2">
-
-                                        @foreach($years as $year)
-                                            <option value={{$year}} @if(old('year', $vehicle->year) == $year) selected @endif >{{ $year }}</option>
-                                        @endforeach
-
-                                    </select>
-
-                                </div>
-                            </div>
-
 
                         </div>
 

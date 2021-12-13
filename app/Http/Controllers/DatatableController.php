@@ -25,10 +25,23 @@ class DatatableController extends Controller
         $limit = $request->length == -1 ? $totalData : $request->length;
 
 
+        $dbColumns = [
+            0 => "id",
+            1 => "invoice_date",
+            2 => "lot",
+            3 => "vin",
+            5 => "created_at",
+        ];
+
+        $orderColumnIndex = $request->input('order.0.column');
+        $orderDbColumn = $dbColumns[$orderColumnIndex];
+        $orderDirection = $request->input('order.0.dir');
+
 
         if (empty($request->input('search.value'))) {
             $vehicles = Vehicle::filters($request->all());
 
+            $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
             //$totalOrders = $vehicles->get(); //if any filter is selected , then count according to that filter
 
             $vehicles = $vehicles->offset($start)->limit($limit)->get();
@@ -40,10 +53,10 @@ class DatatableController extends Controller
                 $q1->where('id', 'LIKE', "%$search%")
                     ->orWhere('vin', 'LIKE', "%$search%")
                     ->orWhere('lot', 'LIKE', "%$search%")
-                    ->orWhere('description', 'ILIKE', "%$search%");
+                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
 
             })
-            ->get();
+                ->get();
 
             $totalOrders = $vehicles; //if any filter is selected , then count according to that filter
 
@@ -56,8 +69,8 @@ class DatatableController extends Controller
         $data = [];
 
         foreach ($vehicles as &$vehicle) {
-            $vehicle->DT_RowId = $vehicle->id;
-            $vehicle->null = "";
+            // $vehicle->DT_RowId = $vehicle->id;
+            // $vehicle->null = "";
 
             //$vehicle->invoice_date = $vehicle->invoice_date;
             // staging
@@ -75,10 +88,10 @@ class DatatableController extends Controller
                     </form>
                     ';
 
-           $vehicle->actions .= $edit;
-           $vehicle->actions .= $delete;
+            $vehicle->actions .= $edit;
+            $vehicle->actions .= $delete;
 
-           $data[] = $vehicle;
+            $data[] = $vehicle;
         }
 
 
