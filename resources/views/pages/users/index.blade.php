@@ -4,13 +4,13 @@
 
 @section('scripts')
     <script>
-        function get_query_params() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var query = urlParams.toString();
-            let url = "{{ route('users.export', ':id') }}";
-            url = url.replace(':id', query);
-            document.location.href = url;
-        }
+        {{--function get_query_params() {--}}
+        {{--    var urlParams = new URLSearchParams(window.location.search);--}}
+        {{--    var query = urlParams.toString();--}}
+        {{--    let url = "{{ route('users.export', ':id') }}";--}}
+        {{--    url = url.replace(':id', query);--}}
+        {{--    document.location.href = url;--}}
+        {{--}--}}
 
         $(document).ready(function () {
             $('#users-table').DataTable();
@@ -30,15 +30,15 @@
             <div class="card">
                 <div class="card-body">
                     <div class="dt-buttons btn-group flex-wrap">
-                        <button class="mb-4 btn btn-secondary buttons-copy buttons-html5"
-                                type="button"
-                                id="btn_export"
-                                value="1"
-                                onclick="get_query_params()">
+{{--                        <button class="mb-4 btn btn-secondary buttons-copy buttons-html5"--}}
+{{--                                type="button"--}}
+{{--                                id="btn_export"--}}
+{{--                                value="1"--}}
+{{--                                onclick="get_query_params()">--}}
 
 
-                            <span>Export</span>
-                        </button>
+{{--                            <span>Export</span>--}}
+{{--                        </button>--}}
 
                     </div>
 
