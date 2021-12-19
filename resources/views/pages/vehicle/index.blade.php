@@ -7,21 +7,21 @@
 @endphp
 @section('scripts')
     <script>
-        function get_query_params() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var query = urlParams.toString();
-            let url = "{{ route('orders.export', ':id') }}";
-            url = url.replace(':id', query);
-            document.location.href = url;
-        }
+        {{--function get_query_params() {--}}
+        {{--    var urlParams = new URLSearchParams(window.location.search);--}}
+        {{--    var query = urlParams.toString();--}}
+        {{--    let url = "{{ route('orders.export', ':id') }}";--}}
+        {{--    url = url.replace(':id', query);--}}
+        {{--    document.location.href = url;--}}
+        {{--}--}}
 
-        function get_query_params2() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var query = urlParams.toString();
-            let url = "{{ route('orders.export.full', ':id') }}";
-            url = url.replace(':id', query);
-            document.location.href = url;
-        }
+        {{--function get_query_params2() {--}}
+        {{--    var urlParams = new URLSearchParams(window.location.search);--}}
+        {{--    var query = urlParams.toString();--}}
+        {{--    let url = "{{ route('orders.export.full', ':id') }}";--}}
+        {{--    url = url.replace(':id', query);--}}
+        {{--    document.location.href = url;--}}
+        {{--}--}}
 
         $(document).ready(function () {
 
@@ -146,39 +146,6 @@
                 table.ajax.reload();
             });
 
-            $('.paid-unpaid').click(function () {
-                var ids = table.rows('.selected').ids().toArray();
-                if (ids.length > 0) {
-                    var operation = this.id;
-                    var msg = '';
-                    if (operation == 'paidp') {
-                        msg = 'Are you sure you want to mark these as paid?';
-                    } else {
-                        msg = 'Are you sure you want to mark these as un-paid?';
-                    }
-                    if (confirm(msg)) {
-                        let url = "{{ route('orders.paid', [':id', 'action' => ':op'] )  }}";
-                        url = url.replace(':id', ids);
-                        url = url.replace(':op', operation);
-                        console.log(url);
-
-                        $.ajax({
-                            url: url,
-                            success: function (msg) {
-                                console.log("Success: " + msg);
-                                location.reload();
-                            },
-                            error: function (err) {
-                                console.log("Error sending data to server: " + err);
-                            }
-                        });
-                    }
-                } else {
-                    alert('Please select any row');
-                }
-
-
-            });
 
             @if($role != 'admin')
             $('#select_all_btn').parent().hide();
@@ -198,7 +165,7 @@
     @endif
 
 
-    <h1 class="h3 mb-3">All Orders</h1>
+    <h1 class="h3 mb-3">All Vehicles</h1>
 
 {{--    @include('pages.order._inc.stats')--}}
 

@@ -53,7 +53,7 @@ class DatatableController extends Controller
                 $q1->where('id', 'LIKE', "%$search%")
                     ->orWhere('vin', 'LIKE', "%$search%")
                     ->orWhere('lot', 'LIKE', "%$search%")
-                    ->orWhere('description', 'ILIKE', "%$search%"); // ILIKE only used for Postgress
+                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
 
             })
                 ->get();
@@ -84,7 +84,7 @@ class DatatableController extends Controller
                         onsubmit="return confirmSubmission(this, \'' . $alertTitle . '\')">
                         <input type="hidden" name="_token" value="' . csrf_token() . '">
                         <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit" class="btn text-danger" href="' . route('orders.destroy', $vehicle->id) . '"><i class="fa fa-trash"></i></button>
+                        <button type="submit" class="btn text-danger"><i class="fa fa-trash"></i></button>
                     </form>
                     ';
 
