@@ -1,32 +1,14 @@
 <?php
 
-use App\Http\Controllers\Api\ZohoController;
-use App\Http\Controllers\BinController;
+
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatatableController;
-use App\Http\Controllers\ExportController;
-use App\Http\Controllers\GatewayController;
-use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LocationsController;
-use App\Http\Controllers\ManualFeedbackController;
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\OrderCategoryController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\PaxfulTrades;
-use App\Http\Controllers\PostMessageController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\TagController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
-use App\Models\Order;
-use App\Models\PostMessage;
-use App\Models\Settings;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 
@@ -62,35 +44,17 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
-    Route::get('orders/export', [ExportController::class, 'export_with_cvc'])->name('orders.export');
-    Route::get('orders/full_export', [ExportController::class, 'full_export_with_cvc'])->name('orders.export.full');
-    Route::get('users/export', [ExportController::class, 'export_users'])->name('users.export');
 
-    Route::post('images', [ImageController::class, 'store'])->name('images.store');
-    Route::post('images/feedback', [ImageController::class, 'store_feedback'])->name('images.store_feedback');
+
+//    Route::post('images', [ImageController::class, 'store'])->name('images.store');
+//    Route::post('images/feedback', [ImageController::class, 'store_feedback'])->name('images.store_feedback');
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
-    Route::resource('feedbacks', ManualFeedbackController::class);
 
-    Route::resource('orders', OrderController::class);
-    Route::get('order/accept/{order}', [OrderController::class, 'accept_card_status'])->name('order.accept');
-    Route::get('order/reject/{order}', [OrderController::class, 'reject_card_status'])->name('order.reject');
-    Route::get('order/void/{order}', [OrderController::class, 'void_card_status'])->name('order.void');
-    Route::get('order/paid/{array}{action}', [OrderController::class, 'mark_as_paid'])->name('orders.paid');
-    Route::get('order/used/{order}', [OrderController::class, 'change_used_status'])->name('order.used');
+
+
     Route::get('api/v1/orders_update', [DatatableController::class, 'orders'])->name('orders.ajax');
-
-    // Report
-    Route::get('reports/payable', [ReportController::class, 'payable'])->name('report.payable');
-    Route::get('reports/daily', [ReportController::class, 'daily'])->name('report.daily');
-    Route::get('manager/subuser/{id}', [ReportController::class, 'get_sub_users'])->name('manager.users');
-
-
-    Route::group([], function () {
-
-        Route::resource('tags', TagController::class);
-    });
 
     Route::impersonate();
 
