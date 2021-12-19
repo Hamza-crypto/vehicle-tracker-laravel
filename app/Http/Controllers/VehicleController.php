@@ -93,7 +93,6 @@ class VehicleController extends Controller
             13 => "Invoice Amount",
         ];
 
-
         if ($csv_header_fields != $expected_header) {
             Session::flash('error', "File is not matching with criteria");
             return back()->withInput($request->all() + ['invalid' => $expected_header]);

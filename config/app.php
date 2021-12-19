@@ -167,10 +167,7 @@ return [
          */
         App\Providers\FortifyServiceProvider::class,
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
-        Laravel\Telescope\TelescopeServiceProvider::class,
-        App\Providers\TelescopeServiceProvider::class,
         Lab404\Impersonate\ImpersonateServiceProvider::class,
-
 
 
         /*
