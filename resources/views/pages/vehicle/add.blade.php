@@ -174,7 +174,7 @@
                             <div class="col-4">
 
                                 <div class="form-group">
-                                    <label for="year"> Year </label>
+                                    <label for="year"> Location </label>
                                     <select id="location" class="form-control select2" name="location"
                                             data-toggle="select2">
 

@@ -443,7 +443,7 @@ class VehicleController extends Controller
     public function get_years()
     {
         $year = [];
-        for ($i = 1950; $i < 2023; $i++) {
+        for ($i = 1950; $i < 2024; $i++) {
             $year[] = $i;
         }
 
