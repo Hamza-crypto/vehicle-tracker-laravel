@@ -212,7 +212,7 @@
                                         class="form-control form-control-lg"
                                         type="text"
                                         name="auction_stk"
-                                        placeholder="Enter VIN"
+                                        placeholder="Enter STK"
                                         value="{{ old('auction_stk',  $vehicle->auction_stk->meta_value ?? '') }}"
                                     />
                                 </div>

@@ -47,22 +47,28 @@ class DatatableController extends Controller
             $vehicles = $vehicles->offset($start)->limit($limit)->get();
 
         } else {
-            $search = $request->input('search.value');
             $vehicles = Vehicle::filters($request->all());
-            $vehicles = $vehicles->where(function ($q1) use ($search) {
-                $q1->where('id', 'LIKE', "%$search%")
-                    ->orWhere('vin', 'LIKE', "%$search%")
-                    ->orWhere('lot', 'LIKE', "%$search%")
-                    ->orWhere('description', 'ILIKE', "%$search%"); // ILIKE only used for Postgress
 
-            })
-                ->get();
+            $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
+            //$totalOrders = $vehicles->get(); //if any filter is selected , then count according to that filter
 
-            $totalOrders = $vehicles; //if any filter is selected , then count according to that filter
-
-
-            $totalFiltered = count($vehicles);
-            $vehicles = $vehicles->skip($start)->take($limit);
+            $vehicles = $vehicles->offset($start)->limit($limit)->get();
+//            $search = $request->input('search.value');
+//            $vehicles = Vehicle::filters($request->all());
+//            $vehicles = $vehicles->where(function ($q1) use ($search) {
+//                $q1->where('id', 'LIKE', "%$search%")
+//                    ->orWhere('vin', 'LIKE', "%$search%")
+//                    ->orWhere('lot', 'LIKE', "%$search%")
+//                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
+//
+//            })
+//                ->get();
+//
+//            $totalOrders = $vehicles; //if any filter is selected , then count according to that filter
+//
+//
+//            $totalFiltered = count($vehicles);
+//            $vehicles = $vehicles->skip($start)->take($limit);
         }
 
 //

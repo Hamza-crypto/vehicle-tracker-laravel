@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Orders')
+@section('title', 'Vehicles')
 @php
     $role = Auth()->user()->role;
     $query = str_replace(url()->current(), '',url()->full());
@@ -122,7 +122,9 @@
                 // ],
 
                 columnDefs: [
-                    {targets: [4,6], orderable: false},
+                    {
+                        targets: [4,6], orderable: false
+                    },
 
                 ],
                 // select: {
@@ -133,7 +135,7 @@
             });
 
             $('.apply-dt-filters').on('click', function () {
-                table.ajax.reload();
+                // table.ajax.reload();
             });
 
             $('.clear-dt-filters').on('click', function () {
@@ -269,7 +271,7 @@
                             <th>Invoice Date</th>
                             <th>Lot</th>
                             <th>VIN</th>
-                            <th>Description</th>
+                            <th>Year - Make - Model</th>
                             <th>Created at</th>
                             <th>Actions</th>
 

@@ -77,26 +77,30 @@ class VehicleController extends Controller
         unset($data[0]);
 
         $expected_header = [
-            0 => "﻿Invoice Date",
-            1 => "Bidder",
-            2 => "Item#",
-            3 => "Lot/Inv #",
-            4 => "Year",
-            5 => "Make",
-            6 => "Model",
-            7 => "VIN",
-            8 => "Location",
-            9 => "Sale Type",
-            10 => "Description",
-            11 => "Left Location",
-            12 => "Date paid",
-            13 => "Invoice Amount",
+            "Invoice",
+            "Item #",
+            "Lot/Inv #",
+            "Year",
+            "Make",
+            "Model",
+            "VIN",
+            "Location",
+            "Description",
+            "Left Location",
+            "Date Paid",
+            "Invoice Amount",
         ];
 
-        if ($csv_header_fields != $expected_header) {
-            Session::flash('error', "File is not matching with criteria");
-            return back()->withInput($request->all() + ['invalid' => $expected_header]);
-        }
+        dump($csv_header_fields, $expected_header);
+        //find difference between arrays and tell which type of difference it is
+
+        $diff = array_diff($expected_header, $csv_header_fields);
+//        dd($diff);
+
+//        if ($csv_header_fields != $expected_header) {
+//            Session::flash('error', "File is not matching with criteria");
+//            return back()->withInput($request->all() + ['invalid' => $expected_header]);
+//        }
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
@@ -174,10 +178,13 @@ class VehicleController extends Controller
             24 => "Transportation & Shipping Fee"
         ];
 
-        if ($csv_header_fields != $expected_header) {
-            Session::flash('error', "File is not matching with criteria");
-            return back()->withInput($request->all() + ['invalid' => $expected_header]);
-        }
+        $diff = array_diff($expected_header, $csv_header_fields);
+//        dump($diff);
+//        dd($csv_header_fields,$expected_header );
+//        if ($csv_header_fields != $expected_header) {
+//            Session::flash('error', "File is not matching with criteria");
+//            return back()->withInput($request->all() + ['invalid' => $expected_header]);
+//        }
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
@@ -271,10 +278,10 @@ class VehicleController extends Controller
             35 => "Reviewed",
         ];
 
-        if ($csv_header_fields != $expected_header) {
-            Session::flash('error', "File is not matching with criteria");
-            return back()->withInput($request->all() + ['invalid' => $expected_header]);
-        }
+//        if ($csv_header_fields != $expected_header) {
+//            Session::flash('error', "File is not matching with criteria");
+//            return back()->withInput($request->all() + ['invalid' => $expected_header]);
+//        }
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
