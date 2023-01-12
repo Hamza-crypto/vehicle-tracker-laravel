@@ -63,9 +63,106 @@ class VehicleController extends Controller
         return back();
     }
 
+    public function shopify_call($token, $shop, $api_endpoint, $query = array(), $method = 'GET', $request_headers = array())
+    {
+        $url = sprintf('https://%s.myshopify.com%s', $shop, $api_endpoint);
+        if (!is_null($query) && in_array($method, array('GET', 'DELETE'))) $url = $url . "?" . http_build_query($query);
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_HEADER, TRUE);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+
+        $request_headers[] = '';
+        $request_headers[] = 'Content-Type: application/json';
+        if (!is_null($token)) $request_headers[] = sprintf('X-Shopify-Access-Token: %s', $token);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $request_headers);
+
+        if ($method != 'GET' && in_array($method, array('POST', 'PUT'))) {
+            if (is_array($query)) $query = json_encode($query);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
+        }
+
+        $response = curl_exec($curl);
+        $error_number = curl_errno($curl);
+        $error_message = curl_error($curl);
+        curl_close($curl);
+
+        if ($error_number) {
+            return $error_message;
+        } else {
+            $response = preg_split("/\r\n\r\n|\n\n|\r\r/", $response, 2);
+            $headers = array();
+            $header_data = explode("\n", $response[0]);
+            $headers['status'] = $header_data[0];
+            array_shift($header_data);
+            foreach ($header_data as $part) {
+                $h = explode(":", $part, 2);
+                $headers[trim($h[0])] = trim($h[1]);
+            }
+
+            return array('headers' => $headers, 'data' => $response[1]);
+        }
+    }
 
     public function import_buy_copart_csv(Request $request)
     {
+        $shop = 'grill-merchant';
+        $token = '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';
+
+        $handle = fopen($_FILES['csv_file']['tmp_name'], "r");
+        $count = 0;
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            if ($count == 0){
+                $count++;
+                continue;
+            }
+            if ($count < (35+1)){
+                $count++;
+                continue;
+            }
+            if ($count > 100){
+                break;
+            }
+            echo sprintf('Count: %d ------ SKU: %s </br>', $count, $data[0]);
+            $body = [
+                'product' => [
+                    'title' => $data[3],
+                    'product_type' => $data[1],
+                    'body_html' => $data[8],
+                    'variant' => [
+                        'sku' => $data[0],
+                        'price' => $data[6],
+                        'inventory_quantity' => $data[4],
+                    ],
+                    'images' => [
+                        ['src' => $data[10]],
+                        ['src' => $data[11]],
+                        ['src' => $data[12]],
+                        ['src' => $data[13]],
+                        ['src' => $data[14]],
+                        ['src' => $data[15]],
+                        ['src' => $data[16]],
+                        ['src' => $data[17]],
+                        ['src' => $data[18]],
+                        ['src' => $data[19]]
+
+                    ]
+                ]
+            ];
+
+            $products = $this->shopify_call($token, $shop, "/admin/api/2023-01/products.json", $body, 'POST');
+            $products = json_decode($products['data'], TRUE);
+            $product_id = $products['product']['id'];
+            $count++;
+        }
+        dd('ads');
+
+
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
 
