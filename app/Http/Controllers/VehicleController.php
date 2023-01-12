@@ -111,57 +111,6 @@ class VehicleController extends Controller
 
     public function import_buy_copart_csv(Request $request)
     {
-        $shop = 'grill-merchant';
-        $token = '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';
-
-        $handle = fopen($_FILES['csv_file']['tmp_name'], "r");
-        $count = 0;
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            if ($count == 0){
-                $count++;
-                continue;
-            }
-            if ($count < (35+1)){
-                $count++;
-                continue;
-            }
-            if ($count > 100){
-                break;
-            }
-            echo sprintf('Count: %d ------ SKU: %s </br>', $count, $data[0]);
-            $body = [
-                'product' => [
-                    'title' => $data[3],
-                    'product_type' => $data[1],
-                    'body_html' => $data[8],
-                    'variant' => [
-                        'sku' => $data[0],
-                        'price' => $data[6],
-                        'inventory_quantity' => $data[4],
-                    ],
-                    'images' => [
-                        ['src' => $data[10]],
-                        ['src' => $data[11]],
-                        ['src' => $data[12]],
-                        ['src' => $data[13]],
-                        ['src' => $data[14]],
-                        ['src' => $data[15]],
-                        ['src' => $data[16]],
-                        ['src' => $data[17]],
-                        ['src' => $data[18]],
-                        ['src' => $data[19]]
-
-                    ]
-                ]
-            ];
-
-            $products = $this->shopify_call($token, $shop, "/admin/api/2023-01/products.json", $body, 'POST');
-            $products = json_decode($products['data'], TRUE);
-            $product_id = $products['product']['id'];
-            $count++;
-        }
-        dd('ads');
-
 
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
