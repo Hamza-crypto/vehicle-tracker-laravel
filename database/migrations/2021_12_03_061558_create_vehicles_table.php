@@ -15,13 +15,14 @@ class CreateVehiclesTable extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-            $table->date('invoice_date')->nullable();
+            $table->string('vin');
             $table->string('lot')->nullable();
-            $table->string('vin')->nullable();
+            $table->string('location')->nullable();
             $table->string('description')->nullable();
-            $table->string('year')->nullable();
-            $table->string('make')->nullable();
-            $table->string('model')->nullable();
+            $table->date('left_location')->nullable();
+            $table->date('date_paid')->nullable();
+            $table->integer('invoice_amount')->nullable();
+
             $table->timestamps();
         });
     }

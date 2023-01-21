@@ -128,6 +128,12 @@
                 </li>
             @endif
 
+            <li class="sidebar-item {{ request()->is('vehicles/create') ? 'active' : '' }}">
+                <a class="sidebar-link" href="/reset">
+                    <i class="align-middle" data-feather="plus-square"></i>
+                    <span class="align-middle">RESET VEHICLES</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

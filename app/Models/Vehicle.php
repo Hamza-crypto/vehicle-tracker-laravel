@@ -15,7 +15,10 @@ class Vehicle extends Model
     ];
 
     protected $casts = [
-        'invoice_date' => 'date'
+    ];
+
+    protected $dates = [
+        'created_at'
     ];
 
     public function getInvoiceDateAttribute($date)

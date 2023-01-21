@@ -27,13 +27,14 @@ class DatatableController extends Controller
 
         $dbColumns = [
             0 => "id",
-            1 => "invoice_date",
-            2 => "lot",
-            3 => "vin",
-            5 => "created_at",
+            5 => "left_location",
+            6 => "date_paid",
+            7 => "invoice_amount",
+            8 => "created_at",
         ];
 
         $orderColumnIndex = $request->input('order.0.column');
+
         $orderDbColumn = $dbColumns[$orderColumnIndex];
         $orderDirection = $request->input('order.0.dir');
 
@@ -82,7 +83,6 @@ class DatatableController extends Controller
             // staging
 
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
-
             $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline"><i class="fa fa-edit text-info"></i></a>';
             $alertTitle = __("Are you sure you want to delete vehicle with VIN ") . ' ' . $vehicle->vin;
             $delete = '
@@ -94,10 +94,13 @@ class DatatableController extends Controller
                     </form>
                     ';
 
+            $vehicle->invoice_amount = "$ ". $vehicle->invoice_amount;
+
             $vehicle->actions .= $edit;
             $vehicle->actions .= $delete;
 
             $data[] = $vehicle;
+
         }
 
 

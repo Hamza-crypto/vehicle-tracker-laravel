@@ -18,10 +18,10 @@ class VehicleController extends Controller
 //        foreach ($vehicles as $vehicle){
 //            dd($vehicle->invoice_amount);
 //        }
-        $makes = $this->get_makes();
+        $makes = [];
 //        unset($makes[0]);
 
-        $models = $this->get_models();
+        $models = [];
         //       unset($models[0]);
         $statuses = VehicleMetas::select('meta_value')->where('meta_key', 'status')->groupBy('meta_value')->get()->toArray();
 
@@ -111,72 +111,33 @@ class VehicleController extends Controller
 
     public function import_buy_copart_csv(Request $request)
     {
-
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
 
-        $csv_header_fields = [];
-        foreach ($data[0] as $value) {
-            $csv_header_fields[] = $value;
-        }
-
         unset($data[0]);
-
-        $expected_header = [
-            "Invoice",
-            "Item #",
-            "Lot/Inv #",
-            "Year",
-            "Make",
-            "Model",
-            "VIN",
-            "Location",
-            "Description",
-            "Left Location",
-            "Date Paid",
-            "Invoice Amount",
-        ];
-
-        dump($csv_header_fields, $expected_header);
-        //find difference between arrays and tell which type of difference it is
-
-        $diff = array_diff($expected_header, $csv_header_fields);
-//        dd($diff);
-
-//        if ($csv_header_fields != $expected_header) {
-//            Session::flash('error', "File is not matching with criteria");
-//            return back()->withInput($request->all() + ['invalid' => $expected_header]);
-//        }
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
         foreach ($data as $row) {
+            $vin = $row[6];
 
-            $vin = $row[array_search("VIN", $csv_header_fields)];
-
-            if (empty($vin)) continue;
-
-            $invoice_amount = $this->format_amount($row[array_search("Invoice Amount", $csv_header_fields)]);
-            $location = $row[array_search("Location", $csv_header_fields)];
-            $date_picked_up = $row[array_search("Left Location", $csv_header_fields)];
-
+            if (empty($vin)) {
+                dump($row);
+                continue;
+            }
 
             if (!in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
-                $vehicle->invoice_date = $row[array_search("Invoice Date", $csv_header_fields)];
-                $vehicle->lot = $row[array_search("Lot/Inv #", $csv_header_fields)];
                 $vehicle->vin = $vin;
-                $vehicle->description = $row[array_search("Description", $csv_header_fields)]; //year_make_model
+                $vehicle->lot = $row[2];
+                $vehicle->location = $row[7];
+                $vehicle->description = $row[8]; //year_make_model
+                $vehicle->left_location = Carbon::parse($row[9])->format('Y-m-d');
+                $vehicle->date_paid = Carbon::parse($row[10])->format('Y-m-d');
+                $vehicle->invoice_amount = $this->format_amount($row[11]);
                 $vehicle->save();
-
-            } else {
-                $vehicle = Vehicle::where('vin', $vin)->first();
             }
 
-            $date_picked_up = Carbon::parse($date_picked_up)->format('Y-m-d');
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'invoice_amount'], ['meta_value' => $invoice_amount]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $location]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $date_picked_up]);
         }
 
         Session::flash('success', "Successfully inserted");
@@ -224,21 +185,13 @@ class VehicleController extends Controller
             24 => "Transportation & Shipping Fee"
         ];
 
-        $diff = array_diff($expected_header, $csv_header_fields);
-//        dump($diff);
-//        dd($csv_header_fields,$expected_header );
-//        if ($csv_header_fields != $expected_header) {
-//            Session::flash('error', "File is not matching with criteria");
-//            return back()->withInput($request->all() + ['invalid' => $expected_header]);
-//        }
-
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
         foreach ($data as $row) {
 
-            $vin = $row[array_search("VIN", $csv_header_fields)];
+            $vin = $row[3];
 
-            if (empty($vin)) continue;
+            if (empty($vin) || empty($row[2])) continue;
 
             $invoice_amount = $this->format_amount($row[array_search("Total Amount", $csv_header_fields)]); // Invoice Amount = Total Amount
 
@@ -247,25 +200,18 @@ class VehicleController extends Controller
 
             if (!in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
-                $vehicle->invoice_date = $row[array_search("Date Won", $csv_header_fields)]; //Invoice Date = Date Won
-                $vehicle->lot = $row[array_search("Stock", $csv_header_fields)]; // Lot/Inv #  = Stock
                 $vehicle->vin = $vin;
+                $vehicle->lot = $row[0];
 
-                $year = $row[array_search("Year", $csv_header_fields)];
-                $make = $row[array_search("Make", $csv_header_fields)];
-                $model = $row[array_search("Model", $csv_header_fields)];
-
-                $vehicle->description = sprintf('%s %s %s', $year, $make, $model);
+                $vehicle->location = $row[14];
+                $vehicle->description = $row[9]; //year_make_model
+                $vehicle->left_location = Carbon::parse($row[6])->format('Y-m-d');
+                $vehicle->date_paid = Carbon::parse($row[5])->format('Y-m-d');
+                $vehicle->invoice_amount = $this->format_amount($row[17]);
                 $vehicle->save();
 
-            } else {
-                $vehicle = Vehicle::where('vin', $vin)->first();
             }
 
-            $date_picked_up = Carbon::parse($date_picked_up)->format('Y-m-d');
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'invoice_amount'], ['meta_value' => $invoice_amount]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $location]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $date_picked_up]);
         }
 
         Session::flash('success', "Successfully inserted");

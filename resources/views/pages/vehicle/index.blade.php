@@ -34,7 +34,7 @@
                 $(this).val('');
             });
 
-            var table = $('#orders-table').DataTable({
+            var table = $('#vehicles-table').DataTable({
                 "ordering": true,
                 'processing': true,
                 'serverSide': true,
@@ -59,7 +59,7 @@
                         //     alert('ddd');
                         // }
 
-                        var queryString = 'search=' + data.search.value + '&make=' +  data.make + '&model=' +  data.model + '&status=' + data.status + '&daterange=' + data.daterange + '&user=' + data.user + '&used_status=' + data.used_status + '&gateway=' + data.gateway + '&tag=' + data.tag;
+                        var queryString = 'search=' + data.search.value + '&status=' + data.status + '&daterange=' + data.daterange + '&used_status=' + data.used_status;
                         var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + queryString;
                         window.history.pushState({path: newurl}, '', newurl);
 
@@ -86,10 +86,13 @@
                 'columns': [
                     //{"data": "null"},
                     {"data": "id"},
-                    {"data": "invoice_date"},
-                    {"data": "lot"},
                     {"data": "vin"},
+                    {"data": "lot"},
+                    {"data": "location"},
                     {"data": "description"},
+                    {"data": "left_location"},
+                    {"data": "date_paid"},
+                    {"data": "invoice_amount"},
                     {"data": "created_at_new"},
                     {"data": "actions", "className": 'table-action'},
 
@@ -123,7 +126,7 @@
 
                 columnDefs: [
                     {
-                        targets: [4,6], orderable: false
+                        targets: [1,2,3,4, 9], orderable: false
                     },
 
                 ],
@@ -263,15 +266,18 @@
             <div class="card">
                 <div class="card-body">
 
-                    <table id="orders-table" class="table table-striped" style="width:100%">
+                    <table id="vehicles-table" class="table table-striped" style="width:100%">
                         <thead>
                         <tr>
 {{--                            <th></th>--}}
                             <th>ID</th>
-                            <th>Invoice Date</th>
+                            <th>VIN 2</th>
                             <th>Lot</th>
-                            <th>VIN</th>
+                            <th>Location</th>
                             <th>Year - Make - Model</th>
+                            <th>Left Location</th>
+                            <th>Invoice Date</th>
+                            <th>Invoice Amount</th>
                             <th>Created at</th>
                             <th>Actions</th>
 
