@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
 use App\Models\User;
 use App\Models\UserMeta;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DatatableController extends Controller
 {
 
-    public function orders(Request $request)
+    public function vehicles(Request $request)
     {
 
         $totalData = Vehicle::filters($request->all())->count();
@@ -40,7 +40,7 @@ class DatatableController extends Controller
 
 
         if (empty($request->input('search.value'))) {
-            $vehicles = Vehicle::filters($request->all());
+            $vehicles = Vehicle::with('metas')->filters($request->all());
 
             $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
             //$totalOrders = $vehicles->get(); //if any filter is selected , then count according to that filter
@@ -48,28 +48,19 @@ class DatatableController extends Controller
             $vehicles = $vehicles->offset($start)->limit($limit)->get();
 
         } else {
-            $vehicles = Vehicle::filters($request->all());
+            $search = $request->input('search.value');
+            $vehicles = Vehicle::with('metas')->filters($request->all());
+            $vehicles = $vehicles->where(function ($q1) use ($search) {
+                $q1->where('vin', 'LIKE', "%$search%")
+                    ->orWhere('purchase_lot', 'LIKE', "%$search%")
+                    ->orWhere('auction_lot', 'LIKE', "%$search%")
+                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
 
-            $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
-            //$totalOrders = $vehicles->get(); //if any filter is selected , then count according to that filter
+            })
+                ->get();
 
-            $vehicles = $vehicles->offset($start)->limit($limit)->get();
-//            $search = $request->input('search.value');
-//            $vehicles = Vehicle::filters($request->all());
-//            $vehicles = $vehicles->where(function ($q1) use ($search) {
-//                $q1->where('id', 'LIKE', "%$search%")
-//                    ->orWhere('vin', 'LIKE', "%$search%")
-//                    ->orWhere('lot', 'LIKE', "%$search%")
-//                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
-//
-//            })
-//                ->get();
-//
-//            $totalOrders = $vehicles; //if any filter is selected , then count according to that filter
-//
-//
-//            $totalFiltered = count($vehicles);
-//            $vehicles = $vehicles->skip($start)->take($limit);
+            $totalFiltered = count($vehicles);
+            $vehicles = $vehicles->skip($start)->take($limit);
         }
 
 //
@@ -94,10 +85,30 @@ class DatatableController extends Controller
                     </form>
                     ';
 
-            $vehicle->invoice_amount = "$ ". $vehicle->invoice_amount;
+            if(Auth::user()->role == 'user'){
+                $edit = $delete = '--';
+            }
+            $vehicle->invoice_amount = $vehicle->invoice_amount != null  ? "$" . $vehicle->invoice_amount : '';
+            $vehicle->date_paid = sprintf("<span> %s </br> %s</span>", $vehicle->date_paid, $vehicle->invoice_amount);
+            $vehicle->lot = $vehicle->purchase_lot ?? $vehicle->auction_lot;
 
-            $vehicle->actions .= $edit;
-            $vehicle->actions .= $delete;
+            $vehicle->invoice_amount = $vehicle->metas != null  ? "$" . $vehicle->invoice_amount : '';
+//            dd(collect($vehicle->metas)->where('meta_key', 'sale_price')->get(0));
+            $sale_price = '';
+            $sale_date = '';
+
+            collect($vehicle->metas)->contains(function ($value, $key) use (&$sale_price, &$sale_date) {
+                if($value->meta_key == 'sale_price'){
+                    $sale_price = "$" . $value->meta_value;
+                }
+                if($value->meta_key == 'sale_date'){
+                    $sale_date = $value->meta_value;
+                }
+
+            });
+            $vehicle->sale_price = sprintf("<span> %s </br> %s </span>", $sale_date, $sale_price);
+
+            $vehicle->actions .= $edit . $delete;
 
             $data[] = $vehicle;
 

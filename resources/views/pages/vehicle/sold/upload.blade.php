@@ -25,7 +25,7 @@
 
         <div class="row">
 
-            <div class="col-4">
+            <div class="col">
                 <div class="card">
                     <div class="card-body">
                         <form method="post" action="{{ route('sold.copart') }}" enctype="multipart/form-data">

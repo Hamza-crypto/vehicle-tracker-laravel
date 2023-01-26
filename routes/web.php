@@ -54,7 +54,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 
-    Route::get('api/v1/orders_update', [DatatableController::class, 'orders'])->name('orders.ajax');
+    Route::get('api/v1/vehicles', [DatatableController::class, 'vehicles'])->name('vehicles.ajax');
 
     Route::impersonate();
 

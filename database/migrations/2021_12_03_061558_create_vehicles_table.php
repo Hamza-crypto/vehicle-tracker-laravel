@@ -16,7 +16,8 @@ class CreateVehiclesTable extends Migration
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
             $table->string('vin');
-            $table->string('lot')->nullable();
+            $table->string('purchase_lot')->nullable();
+            $table->string('auction_lot')->nullable();
             $table->string('location')->nullable();
             $table->string('description')->nullable();
             $table->date('left_location')->nullable();

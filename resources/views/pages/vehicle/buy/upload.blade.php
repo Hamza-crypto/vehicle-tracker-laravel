@@ -30,7 +30,7 @@
 
         <div class="row">
 
-            <div class="col-6">
+            <div class="col">
                 <div class="card">
                     <div class="card-body">
                         <form method="post" action="{{ route('buy.copart') }}" enctype="multipart/form-data">
@@ -54,7 +54,7 @@
                 </div>
             </div>
 
-            <div class="col-6">
+            <div class="col">
                 <div class="card">
                     <div class="card-body">
                         <form method="post" action="{{ route('buy.iaai') }}" enctype="multipart/form-data">

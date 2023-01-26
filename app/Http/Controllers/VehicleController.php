@@ -122,14 +122,13 @@ class VehicleController extends Controller
             $vin = $row[6];
 
             if (empty($vin)) {
-                dump($row);
                 continue;
             }
 
             if (!in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
                 $vehicle->vin = $vin;
-                $vehicle->lot = $row[2];
+                $vehicle->purchase_lot = $row[2];
                 $vehicle->location = $row[7];
                 $vehicle->description = $row[8]; //year_make_model
                 $vehicle->left_location = Carbon::parse($row[9])->format('Y-m-d');
@@ -157,34 +156,6 @@ class VehicleController extends Controller
 
         unset($data[0]);
 
-        $expected_header = [
-            0 => "Stock",
-            1 => "Branch",
-            2 => "VIN",
-            3 => "Year",
-            4 => "Make",
-            5 => "Model",
-            6 => "Date Won",
-            7 => "Date Paid",
-            8 => "Date Picked Up",
-            9 => "Bid Amount",
-            10 => "Buyer Fee",
-            11 => "Internet Fee",
-            12 => "Premium Vehicle Report Fee",
-            13 => "Fedex Fee",
-            14 => "Late Fee",
-            15 => "Yard Fee",
-            16 => "Other Fees",
-            17 => "Service Fee",
-            18 => "Sales Tax",
-            19 => "Storage Fee",
-            20 => "Tow Fee",
-            21 => "Total Amount",
-            22 => "Series",
-            23 => "Color",
-            24 => "Transportation & Shipping Fee"
-        ];
-
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
         foreach ($data as $row) {
@@ -193,16 +164,10 @@ class VehicleController extends Controller
 
             if (empty($vin) || empty($row[2])) continue;
 
-            $invoice_amount = $this->format_amount($row[array_search("Total Amount", $csv_header_fields)]); // Invoice Amount = Total Amount
-
-            $location = $row[array_search("Branch", $csv_header_fields)]; // Location = Branch
-            $date_picked_up = $row[array_search("Date Picked Up", $csv_header_fields)]; // Left Location = Date Picked Up
-
             if (!in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
                 $vehicle->vin = $vin;
-                $vehicle->lot = $row[0];
-
+                $vehicle->purchase_lot = $row[0];
                 $vehicle->location = $row[14];
                 $vehicle->description = $row[9]; //year_make_model
                 $vehicle->left_location = Carbon::parse($row[6])->format('Y-m-d');
@@ -224,91 +189,32 @@ class VehicleController extends Controller
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
 
-        $csv_header_fields = [];
-        foreach ($data[0] as $value) {
-            $csv_header_fields[] = $value;
-        }
-
         unset($data[0]); // Remove header
-
-        $expected_header = [
-            0 => "Lot #",
-            1 => "Claim #",
-            2 => "Status",
-            3 => "Description",
-            4 => "VIN",
-            5 => "Primary Damage",
-            6 => "Secondary Damage",
-            7 => "Keys",
-            8 => "Drivability Rating",
-            9 => "Engine",
-            10 => "Drive",
-            11 => "Missing Parts",
-            12 => "Seller",
-            13 => "Adjuster",
-            14 => "Cert Received Date",
-            15 => "Odometer",
-            16 => "Odometer Brand",
-            17 => "Original Title State",
-            18 => "Original Title Type",
-            19 => "Sale Title State",
-            20 => "Sale Title Type",
-            21 => "Title Reviewed",
-            22 => "Location",
-            23 => "Auction Date",
-            24 => "Item # ",
-            25 => "Row Location",
-            26 => "# of Runs",
-            27 => "Days in Yard",
-            28 => "Advance Charges",
-            29 => "ACV",
-            30 => "Repair Cost",
-            31 => "Current Bid",
-            32 => "Reserve",
-            33 => "Reserve Amount",
-            34 => "Reserve %",
-            35 => "Reviewed",
-        ];
-
-//        if ($csv_header_fields != $expected_header) {
-//            Session::flash('error', "File is not matching with criteria");
-//            return back()->withInput($request->all() + ['invalid' => $expected_header]);
-//        }
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
         foreach ($data as $row) {
 
-            $vin = $row[array_search("VIN", $csv_header_fields)];
-
-            if (empty($vin)) continue;
-
-            $lot = $row[array_search("Lot #", $csv_header_fields)];
-            $claim_number = $row[array_search("Claim #", $csv_header_fields)];
-            $location = $row[array_search("Location", $csv_header_fields)];
-            $auction_date = $row[array_search("Auction Date", $csv_header_fields)];
-            $number_of_runs = $row[array_search("# of Runs", $csv_header_fields)];
-            $days_in_yard = $row[array_search("Days in Yard", $csv_header_fields)];
+            $vin = $row[4];
 
             if (!in_array($vin, $vehicles_vins)) {
+                //insert new vehicle
                 $vehicle = new Vehicle();
                 $vehicle->vin = $vin;
-                $vehicle->description = $row[array_search("Description", $csv_header_fields)];
+                $vehicle->auction_lot = $row[0];
+                $vehicle->location = $row[22];
+                $vehicle->description = $row[3]; //year_make_model
                 $vehicle->save();
-
+                $this->insert_vehicle_metas($row, $vehicle->id);
             } else {
+                //update vehicle
                 $vehicle = Vehicle::where('vin', $vin)->first();
+                $vehicle->auction_lot = $row[0];
+                $vehicle->location = $row[22];
+                $vehicle->save();
+                $this->insert_vehicle_metas($row, $vehicle->id);
 
             }
-
-            $auction_date = Carbon::parse($auction_date)->format('Y-m-d');
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $location]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'claim_number'], ['meta_value' => $claim_number]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'auction_date'], ['meta_value' => $auction_date]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'number_of_runs'], ['meta_value' => $number_of_runs]);
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'days_in_yard'], ['meta_value' => $days_in_yard]);
-
-            $vehicle->metas()->updateOrCreate(['meta_key' => 'auction_stk'], ['meta_value' => $lot]);
 
         }
 
@@ -316,63 +222,81 @@ class VehicleController extends Controller
         return back();
     }
 
+    public function insert_vehicle_metas($row, $vehicle_id)
+    {
+        $necessary_meta_fields = [
+            'claim_number' => $row[1],
+            'status' => $row[2],
+            'primary_damage' => $row[5],
+            'keys' => $row[7],
+            'drivability_rating' => $row[8],
+            'odometer' => $row[15],
+            'odometer_brand' => $row[16],
+            'days_in_yard' => $row[27],
+        ];
+        if (!empty($row[6])) {
+            $necessary_meta_fields['secondary_damage'] = $row[6];
+        }
+        if (!empty($row[20])) {
+            $necessary_meta_fields['sale_title_type'] = $row[20];
+        }
+        if (!empty($row[19])) {
+            $necessary_meta_fields['sale_title_state'] = $row[19];
+        }
+
+        $metas = [];
+        foreach ($necessary_meta_fields as $key => $value) {
+            $metas[] = [
+                'meta_key' => $key,
+                'meta_value' => $value,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            VehicleMetas::updateOrCreate(
+                ['vehicle_id' => $vehicle_id, 'meta_key' => $key],
+                [
+                    'meta_value' => $value,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+
+        }
+//        DB::table('vehicle_metas')->insert($metas);
+    }
+
     public function import_sold_copart_csv(Request $request)
     {
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
 
-        $csv_header_fields = [];
-        foreach ($data[0] as $value) {
-            $csv_header_fields[] = $value;
-        }
-
         unset($data[0]); // Remove header
 
-        $expected_header = [
-            0 => "Lot #",
-            1 => "Claim #",
-            2 => "Status",
-            3 => "Location",
-            4 => "Sale Date",
-            5 => "Description",
-            6 => "Title State ",
-            7 => "Title Type",
-            8 => "Odometer",
-            9 => "Odometer Brand",
-            10 => "Primary Damage",
-            11 => "Loss Type",
-            12 => "Keys",
-            13 => "Drivability Rating",
-            14 => "ACV",
-            15 => "Repair Cost",
-            16 => "Sale Price",
-            17 => "Return %",
-        ];
-
-        if ($csv_header_fields != $expected_header) {
-            Session::flash('error', "File is not matching with criteria");
-            return back()->withInput($request->all() + ['invalid' => $expected_header]);
-        }
-
-        $vehicles_lot = Vehicle::pluck('lot')->toArray();
+        $auction_lot = Vehicle::whereNotNull('auction_lot')->pluck('auction_lot')->toArray();
+        $purchase_lot = Vehicle::whereNotNull('purchase_lot')->pluck('purchase_lot')->toArray();
 
         foreach ($data as $row) {
-            $status = $row[array_search("Status", $csv_header_fields)];
-            if ($status == 'WAITING FOR BUYER PAYMENT') continue;
+            $lot = $row[0];
 
-            $lot = $row[array_search("Lot #", $csv_header_fields)];
-
-            $sale_price = $row[array_search("Sale Price", $csv_header_fields)];
-            $auction_date = $row[array_search("Sale Date", $csv_header_fields)];
-            $auction_date = Carbon::parse($auction_date)->format('Y-m-d');
-
-            if (in_array($lot, $vehicles_lot)) {
-                $vehicle = Vehicle::where('lot', $lot)->first();
-
-                $vehicle->metas()->updateOrCreate(['meta_key' => 'status'], ['meta_value' => 'sold']);
-                $vehicle->metas()->updateOrCreate(['meta_key' => 'sale_price'], ['meta_value' => $sale_price]);
-                $vehicle->metas()->updateOrCreate(['meta_key' => 'auction_date'], ['meta_value' => $auction_date]);
-
+            if ( in_array($lot, $auction_lot ) || in_array($lot, $purchase_lot ) ) {
+                $vehicle = Vehicle::where('auction_lot', $lot)->orWhere('purchase_lot' , $lot)->first();
+                VehicleMetas::updateOrCreate(
+                    ['vehicle_id' => $vehicle->id, 'meta_key' => 'sale_date'],
+                    [
+                        'meta_value' => Carbon::parse($row[4])->format('Y-m-d') //sale_date
+                    ]);
+                VehicleMetas::updateOrCreate(
+                    ['vehicle_id' => $vehicle->id, 'meta_key' => 'sale_price'],
+                    [
+                        'meta_value' => $row[16] //sale_price
+                    ]);
+            } else {
+                $vehicle = new Vehicle();
+                $vehicle->vin = 'NOT_ADDED';
+                $vehicle->auction_lot = $row[0];
+                $vehicle->location = $row[3];
+                $vehicle->description = $row[5]; //year_make_model
+                $vehicle->save();
             }
 
         }

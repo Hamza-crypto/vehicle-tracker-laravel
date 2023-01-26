@@ -39,7 +39,7 @@
                 'processing': true,
                 'serverSide': true,
                 'ajax': {
-                    'url': "{{  route('orders.ajax')  }}",
+                    'url': "{{  route('vehicles.ajax')  }}",
                     "dataType": "json",
                     "type": "GET",
                     "data": function (data) {
@@ -92,7 +92,7 @@
                     {"data": "description"},
                     {"data": "left_location"},
                     {"data": "date_paid"},
-                    {"data": "invoice_amount"},
+                    {"data": "sale_price"},
                     {"data": "created_at_new"},
                     {"data": "actions", "className": 'table-action'},
 
@@ -271,16 +271,15 @@
                         <tr>
 {{--                            <th></th>--}}
                             <th>ID</th>
-                            <th>VIN 2</th>
+                            <th>VIN</th>
                             <th>Lot</th>
                             <th>Location</th>
                             <th>Year - Make - Model</th>
                             <th>Left Location</th>
                             <th>Invoice Date</th>
-                            <th>Invoice Amount</th>
+                            <th>Sale Price</th>
                             <th>Created at</th>
                             <th>Actions</th>
-
                         </tr>
                         </thead>
                         <tbody>
