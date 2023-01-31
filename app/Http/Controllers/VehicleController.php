@@ -290,6 +290,11 @@ class VehicleController extends Controller
                     [
                         'meta_value' => $row[16] //sale_price
                     ]);
+                VehicleMetas::updateOrCreate(
+                    ['vehicle_id' => $vehicle->id, 'meta_key' => 'status'],
+                    [
+                        'meta_value' => 'SOLD' //sale_price
+                    ]);
             } else {
                 $vehicle = new Vehicle();
                 $vehicle->vin = 'NOT_ADDED';
@@ -310,14 +315,8 @@ class VehicleController extends Controller
 
     public function edit(Vehicle $vehicle)
     {
-        $makes = $this->get_makes();
-        $models = $this->get_models();
-        $years = $this->get_years();
-
-        $locations = $this->get_locations();
-        $locations2 = Location::all();
-
-        return view('pages.vehicle.edit', get_defined_vars());
+        $vehicle_metas = VehicleMetas::where('vehicle_id', $vehicle->id)->get();
+        return view('pages.vehicle.detail', get_defined_vars());
     }
 
 

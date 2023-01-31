@@ -59,7 +59,7 @@
                         //     alert('ddd');
                         // }
 
-                        var queryString = 'search=' + data.search.value + '&status=' + data.status + '&daterange=' + data.daterange + '&used_status=' + data.used_status;
+                        var queryString = 'search=' + data.search.value + '&status=' + data.status;
                         var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + queryString;
                         window.history.pushState({path: newurl}, '', newurl);
 
@@ -92,7 +92,7 @@
                     {"data": "description"},
                     {"data": "left_location"},
                     {"data": "date_paid"},
-                    {"data": "sale_price"},
+                    {"data": "invoice_amount"},
                     {"data": "created_at_new"},
                     {"data": "actions", "className": 'table-action'},
 
@@ -138,7 +138,7 @@
             });
 
             $('.apply-dt-filters').on('click', function () {
-                // table.ajax.reload();
+                table.ajax.reload();
             });
 
             $('.clear-dt-filters').on('click', function () {
@@ -229,14 +229,14 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm">
-                                <div class="form-group">
-                                    <label class="form-label" for="daterange">{{ __('Date Range') }}</label>
-                                    <input id="daterange" class="form-control" type="text" name="daterange"
-                                           value="{{ request()->daterange }}"
-                                           placeholder="{{ __('Select Date range') }}"/>
-                                </div>
-                            </div>
+{{--                            <div class="col-sm">--}}
+{{--                                <div class="form-group">--}}
+{{--                                    <label class="form-label" for="daterange">{{ __('Date Range') }}</label>--}}
+{{--                                    <input id="daterange" class="form-control" type="text" name="daterange"--}}
+{{--                                           value="{{ request()->daterange }}"--}}
+{{--                                           placeholder="{{ __('Select Date range') }}"/>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
                         </div>
 
                         <div class="row">
@@ -277,7 +277,7 @@
                             <th>Year - Make - Model</th>
                             <th>Left Location</th>
                             <th>Invoice Date</th>
-                            <th>Sale Price</th>
+                            <th>Invoice Amount</th>
                             <th>Created at</th>
                             <th>Actions</th>
                         </tr>

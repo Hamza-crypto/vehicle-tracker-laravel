@@ -43,7 +43,6 @@ class DatatableController extends Controller
             $vehicles = Vehicle::with('metas')->filters($request->all());
 
             $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
-            //$totalOrders = $vehicles->get(); //if any filter is selected , then count according to that filter
 
             $vehicles = $vehicles->offset($start)->limit($limit)->get();
 
@@ -67,14 +66,8 @@ class DatatableController extends Controller
         $data = [];
 
         foreach ($vehicles as &$vehicle) {
-            // $vehicle->DT_RowId = $vehicle->id;
-            // $vehicle->null = "";
-
-            //$vehicle->invoice_date = $vehicle->invoice_date;
-            // staging
-
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
-            $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline"><i class="fa fa-edit text-info"></i></a>';
+            $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
             $alertTitle = __("Are you sure you want to delete vehicle with VIN ") . ' ' . $vehicle->vin;
             $delete = '
                     <form method="post" action="' . route('vehicles.destroy', $vehicle->id) . '" style="display: inline"
@@ -89,24 +82,8 @@ class DatatableController extends Controller
                 $edit = $delete = '--';
             }
             $vehicle->invoice_amount = $vehicle->invoice_amount != null  ? "$" . $vehicle->invoice_amount : '';
-            $vehicle->date_paid = sprintf("<span> %s </br> %s</span>", $vehicle->date_paid, $vehicle->invoice_amount);
+            $vehicle->date_paid = sprintf("<span> %s</span>", $vehicle->date_paid);
             $vehicle->lot = $vehicle->purchase_lot ?? $vehicle->auction_lot;
-
-            $vehicle->invoice_amount = $vehicle->metas != null  ? "$" . $vehicle->invoice_amount : '';
-//            dd(collect($vehicle->metas)->where('meta_key', 'sale_price')->get(0));
-            $sale_price = '';
-            $sale_date = '';
-
-            collect($vehicle->metas)->contains(function ($value, $key) use (&$sale_price, &$sale_date) {
-                if($value->meta_key == 'sale_price'){
-                    $sale_price = "$" . $value->meta_value;
-                }
-                if($value->meta_key == 'sale_date'){
-                    $sale_date = $value->meta_value;
-                }
-
-            });
-            $vehicle->sale_price = sprintf("<span> %s </br> %s </span>", $sale_date, $sale_price);
 
             $vehicle->actions .= $edit . $delete;
 
