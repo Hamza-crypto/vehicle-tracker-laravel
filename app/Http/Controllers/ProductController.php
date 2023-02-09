@@ -16,9 +16,17 @@ class ProductController extends Controller
         return Product::latest()->get()->toJson();
     }
 
+    function get()
+    {
+        return view('pages.products.add');
+
+    }
     function store(Request $request)
     {
         $url = $request->url;
+        if($url == null){
+            return redirect()->back()->with('error', 'Please enter a valid url');
+        }
         $url2 = "http://api.scraperapi.com/?api_key=a0d85f10e3d111acf3e8ebf4600eaf3e&url=$url";
 
         $client = new Client();

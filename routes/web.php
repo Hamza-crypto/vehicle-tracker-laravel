@@ -95,4 +95,6 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/products', [ProductController::class, 'index'] );
-Route::get('/scrape', [ProductController::class, 'store'] );
+Route::get('/product/create', [ProductController::class, 'get'] );
+Route::post('/scrape', [ProductController::class, 'store'] )->name('scrape.store');
+
