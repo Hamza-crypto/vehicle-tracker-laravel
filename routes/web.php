@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 
+use App\Http\Controllers\ProductController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -91,3 +93,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('vehicles', VehicleController::class)->only('index');
 
 });
+
+Route::get('/products', [ProductController::class, 'index'] );
+Route::get('/scrape', [ProductController::class, 'store'] );
