@@ -23,11 +23,12 @@ class ProductController extends Controller
     }
     function store(Request $request)
     {
-        $url = $request->url;
-        if($url == null){
-            return redirect()->back()->with('error', 'Please enter a valid url');
-        }
-        $url2 = "http://api.scraperapi.com/?api_key=a0d85f10e3d111acf3e8ebf4600eaf3e&url=$url";
+        $url = "https://www.skroutz.gr/s/23600384/Sony-PlayStation-5.html";
+//        $url = $request->url;
+//        if($url == null){
+//            return redirect()->back()->with('error', 'Please enter a valid url');
+//        }
+        $url2 = "https://app.scrapingbee.com/api/v1/?api_key=M0X68R92D437A7AZ1WA5AOO0QGVWJTI9FHEPCRYZBF41163TYLFV24LH97TCCM05SQZNVNRCCN1K3KK4&url=$url";
 
         $client = new Client();
         $crawler = $client->request('GET', $url2);

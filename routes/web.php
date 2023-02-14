@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatatableController;
+use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\ProfileController;
@@ -96,5 +97,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/products', [ProductController::class, 'index'] );
 Route::get('/product/create', [ProductController::class, 'get'] );
-Route::post('/scrape', [ProductController::class, 'store'] )->name('scrape.store');
+Route::get('/scrape', [ProductController::class, 'store'] )->name('scrape.store');
+
+//Elections
+Route::get('elections', [ElectionController::class, 'index']);
+Route::get('update_election', [ElectionController::class, 'update_election']);
 
