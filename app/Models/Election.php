@@ -55,13 +55,13 @@ class Election extends Model
             $query->where('year', $filters['year']);
         }
         if ($filters['department']) {
-            $query->where('department', $filters['department']);
+            $query->where('department', 'LIKE', '%' . $filters['department'] . '%');
         }
         if ($filters['election']) {
-            $query->where('election', $filters['election']);
+            $query->where('election', 'LIKE', '%' . $filters['election'] . '%');
         }
         if ($filters['party']) {
-            $query->where('party', $filters['party']);
+            $query->where('party', 'LIKE', '%' . $filters['party'] . '%');
         }
 
         //order by

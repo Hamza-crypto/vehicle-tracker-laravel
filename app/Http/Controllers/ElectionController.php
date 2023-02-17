@@ -40,17 +40,17 @@ class ElectionController extends Controller
                 $count++;
                 continue;
             }
-            if ($data[3] == '') continue; //Candidate Name
+            if ($data[4] == '') continue; //Candidate Name
 
             $election = new Election();
-            $election->candidate = $data[3];
-            $election->votes_first_round = str_replace(',', '', $data[5]);
-            $election->percentage_first_round = $data[6];
-            $election->votes_second_round = str_replace(',', '', $data[7]);;
-            $election->percentage_second_round = $data[8];
-            $election->party = $data[4];
-            $election->department = $data[1];
-            $election->year = $data[2];
+            $election->candidate = $data[4];
+            $election->votes_first_round = str_replace(',', '', $data[6]);
+            $election->percentage_first_round = $data[7];
+            $election->votes_second_round = str_replace(',', '', $data[8]);;
+            $election->percentage_second_round = $data[9];
+            $election->party = $data[5];
+            $election->department = $data[2];
+            $election->year = $data[3];
             $election->election = $data[0];
             $election->save();
             $count++;
