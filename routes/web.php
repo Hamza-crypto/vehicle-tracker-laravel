@@ -9,6 +9,7 @@ use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
@@ -25,7 +26,11 @@ use App\Http\Controllers\ProductController;
 | contains the "web" middleware group. Now create something great!
 |
  */
+Route::get('/test', function (){
 
+    dd(strpos('Hamza', 'zaa') );
+
+});
 
 Route::redirect('/', '/dashboard');
 
@@ -94,10 +99,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('vehicles', VehicleController::class)->only('index');
 
 });
-
-Route::get('/products', [ProductController::class, 'index'] );
-Route::get('/product/create', [ProductController::class, 'get'] );
-Route::get('/scrape', [ProductController::class, 'store'] )->name('scrape.store');
 
 //Elections
 Route::get('elections', [ElectionController::class, 'index']);

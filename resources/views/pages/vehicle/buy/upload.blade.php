@@ -5,11 +5,15 @@
 @section('scripts')
     <script>
         $('#add').click(function(){
-             $('#loader').toggleClass('d-none');
+            if($('input[name="csv_file"]').val() != '') {
+                $('#loader').toggleClass('d-none');
+            }
         });
 
         $('#add2').click(function(){
-             $('#loader').toggleClass('d-none');
+            if($('input[name="csv_file"]').val() != '') {
+                $('#loader').toggleClass('d-none');
+            }
         });
     </script>
 @endsection
@@ -102,13 +106,33 @@
         </div>
     </div>
 
-    @if(old('invalid'))
-        <h1>Expected header for this file</h1>
-        @foreach(old('invalid') as $header)
+    @if(isset($csv_header))
+        <div class="row">
+            <div class="col-12 col-xl-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Expected Header for CSV File</h5>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th style="width:40%;">Sr.#</th>
+                            <th style="width:40%;">Column</th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-            <p> {{ $header }}</p>
-        @endforeach
-
+                        @foreach($csv_header as $key => $value)
+                            <tr>
+                                <td>{{ $key+1 }}</td>
+                                <td>{{ $value }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     @endif
 
 @endsection

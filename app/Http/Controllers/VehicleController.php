@@ -14,20 +14,13 @@ class VehicleController extends Controller
 {
     public function index()
     {
-//        $vehicles = Vehicle::with('metas')->get();
-//        foreach ($vehicles as $vehicle){
-//            dd($vehicle->invoice_amount);
-//        }
         $makes = [];
-//        unset($makes[0]);
-
         $models = [];
-        //       unset($models[0]);
+
         $statuses = VehicleMetas::select('meta_value')->where('meta_key', 'status')->groupBy('meta_value')->get()->toArray();
 
         return view('pages.vehicle.index', compact('models', 'makes', 'statuses'));
     }
-
 
     public function create_upload_buy()
     {
@@ -58,61 +51,53 @@ class VehicleController extends Controller
     {
         $this->insert_in_db($request);
 
-
         Session::flash('success', "Vehicle inserted successfully");
         return back();
     }
 
-    public function shopify_call($token, $shop, $api_endpoint, $query = array(), $method = 'GET', $request_headers = array())
-    {
-        $url = sprintf('https://%s.myshopify.com%s', $shop, $api_endpoint);
-        if (!is_null($query) && in_array($method, array('GET', 'DELETE'))) $url = $url . "?" . http_build_query($query);
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_HEADER, TRUE);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
-        curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+    /*
+     * Step 1:
+     */
 
-        $request_headers[] = '';
-        $request_headers[] = 'Content-Type: application/json';
-        if (!is_null($token)) $request_headers[] = sprintf('X-Shopify-Access-Token: %s', $token);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $request_headers);
-
-        if ($method != 'GET' && in_array($method, array('POST', 'PUT'))) {
-            if (is_array($query)) $query = json_encode($query);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
+    function strToHex($string){
+        $hex = '';
+        for ($i=0; $i<strlen($string); $i++){
+            $ord = ord($string[$i]);
+            $hexCode = dechex($ord);
+            $hex .= substr('0'.$hexCode, -2);
         }
-
-        $response = curl_exec($curl);
-        $error_number = curl_errno($curl);
-        $error_message = curl_error($curl);
-        curl_close($curl);
-
-        if ($error_number) {
-            return $error_message;
-        } else {
-            $response = preg_split("/\r\n\r\n|\n\n|\r\r/", $response, 2);
-            $headers = array();
-            $header_data = explode("\n", $response[0]);
-            $headers['status'] = $header_data[0];
-            array_shift($header_data);
-            foreach ($header_data as $part) {
-                $h = explode(":", $part, 2);
-                $headers[trim($h[0])] = trim($h[1]);
-            }
-
-            return array('headers' => $headers, 'data' => $response[1]);
-        }
+        return strToUpper($hex);
     }
-
     public function import_buy_copart_csv(Request $request)
     {
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
+
+        $required_header = [
+            "Invoice Date",
+            "Item #",
+            "Lot/Inv #",
+            "Year",
+            "Make",
+            "Model",
+            "VIN",
+            "Location",
+            "Description",
+            "Left Location",
+            "Date Paid",
+            "Invoice Amount"
+        ];
+
+        foreach ($data[0] as $value) {
+            $value = trim($value);
+            if (strpos($value, 'Invoice Date') !== false) {
+                continue;
+            }
+            if(!in_array($value, $required_header)){
+                Session::flash('error', "CSV file header is not correct");
+                return view('pages.vehicle.buy.upload')->with('csv_header', $required_header);
+            }
+        }
 
         unset($data[0]);
 
@@ -140,8 +125,8 @@ class VehicleController extends Controller
         }
 
         Session::flash('success', "Successfully inserted");
+        return redirect()->route('upload.create.buy');
 
-        return back();
     }
 
     public function import_buy_iaai_csv(Request $request)
@@ -153,6 +138,39 @@ class VehicleController extends Controller
         foreach ($data[0] as $value) {
             $csv_header_fields[] = $value;
         }
+
+        $required_header = [
+            "Stock#",
+            "Lane",
+            "Item#",
+            "VIN",
+            "Date Won",
+            "Date Paid",
+            "Date Picked Up",
+            "Payment Reference",
+            "Receipt#",
+            "Description",
+            "Series",
+            "Color",
+            "Bid Type",
+            "Bidder",
+            "Branch",
+            "Bid Amount",
+            "Fees & Tax",
+            "Total Paid"
+        ];
+
+//        foreach ($data[0] as $value) {
+//            $value = trim($value);
+//            if (strpos($value, 'Stock') !== false) {
+//                continue;
+//            }
+//            if(!in_array($value, $required_header)){
+//                Session::flash('error', "CSV file header is not correct");
+//                return view('pages.vehicle.buy.upload')->with('csv_header', $required_header);
+//            }
+//        }
+
 
         unset($data[0]);
 
@@ -180,22 +198,93 @@ class VehicleController extends Controller
         }
 
         Session::flash('success', "Successfully inserted");
-
-        return back();
+        return redirect()->route('upload.create.buy');
     }
+
+    /*
+     * Step 2:
+     */
 
     public function import_inventory_copart_csv(Request $request) //step 2
     {
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
 
+        $csv_header_fields = [];
+        foreach ($data[0] as $value) {
+            $csv_header_fields[] = $value;
+        }
+
+        $required_header = [
+            "Lot #",
+            "Claim #",
+            "Status",
+            "Description",
+            "VIN",
+            "Primary Damage",
+            "Secondary Damage",
+            "Keys",
+            "Drivability Rating",
+            "Engine",
+            "Drive",
+            "Missing Parts",
+            "Seller",
+            "Adjuster",
+            "Cert Received Date",
+            "Odometer",
+            "Odometer Brand",
+            "Original Title State",
+            "Original Title Type",
+            "Sale Title State",
+            "Sale Title Type",
+            "Title Reviewed",
+            "Location",
+            "Auction Date",
+            "Item # ",
+            "Row Location",
+            "# of Runs",
+            "Days in Yard",
+            "Advance Charges",
+            "ACV",
+            "Repair Cost",
+            "Current Bid",
+            "Reserve",
+            "Reserve Amount",
+            "Reserve %",
+            "Reviewed",
+            "Auction Comment"
+        ];
+
+//        foreach ($data[0] as $value) {
+//            $value = trim($value);
+//            if(!in_array($value, $required_header)){
+//                Session::flash('error', "CSV file header is not correct");
+//                return view('pages.vehicle.inventory.upload')->with('csv_header', $required_header);
+//            }
+//        }
+
+
         unset($data[0]); // Remove header
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
+        $today = now();
+        $past_auction_date = [];
+        $count = 0;
         foreach ($data as $row) {
 
             $vin = $row[4];
+
+            $auction_date = Carbon::parse($row[23]);
+            if($auction_date < $today){
+                $past_auction_date[] = ['vin' => $vin, 'auction_date' => $auction_date->format('Y-m-d')];
+
+                $count++;
+                if($count > 10) {
+                    return view('pages.vehicle.inventory.upload')->with('past_auction_date', $past_auction_date);
+                }
+                continue;
+            }
 
             if (!in_array($vin, $vehicles_vins)) {
                 //insert new vehicle
@@ -209,6 +298,8 @@ class VehicleController extends Controller
             } else {
                 //update vehicle
                 $vehicle = Vehicle::where('vin', $vin)->first();
+                //delete old vehicle metas
+                VehicleMetas::where('vehicle_id', $vehicle->id)->delete();
                 $vehicle->auction_lot = $row[0];
                 $vehicle->location = $row[22];
                 $vehicle->save();
@@ -218,8 +309,9 @@ class VehicleController extends Controller
 
         }
 
+
         Session::flash('success', "Successfully inserted");
-        return back();
+        return view('pages.vehicle.inventory.upload')->with('past_auction_date', $past_auction_date);
     }
 
     public function insert_vehicle_metas($row, $vehicle_id)
@@ -265,16 +357,56 @@ class VehicleController extends Controller
 //        DB::table('vehicle_metas')->insert($metas);
     }
 
+    /*
+     * Step 3:
+     */
+
     public function import_sold_copart_csv(Request $request)
     {
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
 
-        unset($data[0]); // Remove header
+        $csv_header_fields = [];
+        foreach ($data[0] as $value) {
+            $csv_header_fields[] = $value;
+        }
 
+
+        $required_header = [
+            "Lot #",
+            "Claim #",
+            "Status",
+            "Location",
+            "Sale Date",
+            "Description",
+            "Title State",
+            "Title Type",
+            "Odometer",
+            "Odometer Brand",
+            "Primary Damage",
+            "Loss Type",
+            "Keys",
+            "Drivability Rating",
+            "ACV",
+            "Repair Cost",
+            "Sale Price",
+            "Return %"
+        ];
+
+        foreach ($data[0] as $value) {
+            $value = trim($value);
+            if(!in_array($value, $required_header)){
+                Session::flash('error', "CSV file header is not correct");
+                return view('pages.vehicle.sold.upload')->with('csv_header', $required_header);
+            }
+        }
+
+
+        unset($data[0]); // Remove header
         $auction_lot = Vehicle::whereNotNull('auction_lot')->pluck('auction_lot')->toArray();
         $purchase_lot = Vehicle::whereNotNull('purchase_lot')->pluck('purchase_lot')->toArray();
 
+        $vehicles_not_found = [];
         foreach ($data as $row) {
             $lot = $row[0];
 
@@ -296,19 +428,13 @@ class VehicleController extends Controller
                         'meta_value' => 'SOLD' //sale_price
                     ]);
             } else {
-                $vehicle = new Vehicle();
-                $vehicle->vin = 'NOT_ADDED';
-                $vehicle->auction_lot = $row[0];
-                $vehicle->location = $row[3];
-                $vehicle->description = $row[5]; //year_make_model
-                $vehicle->save();
+                $vehicles_not_found[] = ['lot' => $lot];
             }
 
         }
 
         Session::flash('success', "Successfully updated");
-
-        return back();
+        return view('pages.vehicle.sold.upload')->with('vehicles_not_found', $vehicles_not_found);
 
     }
 
