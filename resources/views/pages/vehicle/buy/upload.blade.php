@@ -111,7 +111,7 @@
             <div class="col-12 col-xl-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title">Expected Header for CSV File</h5>
+                        <h5 class="card-title">Header must include following columns (order can be different)</h5>
                     </div>
                     <table class="table table-bordered">
                         <thead>
