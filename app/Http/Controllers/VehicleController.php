@@ -7,6 +7,7 @@ use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 
@@ -131,6 +132,7 @@ class VehicleController extends Controller
         $csvFile = array_map('str_getcsv', file($path));
 
         $headers = $csvFile[0];
+        unset($csvFile[0]);
 
         $requiredColumns = [
             "VIN",
@@ -202,7 +204,6 @@ class VehicleController extends Controller
                 $vehicle->invoice_amount = isset($positions['Total Amount']) ? $this->format_amount($row[$positions['Total Amount']]) : $this->format_amount($row[$positions['Total Paid']]);
                 $vehicle->save();
             }
-
         }
 
         Session::flash('success', "Successfully inserted");
@@ -222,21 +223,21 @@ class VehicleController extends Controller
         unset($csvFile[0]);
 
         $requiredColumns = [
-            "VIN",
             "Lot #",
-            "Location",
-            "Description",
             "Claim #",
             "Status",
+            "Description",
+            "VIN",
             "Primary Damage",
+            "Secondary Damage",
             "Keys",
             "Drivability Rating",
             "Odometer",
             "Odometer Brand",
-            "Days in Yard",
-            "Secondary Damage",
             "Sale Title State",
-            "Sale Title Type"
+            "Sale Title Type",
+            "Location",
+            "Days in Yard",
         ];
 
         $positions = [];
@@ -250,7 +251,6 @@ class VehicleController extends Controller
             }
             $positions[$columnName] = $position;
         }
-dd($positions);
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
 //        $today = now();
@@ -299,7 +299,7 @@ dd($positions);
         }
 
         Session::flash('success', "Successfully inserted");
-        return view('pages.vehicle.inventory.upload');
+        return redirect()->route('upload.create.inventory');
     }
 
     public function insert_vehicle_metas($row, $vehicle_id, $positions)
@@ -315,34 +315,28 @@ dd($positions);
             'days_in_yard' => $row[$positions['Days in Yard']],
         ];
         if (!empty($row[6])) {
-            $necessary_meta_fields['secondary_damage'] = $row[6];
+            $necessary_meta_fields['secondary_damage'] = $row[$positions['Secondary Damage']];
         }
         if (!empty($row[20])) {
-            $necessary_meta_fields['sale_title_type'] = $row[20];
+            $necessary_meta_fields['sale_title_type'] = $row[$positions['Sale Title State']];
         }
         if (!empty($row[19])) {
-            $necessary_meta_fields['sale_title_state'] = $row[19];
+            $necessary_meta_fields['sale_title_state'] = $row[$positions['Sale Title Type']];
         }
 
         $metas = [];
+        $now = now();
         foreach ($necessary_meta_fields as $key => $value) {
             $metas[] = [
+                'vehicle_id' => $vehicle_id,
                 'meta_key' => $key,
-                'meta_value' => $value,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'meta_value' => trim($value),
+                'created_at' => $now,
+                'updated_at' => $now,
             ];
-            VehicleMetas::updateOrCreate(
-                ['vehicle_id' => $vehicle_id, 'meta_key' => $key],
-                [
-                    'meta_value' => $value,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
 
         }
-//        DB::table('vehicle_metas')->insert($metas);
+        DB::table('vehicle_metas')->insert($metas);
     }
 
     /*
@@ -353,12 +347,6 @@ dd($positions);
     {
         $path = $request->file('csv_file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
-
-        $csv_header_fields = [];
-        foreach ($data[0] as $value) {
-            $csv_header_fields[] = $value;
-        }
-
 
         $required_header = [
             "Lot #",
