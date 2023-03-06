@@ -189,16 +189,17 @@ class VehicleController extends Controller
 
         foreach ($csvFile as $row) {
 
-            $vin = $row[$positions['VIN']];
+            if (!isset($positions['Item#']) || empty($row[$positions['Item#']])) continue;
 
-            if (empty($vin) || empty($row)) continue;
+            $vin = $row[$positions['VIN']];
+            if (empty($vin)) continue;
 
             if (!in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
                 $vehicle->vin = $vin;
                 $vehicle->purchase_lot = isset($positions['Stock']) ? $row[$positions['Stock']] : $row[$positions['Stock#']];
                 $vehicle->location = $row[$positions['Branch']];
-                $vehicle->description = isset($positions['Description']) ?  $row[$positions['Description']] : sprintf("%s %s %s",$row[$positions['Year']], $row[$positions['Make']], $row[$positions['Model']] ) ; //year_make_model
+                $vehicle->description = isset($positions['Description']) ? $row[$positions['Description']] : sprintf("%s %s %s", $row[$positions['Year']], $row[$positions['Make']], $row[$positions['Model']]); //year_make_model
                 $vehicle->left_location = Carbon::parse($row[$positions['Date Picked Up']])->format('Y-m-d');
                 $vehicle->date_paid = Carbon::parse($row[$positions['Date Paid']])->format('Y-m-d');
                 $vehicle->invoice_amount = isset($positions['Total Amount']) ? $this->format_amount($row[$positions['Total Amount']]) : $this->format_amount($row[$positions['Total Paid']]);
@@ -246,7 +247,7 @@ class VehicleController extends Controller
         foreach ($requiredColumns as $columnName) {
             $position = array_search($columnName, $headers);
             if ($position === false) {
-                 Session::flash('error', "CSV file header is not correct");
+                Session::flash('error', "CSV file header is not correct");
                 return view('pages.vehicle.inventory.upload')->with('csv_header', $requiredColumns);
             }
             $positions[$columnName] = $position;
