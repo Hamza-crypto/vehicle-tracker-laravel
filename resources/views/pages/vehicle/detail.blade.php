@@ -2,6 +2,27 @@
 
 @section('title', 'Vehicle Details')
 
+@section('scripts')
+    <script>
+        $(document).ready(function () {
+
+            $(".daterange").each(function(index) {
+                var startDate = $(this).val();
+                $(this).daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    startDate: startDate,
+                    locale: {
+                        format: "Y-MM-DD"
+                    }
+                });
+            });
+        });
+
+    </script>
+
+@endsection
+
 @section('content')
 
     <h1 class="h3 mb-3"> Vehicle Details </h1>
@@ -30,26 +51,48 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($vehicle->toArray() as $key => $value)
-                        <tr>
-                            <td>{{ strtoupper($key) }}</td>
-                            <td>{{ $value }}</td>
-                        </tr>
-
-                    @endforeach
-
-                    @if(sizeof($vehicle_metas) > 0)
-                        @foreach($vehicle_metas as $vehicle_meta)
+                    <form method="post" action="{{ route('vehicles.update', $vehicle->id) }}">
+                        @csrf
+                        @method('PUT')
+                        @foreach($vehicle->toArray() as $key => $value)
+                            @if($key == 'updated_at')
+                                @continue
+                            @endif
                             <tr>
-                                <td>{{ strtoupper($vehicle_meta->meta_key) }}</td>
-                                <td>{{ $vehicle_meta->meta_value }}</td>
+                                <td>{{ strtoupper($key) }}</td>
+
+                                <td>
+                                    <input type="text" class="form-control @if(in_array($key, ['left_location', 'date_paid'])) daterange @endif"
+                                           name="{{ $key }}"
+                                           value="{{ $value }}"
+                                           @if(in_array($key, ['id', 'created_at'])) readonly @endif
+
+                                    >
+                                </td>
+                            </tr>
+
+                        @endforeach
+                        @foreach($meta_keys as $key)
+                            <tr>
+                                <td>{{ strtoupper($key) }}</td>
+                                <td>
+                                    <input type="text" class="form-control"
+                                           name="{{ $key }}"
+                                           value="{{ $vehicle_metas[$key] ?? '' }}"
+                                    >
+                                </td>
                             </tr>
                         @endforeach
-                    @else
                         <tr>
-                            <td colspan="2">No more data found</td>
+                            <td></td>
+                            <td>
+                                <button type="submit" id="add" class="btn btn-lg btn-primary">Update
+                                    Vehicle
+                                </button>
+                            </td>
+
                         </tr>
-                    @endif
+                    </form>
                     </tbody>
                 </table>
             </div>

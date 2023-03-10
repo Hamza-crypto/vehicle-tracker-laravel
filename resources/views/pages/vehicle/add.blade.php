@@ -93,6 +93,78 @@
 
                             </div>
 
+
+
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="purchase_lot">Purchase Lot</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="purchase_lot"
+                                        placeholder="Enter purchase lot"
+                                    />
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="auction_lot">Auction Lot</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="auction_lot"
+                                        placeholder="Enter auction lot"
+                                    />
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="year">Year</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="number"
+                                        name="year"
+                                        placeholder="Enter Year e.g. 2002"
+                                    />
+                                </div>
+
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="make">Make</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="make"
+                                        placeholder="Enter Make"
+                                    />
+                                </div>
+
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="model">Model</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="model"
+                                        placeholder="Enter Model"
+                                    />
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="number">Invoice Date</label>
@@ -110,120 +182,52 @@
 
                             <div class="col-4">
                                 <div class="form-group">
-                                    <label for="number">Lot</label>
-                                    <input
-                                        class="form-control form-control-lg"
-                                        type="text"
-                                        name="lot"
-                                        placeholder="Enter Lot number"
-                                    />
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-4">
-
-                                <div class="form-group">
-                                    <label for="make"> Make </label>
-                                    <select id="make" class="form-control select2" name="make" data-toggle="select2">
-                                        <option value="" > Select </option>
-                                        @foreach($makes as $make)
-                                            <option value={{ $make->make}} >{{ $make->make}}</option>
-                                        @endforeach
-
-                                    </select>
-
-                                </div>
-
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="model"> Model </label>
-                                    <select id="model" class="form-control select2" name="model" data-toggle="select2">
-                                        <option value="" > Select </option>
-                                        @foreach($models as $model)
-                                            <option value={{ $model->model}} >{{ $model->model}}</option>
-                                        @endforeach
-
-                                    </select>
-
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="year"> Year </label>
-                                    <select id="year" class="form-control select2" name="year" data-toggle="select2">
-
-                                        @foreach($years as $year)
-                                            <option value={{$year}} >{{ $year }}</option>
-                                        @endforeach
-
-                                    </select>
-
-                                </div>
-                            </div>
-
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-4">
-
-                                <div class="form-group">
-                                    <label for="year"> Location </label>
-                                    <select id="location" class="form-control select2" name="location"
-                                            data-toggle="select2">
-
-                                        @foreach($locations as $location)
-                                            <option
-                                                value="{{ $location->meta_value }}">{{ $location->meta_value }}</option>
-                                        @endforeach
-
-                                        @foreach($locations2 as $location)
-                                            <option value="{{ $location->location }}">{{ $location->location }}</option>
-                                        @endforeach
-
-
-                                    </select>
-
-                                </div>
-                            </div>
-
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="number">Pick up Date</label>
-
+                                    <label for="left_location">Left Location</label>
                                     <input
                                         class="form-control form-control-lg daterange"
                                         type="text"
-                                        name="pickup_date"
-                                        placeholder="Enter card number"
-                                        value="{{ old('card_number' )}}"
+                                        name="left_location"
+                                        placeholder="Enter left location"
+                                        value="{{ old('left_location' )}}"
                                     />
 
                                 </div>
-
                             </div>
 
                             <div class="col-4">
                                 <div class="form-group">
-                                    <label for="year">Invoice Amount($)</label>
+                                    <label for="invoice_amount">Invoice Amount($)</label>
                                     <input
                                         class="form-control form-control-lg"
                                         type="number"
                                         name="invoice_amount"
-                                        placeholder="Enter Location"
+                                        placeholder="Enter Invoice Amount"
+                                        value="{{ old('invoice_amount' )}}"
+                                    />
+
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="location">Location</label>
+                                    <input
+                                        class="form-control form-control-lg"
+                                        type="text"
+                                        name="location"
+                                        placeholder="Enter location"
                                         value="{{ old('location' )}}"
                                     />
 
                                 </div>
                             </div>
-                        </div>
 
+
+                        </div>
                         <div class="form-group">
                             <button type="submit" id="add" class="btn btn-lg btn-primary">Add New
                                 Vehicle
@@ -232,35 +236,6 @@
 
 
                     </form>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-body">
-
-                    <div class="row">
-
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="number">Add new Location</label>
-                                <input
-                                    class="form-control form-control-lg"
-                                    type="text"
-                                    id="new_location"
-                                    placeholder="Enter Location"
-                                />
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-                        <button id="add_location" class="btn btn-lg btn-primary">Add New
-                            Location
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>

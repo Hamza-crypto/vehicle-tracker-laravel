@@ -40,12 +40,7 @@ class VehicleController extends Controller
 
     public function create()
     {
-        $makes = $this->get_makes();
-        $models = $this->get_models();
-        $years = $this->get_years();
-        $locations = $this->get_locations();
-        $locations2 = Location::all();
-        return view('pages.vehicle.add', get_defined_vars());
+        return view('pages.vehicle.add');
     }
 
     public function store(Request $request)
@@ -59,17 +54,6 @@ class VehicleController extends Controller
     /*
      * Step 1:
      */
-
-    function strToHex($string)
-    {
-        $hex = '';
-        for ($i = 0; $i < strlen($string); $i++) {
-            $ord = ord($string[$i]);
-            $hexCode = dechex($ord);
-            $hex .= substr('0' . $hexCode, -2);
-        }
-        return strToUpper($hex);
-    }
 
     public function import_buy_copart_csv(Request $request)
     {
@@ -189,7 +173,9 @@ class VehicleController extends Controller
 
         foreach ($csvFile as $row) {
 
-            if (!isset($positions['Item#']) || empty($row[$positions['Item#']])) continue;
+            if (!isset($positions['Item#']) || empty($row[$positions['Item#']])){ //if item# is not present in csv file
+                continue;
+            }
 
             $vin = $row[$positions['VIN']];
             if (empty($vin)) continue;
@@ -418,14 +404,61 @@ class VehicleController extends Controller
 
     public function edit(Vehicle $vehicle)
     {
-        $vehicle_metas = VehicleMetas::where('vehicle_id', $vehicle->id)->get();
+        $vehicle_metas = VehicleMetas::where('vehicle_id', $vehicle->id)->get()->mapWithKeys(function ($item) {
+        return [$item['meta_key'] => $item['meta_value']];
+    });
+
+        $meta_keys = [
+            'claim_number',
+            'status',
+            'primary_damage',
+            'keys',
+            'drivability_rating',
+            'odometer',
+            'odometer_brand',
+            'days_in_yard',
+            'secondary_damage',
+            'sale_title_state',
+            'sale_title_type'
+        ];
+
         return view('pages.vehicle.detail', get_defined_vars());
     }
 
 
     public function update(Request $request, Vehicle $vehicle)
     {
-        $this->insert_in_db($request, $vehicle);
+        $vehicle->vin = $request->vin;
+        $vehicle->purchase_lot = $request->purchase_lot;
+        $vehicle->auction_lot = $request->auction_lot;
+        $vehicle->location = $request->location;
+        $vehicle->description = $request->description;
+        $vehicle->left_location = $request->left_location;
+        $vehicle->date_paid = $request->date_paid;
+        $vehicle->invoice_amount = $request->invoice_amount;
+        $vehicle->save();
+
+        $meta_keys = [
+            'claim_number',
+            'status',
+            'primary_damage',
+            'keys',
+            'drivability_rating',
+            'odometer',
+            'odometer_brand',
+            'days_in_yard',
+            'secondary_damage',
+            'sale_title_state',
+            'sale_title_type'
+        ];
+
+        foreach ($meta_keys as $key) {
+            VehicleMetas::updateOrCreate(
+                ['vehicle_id' => $vehicle->id, 'meta_key' => $key],
+                [
+                    'meta_value' => $request->$key
+                ]);
+        }
 
         Session::flash('success', "Vehicle updated successfully");
         return back();
@@ -490,16 +523,18 @@ class VehicleController extends Controller
             $vehicle = new Vehicle();
         }
 
-        $vehicle->invoice_date = $request->invoice_date;
-        $vehicle->lot = $request->lot;
+        $vehicle->date_paid = $request->invoice_date;
+        $vehicle->invoice_amount = $request->invoice_amount;
+        $vehicle->purchase_lot = $request->purchase_lot;
+        $vehicle->auction_lot = $request->auction_lot;
         $vehicle->vin = $request->vin;
-        $vehicle->year = $request->year;
-        $vehicle->make = $request->make;
-        $vehicle->model = $request->model;
+        $vehicle->description = sprintf("%s %s %s", $request->year, $request->make, $request->model);
+        $vehicle->location = $request->location;
+        $vehicle->left_location = $request->left_location;
         $vehicle->save();
 
         $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $request->location]);
-        $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $request->pickup_date]);
         $vehicle->metas()->updateOrCreate(['meta_key' => 'invoice_amount'], ['meta_value' => $request->invoice_amount]);
+//        $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $request->pickup_date]);
     }
 }
