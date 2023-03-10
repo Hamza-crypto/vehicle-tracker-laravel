@@ -45,10 +45,9 @@ class VehicleController extends Controller
 
     public function store(Request $request)
     {
-        $this->insert_in_db($request);
+        $vehicle = $this->insert_in_db($request);
 
-        Session::flash('success', "Vehicle inserted successfully");
-        return back();
+        return redirect()->route('vehicles.edit', $vehicle->id);
     }
 
     /*
@@ -535,6 +534,7 @@ class VehicleController extends Controller
 
         $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $request->location]);
         $vehicle->metas()->updateOrCreate(['meta_key' => 'invoice_amount'], ['meta_value' => $request->invoice_amount]);
+        return $vehicle;
 //        $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $request->pickup_date]);
     }
 }
