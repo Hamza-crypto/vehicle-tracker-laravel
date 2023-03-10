@@ -102,32 +102,6 @@
                 </li>
             @endif
 
-            @if( $role != 'user')
-                <li class="sidebar-item {{ request()->is('locations*') ? 'active' : '' }} ">
-                    <a data-target="#locations" data-toggle="collapse" class="sidebar-link {{ request()->is('users/*') ? 'collapsed' : '' }}">
-                        <i class="align-middle" data-feather="map-pin"></i>
-                        <span class="align-middle">Locations</span>
-                    </a>
-                    <ul id="locations"
-                        class="sidebar-dropdown list-unstyled collapse {{ request()->is('locations*') ? 'show' : '' }}"
-                        data-parent="#sidebar">
-
-                        <li class="sidebar-item {{ request()->is('locations') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('locations.index') }}">
-                                <i class="align-middle" data-feather="map-pin"></i>
-                                <span class="align-middle">All Location</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->is('locations/create') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('locations.create') }}">
-                                <i class="align-middle" data-feather="plus"></i>
-                                <span class="align-middle">Add New Location</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            @endif
-
             <li class="sidebar-item {{ request()->is('vehicles/create') ? 'active' : '' }}">
                 <a class="sidebar-link" href="/reset">
                     <i class="align-middle" data-feather="plus-square"></i>
