@@ -5,7 +5,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\GuruController;
-use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsersController;
@@ -29,10 +28,7 @@ use App\Http\Controllers\ProductController;
 |
  */
 Route::get('/test', function (){
-
-
    dd('Deploy completed');
-
 });
 
 Route::get('/test2', function (){
