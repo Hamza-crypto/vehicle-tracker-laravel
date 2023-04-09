@@ -4,11 +4,13 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\ElectionController;
+use App\Http\Controllers\GuruController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
+use App\Models\VehicleMetas;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -28,8 +30,16 @@ use App\Http\Controllers\ProductController;
  */
 Route::get('/test', function (){
 
-    dd(strpos('Hamza', 'zaa') );
 
+   dd('Deploy completed');
+
+});
+
+Route::get('/test2', function (){
+    $flight = VehicleMetas::updateOrCreate(
+        ['vehicle_id' => 2, 'meta_key' => 'keys'],
+        ['meta_value' => 'Yes 2']
+    );
 });
 
 Route::redirect('/', '/dashboard');
@@ -103,4 +113,12 @@ Route::group(['middleware' => ['auth']], function () {
 //Elections
 Route::get('elections', [ElectionController::class, 'index']);
 Route::get('update_election', [ElectionController::class, 'update_election']);
+
+//Guru
+Route::get('token', [GuruController::class, 'getAccessToken']);
+Route::get('jobs', [GuruController::class, 'getJobs']);
+
+
+
+
 
