@@ -28,6 +28,7 @@ use App\Http\Controllers\ProductController;
 |
  */
 Route::get('/test', function (){
+
    dd('Deploy completed');
 });
 
