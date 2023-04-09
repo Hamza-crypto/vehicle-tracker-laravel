@@ -79,28 +79,38 @@ Route::group(['middleware' => ['auth']], function () {
         ], function () {
         Route::get('logs', [LogViewerController::class, 'index']);
 
+
+
+
+//        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
+//        Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
+
+
+
+
+        Route::resource('users', UsersController::class);
+        Route::post('password/{user}', [UsersController::class, 'password_update'])->name('user.password_update');
+
+    });
+
+    Route::group(['middleware' => 'vehicle_manager'], function () {
+
+    });
+
+    Route::group(['middleware' => 'yard_manager'], function () {
         Route::get('vehicles/upload/buy', [VehicleController::class, 'create_upload_buy'])->name('upload.create.buy');
         Route::get('vehicles/upload/inventory', [VehicleController::class, 'create_upload_inventory'])->name('upload.create.inventory');
         Route::get('vehicles/upload/sold', [VehicleController::class, 'create_upload_sold'])->name('upload.create.sold');
-
 
         Route::post('buy/copart', [VehicleController::class, 'import_buy_copart_csv'])->name('buy.copart');
         Route::post('buy/iaai', [VehicleController::class, 'import_buy_iaai_csv'])->name('buy.iaai');
         Route::post('inventory/copart', [VehicleController::class, 'import_inventory_copart_csv'])->name('inventory.copart');
         Route::post('sold/copart', [VehicleController::class, 'import_sold_copart_csv'])->name('sold.copart');
 
-        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
-        Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
-
         Route::get('vehicle/location/{location}', [LocationsController::class, 'add_new_location'])->name('location.add');
 
         Route::resource('vehicles', VehicleController::class)->except('index');
         Route::resource('locations', LocationsController::class);
-
-
-        Route::resource('users', UsersController::class);
-        Route::post('password/{user}', [UsersController::class, 'password_update'])->name('user.password_update');
-
     });
 
     Route::resource('vehicles', VehicleController::class)->only('index');

@@ -74,11 +74,13 @@
 
                                 <td>
                                     @if ($user->role == 'admin')
-                                        <span class="badge badge-success">{{$user->role}}</span>
-                                    @elseif($user->role == 'user')
-                                        <span class="badge badge-secondary">{{$user->role}}</span>
-                                    @elseif($user->role == 'assistant')
-                                        <span class="badge badge-info">{{$user->role}}</span>
+                                        <span class="badge badge-success"> Admin </span>
+                                    @elseif($user->role == 'vehicle_manager')
+                                        <span class="badge badge-primary">Vehicle Manager</span>
+                                    @elseif($user->role == 'yard_manager')
+                                        <span class="badge badge-info">Yard Manager</span>
+                                    @elseif($user->role == 'viewer')
+                                        <span class="badge badge-warning">Viewer</span>
                                     @endif
                                 </td>
 

@@ -59,5 +59,12 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
+    public const USER_ROLES = [
+        'admin' => 'Admin',
+        'vehicle_manager' => 'Vehicle Manager',
+        'yard_manager' => 'Yard Manager',
+        'viewer' => 'Viewer'
+        ];
+
 
 }

@@ -102,8 +102,8 @@
                     var api = this.api();
                     var role = "<?php echo Auth()->user()->role ?>";
 
-                    if (role == 'user') {
-                        api.columns([6]).visible(false);
+                    if (role == 'viewer') {
+                        api.columns([9]).visible(false);
                     }
                 },
                 // buttons: [

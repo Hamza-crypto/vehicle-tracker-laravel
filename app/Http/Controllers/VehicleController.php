@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Session;
 
 class VehicleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('vehicle_manager')->only('destroy'); // Vehicle manager and higher roles can delete
+        $this->middleware('yard_manager')->only('update'); // Yard manager and higher roles can edit
+    }
+
     public function index()
     {
         $makes = [];

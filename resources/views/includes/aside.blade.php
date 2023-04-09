@@ -27,7 +27,7 @@
                     <span class="align-middle">All Vehicles</span>
                 </a>
             </li>
-            @if( $role != 'user')
+            @if( $role != 'viewer')
 
                 <li class="sidebar-item {{ request()->is('vehicles/upload*') ? 'active' : '' }} ">
                     <a data-target="#upload" data-toggle="collapse" class="sidebar-link {{ request()->is('users/*') ? 'collapsed' : '' }}">
@@ -102,7 +102,7 @@
                 </li>
             @endif
 
-            <li class="sidebar-item {{ request()->is('vehicles/create') ? 'active' : '' }}">
+            <li class="sidebar-item ">
                 <a class="sidebar-link" href="/reset">
                     <i class="align-middle" data-feather="plus-square"></i>
                     <span class="align-middle">RESET VEHICLES</span>

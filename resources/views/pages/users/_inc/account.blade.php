@@ -33,9 +33,10 @@
                 <div class="form-group">
                     <label for="role">{{ 'Role' }}</label>
                     <select id="role" class="form-control select2 @error('role') is-invalid @enderror" name="role" data-toggle="select2">
-                        <option value="assistant" @if(old('role' ,$user->role) == 'assistant') selected @endif>{{ __('Assistant') }}</option>
-                        <option value="user" @if(old('role' ,$user->role) == 'user') selected @endif>{{ 'User' }}</option>
-                        <option value="admin" @if(old('role' ,$user->role ) == 'admin') selected @endif>{{ 'Admin' }}</option>
+
+                        @foreach(\App\Models\User::USER_ROLES as  $key => $value)
+                            <option value="{{ $key }}" @if(old('role' ,$user->role ) == $key) selected @endif >{{ $value }}</option>
+                        @endforeach
 
                     </select>
                     @error('role')
