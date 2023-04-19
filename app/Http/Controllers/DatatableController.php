@@ -66,6 +66,8 @@ class DatatableController extends Controller
         $data = [];
         $user_role = Auth::user()->role;
         foreach ($vehicles as &$vehicle) {
+            $vehicle->null = "";
+            $vehicle->DT_RowId = $vehicle->id;
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
             $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
             $alertTitle = __("Are you sure you want to delete vehicle with VIN ") . ' ' . $vehicle->vin;

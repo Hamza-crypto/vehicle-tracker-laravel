@@ -35,6 +35,8 @@
             });
 
             var table = $('#vehicles-table').DataTable({
+                "dom": 'lrtBip',
+                "responsive": true,
                 "ordering": true,
                 'processing': true,
                 'serverSide': true,
@@ -65,26 +67,11 @@
 
                     },
                     dataSrc: function (data) {
-                        var pay_able_amount = ((data['extra_info']['amount_accepted'] * data['extra_info']['user_rate']) / 100).toFixed(2);
-                        console.log(data['extra_info']['amount_pending']);
-                        // Orders
-                        $('[data-count-orders]').text(data['extra_info']['total_orders_count']);
-                        $('[data-count-orders-accepted]').text(data['extra_info']['orders_status_accepted']);
-                        $('[data-count-orders-pending]').text(data['extra_info']['orders_status_pending']);
-                        $('[data-count-orders-declined]').text(data['extra_info']['orders_status_declined']);
-                        $('[data-count-orders-total-sum]').text(data['extra_info']['orders_total_sum']);
-
-                        // Amount
-                        $('[data-count-accepted-amount]').text(data['extra_info']['amount_accepted']);
-                        $('[data-count-rejected-amount]').text(data['extra_info']['amount_rejected']);
-                        $('[data-count-pending-amount]').text(data['extra_info']['amount_pending']);
-
-                        $('[data-count-payable-amount]').text(pay_able_amount);
                         return data.data;
                     }
                 },
                 'columns': [
-                    //{"data": "null"},
+                    {"data": "null"},
                     {"data": "id"},
                     {"data": "vin"},
                     {"data": "lot"},
@@ -106,36 +93,98 @@
                         api.columns([9]).visible(false);
                     }
                 },
-                // buttons: [
-                //     {
-                //         text: 'Select all',
-                //         action: function () {
-                //             table.rows().select();
-                //         },
-                //         attr: {
-                //             id: 'select_all_btn'
-                //         }
-                //     },
-                //     {
-                //         text: 'Select none',
-                //         action: function () {
-                //             table.rows().deselect();
-                //         }
-                //     }
-                // ],
+                buttons: [
+                    {
+                        text: 'Select all',
+                        action: function () {
+                            table.rows().select();
+                        },
+                        attr: {
+                            id: 'select_all_btn',
+                            class: 'btn btn-primary'
+                        }
+                    },
+                    {
+                        text: 'Select none',
+                        action: function () {
+                            table.rows().deselect();
+                        }
+                    },
+                    {
+                        text: 'Delete selected',
+                        action: function () {
+                            var ids = table.rows('.selected').ids().toArray();
+                            if (ids.length > 0) {
+
+                                Swal.fire({
+                                    title: 'Are you sure?',
+                                    text: "You want to delete selected vehicles?",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Yes, delete it!'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $.ajax({
+                                            url: "{{ route('vehicles.delete-multiple') }}",
+                                            type: 'DELETE',
+                                            data: {
+                                                ids: ids,
+                                                _token: "{{ csrf_token() }}"
+                                            },
+                                            success: function (data) {
+                                                Swal.fire(
+                                                    'Successfully deleted!',
+                                                    data.message,
+                                                    'success'
+                                                );
+                                                table.ajax.reload();
+
+                                            }
+                                        });
+                                    }
+                                })
+                            }
+
+
+                        },
+                        attr: {
+                            id: 'delete_btn',
+                            class: 'btn btn-danger'
+                        }
+                    }
+                ],
 
                 columnDefs: [
-                    {
-                        targets: [1,2,3,4, 9], orderable: false
-                    },
+                    {targets: [0], className: 'select-checkbox'},
+                    {targets: [1,2,3,4, 9], orderable: false}
+
 
                 ],
-                // select: {
-                //     style: 'multi',
-                //     selector: 'td:first-child'
-                // },
+                select: {
+                    style: 'multi',
+                    selector: 'td:first-child'
+                },
 
             });
+
+            // Attach click event to each row
+            // $('#vehicles-table tbody').on('click', 'tr', function() {
+            //     var tr = $(this);
+            //     var row = $('#vehicles-table').DataTable().row(tr);
+            //
+            //     if (row.child.isShown()) {
+            //         // This row is already open - close it
+            //         row.child.hide();
+            //         tr.removeClass('shown');
+            //     } else {
+            //         // Open this row
+            //         row.child(row.data()).show();
+            //         tr.addClass('shown');
+            //     }
+            // });
+
 
             $('.apply-dt-filters').on('click', function () {
                 table.ajax.reload();
@@ -266,10 +315,10 @@
             <div class="card">
                 <div class="card-body">
 
-                    <table id="vehicles-table" class="table table-striped" style="width:100%">
+                    <table id="vehicles-table" class="table table-striped dataTable no-footer dtr-inline" style="width:100%">
                         <thead>
                         <tr>
-{{--                            <th></th>--}}
+                            <th></th>
                             <th>ID</th>
                             <th>VIN</th>
                             <th>Lot</th>

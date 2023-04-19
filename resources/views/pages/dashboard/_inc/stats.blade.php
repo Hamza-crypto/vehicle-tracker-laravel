@@ -35,17 +35,25 @@
                             <div class="mb-0">
                                 <span class="badge badge-soft-success mr-2">
                                     <i class="mdi mdi-arrow-bottom-right"></i>
-                                    {{ \App\Models\User::where('role', 'user')->count()  }} User
-                                </span>
-                                <span class="badge badge-soft-success mr-2">
-                                    <i class="mdi mdi-arrow-bottom-right"></i>
-                                    {{ \App\Models\User::where('role', 'assistant')->count()  }} Assistants
+                                    {{ \App\Models\User::where('role', 'admin')->count()  }} Admin(s)
                                 </span>
 
-                                <span class="badge badge-soft-success mr-2">
+                                <span class="badge badge-soft-primary mr-2">
                                     <i class="mdi mdi-arrow-bottom-right"></i>
-                                    {{ \App\Models\User::where('role', 'admin')->count()  }} Admins
+                                    {{ \App\Models\User::where('role', 'vehicle_manager')->count()  }} Vehicle Manager
                                 </span>
+
+                                <span class="badge badge-soft-info mr-2">
+                                    <i class="mdi mdi-arrow-bottom-right"></i>
+                                    {{ \App\Models\User::where('role', 'yard_manager')->count()  }} Yard Manager
+                                </span>
+
+                                <span class="badge badge-soft-warning mr-2">
+                                    <i class="mdi mdi-arrow-bottom-right"></i>
+                                    {{ \App\Models\User::where('role', 'viewer')->count()  }} Viewer
+                                </span>
+
+
                             </div>
                         </div>
                         <div class="d-inline-block ml-3">

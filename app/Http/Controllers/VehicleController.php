@@ -481,6 +481,14 @@ class VehicleController extends Controller
         return redirect()->back();
     }
 
+    public function delete_multiple_vehicles(Request $request)
+    {
+        $ids = $request->input('ids');
+        $deleted = Vehicle::whereIn('id', $ids)->delete();
+
+        return response()->json(['message' => $deleted . ' vehicles have been deleted.']);
+    }
+
     public function get_makes()
     {
         return Vehicle::select('make')

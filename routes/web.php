@@ -109,6 +109,7 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('vehicle/location/{location}', [LocationsController::class, 'add_new_location'])->name('location.add');
 
+        Route::delete('vehicles/delete-multiple', [VehicleController::class, 'delete_multiple_vehicles'])->name('vehicles.delete-multiple');
         Route::resource('vehicles', VehicleController::class)->except('index');
         Route::resource('locations', LocationsController::class);
     });
