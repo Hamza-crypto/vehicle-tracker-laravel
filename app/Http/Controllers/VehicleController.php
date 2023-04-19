@@ -24,7 +24,12 @@ class VehicleController extends Controller
         $makes = [];
         $models = [];
 
-        $statuses = VehicleMetas::select('meta_value')->where('meta_key', 'status')->groupBy('meta_value')->get()->toArray();
+        $statuses = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'status')
+            ->where('meta_value', '!=', 'Sold') //excluding sold status
+            ->groupBy('meta_value')
+            ->get()
+            ->toArray();
 
         return view('pages.vehicle.index', compact('models', 'makes', 'statuses'));
     }

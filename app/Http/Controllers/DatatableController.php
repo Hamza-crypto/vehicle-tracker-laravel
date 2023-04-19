@@ -24,13 +24,18 @@ class DatatableController extends Controller
         $start = $request->length == -1 ? 0 : $request->start;
         $limit = $request->length == -1 ? $totalData : $request->length;
 
-
+        //Put the columns in an array for which you want to apply the sorting,
+        // index should be in accordance with the column index in the table
         $dbColumns = [
             0 => "id",
-            5 => "left_location",
-            6 => "date_paid",
-            7 => "invoice_amount",
-            8 => "created_at",
+            3 => "left_location",
+            5 => "date_paid",
+            6 => "purchase_lot",
+            7 => "auction_lot",
+
+            // sorting by meta value
+            8 => "days_in_yard",
+            9 => "claim_number"
         ];
 
         $orderColumnIndex = $request->input('order.0.column');
@@ -81,12 +86,19 @@ class DatatableController extends Controller
                     ';
 
 
+            $vehicle->purchase_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->purchase_lot, $vehicle->purchase_lot);
+            $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
+
             $vehicle->invoice_amount = $vehicle->invoice_amount != null  ? "$" . $vehicle->invoice_amount : '';
             $vehicle->date_paid = sprintf("<span> %s</span>", $vehicle->date_paid);
-            $vehicle->lot = $vehicle->purchase_lot ?? $vehicle->auction_lot;
-
             $vehicle->actions .= $edit . $delete;
             if($user_role == 'yard_manager') $vehicle->actions = $edit;
+
+            //Get meta data
+            $vehicle_metas = collect($vehicle->metas);
+            $vehicle->claim_number = $vehicle_metas->where('meta_key', 'claim_number')->pluck('meta_value')->first();
+            $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
+            $vehicle->status = $vehicle_metas->where('meta_key', 'status')->pluck('meta_value')->first();
 
             $data[] = $vehicle;
 

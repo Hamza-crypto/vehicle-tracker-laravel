@@ -72,18 +72,18 @@
                 },
                 'columns': [
                     {"data": "null"},
-                    {"data": "id"},
-                    {"data": "vin"},
-                    {"data": "lot"},
-                    {"data": "location"},
                     {"data": "description"},
+                    {"data": "vin"},
                     {"data": "left_location"},
+                    {"data": "location"},
                     {"data": "date_paid"},
-                    {"data": "invoice_amount"},
-                    {"data": "created_at_new"},
+                    {"data": "purchase_lot"}, //purchase lot
+                    {"data": "auction_lot"}, //auction lot
+                    {"data": "days_in_yard"},
+                    {"data": "claim_number"},
                     {"data": "actions", "className": 'table-action'},
-
-
+                    {"data": "status"},
+                    {"data": "id"},
                 ],
                 "initComplete": function () {
                     var api = this.api();
@@ -93,7 +93,7 @@
                         api.columns([9]).visible(false);
                     }
                 },
-                buttons: [
+                "buttons": [
                     {
                         text: 'Select all',
                         action: function () {
@@ -155,19 +155,20 @@
                         }
                     }
                 ],
-
-                columnDefs: [
+                "columnDefs": [
                     {targets: [0], className: 'select-checkbox'},
-                    {targets: [1,2,3,4, 9], orderable: false}
+                    {targets: [0, 1, 2, 4, 8, 9, 10, 11], orderable: false}
 
 
                 ],
-                select: {
+                "select": {
                     style: 'multi',
                     selector: 'td:first-child'
                 },
-
+                "pagingType": "simple_numbers"
             });
+
+            $.fn.DataTable.ext.pager.numbers_length = 4;
 
             // Attach click event to each row
             // $('#vehicles-table tbody').on('click', 'tr', function() {
@@ -319,16 +320,19 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th>ID</th>
+
+                            <th>Year-Make-Model</th>
                             <th>VIN</th>
-                            <th>Lot</th>
-                            <th>Location</th>
-                            <th>Year - Make - Model</th>
                             <th>Left Location</th>
-                            <th>Invoice Date</th>
-                            <th>Invoice Amount</th>
-                            <th>Created at</th>
+                            <th>Current Location</th>
+                            <th>Purchase Date</th>
+                            <th>Purchase Lot #</th>
+                            <th>Auction Lot #</th>
+                            <th>Days in Yard</th>
+                            <th>Claim Number</th>
                             <th>Actions</th>
+                            <th>Status</th>
+                            <th>ID</th>
                         </tr>
                         </thead>
                         <tbody>

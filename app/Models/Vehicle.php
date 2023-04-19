@@ -107,6 +107,11 @@ class Vehicle extends Model
             $query->whereBetween('created_at', [Carbon::parse($dateRange[0])->format('Y-m-d'), Carbon::parse($dateRange[1])->format('Y-m-d')]);
         }
 
+        $query->whereHas('metas',function ($q1) {
+            $q1->where('meta_key', 'status')
+                ->where('meta_value', '!=', 'Sold');
+        });
+
 
         //$query->orderBy('created_at', 'desc');
     }
