@@ -82,8 +82,8 @@
                     {"data": "days_in_yard"},
                     {"data": "claim_number"},
                     {"data": "actions", "className": 'table-action'},
-                    {"data": "status"},
-                    {"data": "id"},
+                    // {"data": "status"},
+                    // {"data": "id"},
                 ],
                 "initComplete": function () {
                     var api = this.api();
@@ -157,7 +157,7 @@
                 ],
                 "columnDefs": [
                     {targets: [0], className: 'select-checkbox'},
-                    {targets: [0, 1, 2, 4, 8, 9, 10, 11], orderable: false}
+                    {targets: [0, 1, 2, 4, 8, 9, 10], orderable: false}
 
 
                 ],
@@ -320,7 +320,6 @@
                         <thead>
                         <tr>
                             <th></th>
-
                             <th>Year-Make-Model</th>
                             <th>VIN</th>
                             <th>Left Location</th>
@@ -331,8 +330,8 @@
                             <th>Days in Yard</th>
                             <th>Claim Number</th>
                             <th>Actions</th>
-                            <th>Status</th>
-                            <th>ID</th>
+{{--                            <th>Status</th>--}}
+{{--                            <th>ID</th>--}}
                         </tr>
                         </thead>
                         <tbody>
