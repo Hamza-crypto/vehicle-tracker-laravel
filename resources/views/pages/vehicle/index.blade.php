@@ -7,32 +7,19 @@
 @endphp
 @section('scripts')
     <script>
-        {{--function get_query_params() {--}}
-        {{--    var urlParams = new URLSearchParams(window.location.search);--}}
-        {{--    var query = urlParams.toString();--}}
-        {{--    let url = "{{ route('orders.export', ':id') }}";--}}
-        {{--    url = url.replace(':id', query);--}}
-        {{--    document.location.href = url;--}}
-        {{--}--}}
-
-        {{--function get_query_params2() {--}}
-        {{--    var urlParams = new URLSearchParams(window.location.search);--}}
-        {{--    var query = urlParams.toString();--}}
-        {{--    let url = "{{ route('orders.export.full', ':id') }}";--}}
-        {{--    url = url.replace(':id', query);--}}
-        {{--    document.location.href = url;--}}
-        {{--}--}}
 
         $(document).ready(function () {
 
-            $("input[id=\"daterange\"]").daterangepicker({
+            // $("input[id=\"daterange\"]").daterangepicker({
+            //
+            //     autoUpdateInput: false,
+            // }).on('apply.daterangepicker', function (ev, picker) {
+            //     $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+            // }).on('cancel.daterangepicker', function (ev, picker) {
+            //     $(this).val('');
+            // });
 
-                autoUpdateInput: false,
-            }).on('apply.daterangepicker', function (ev, picker) {
-                $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-            }).on('cancel.daterangepicker', function (ev, picker) {
-                $(this).val('');
-            });
+
 
             var table = $('#vehicles-table').DataTable({
                 "dom": 'lrtBip',
@@ -141,10 +128,24 @@
                                                 );
                                                 table.ajax.reload();
 
+                                            },
+                                            error: function (data) {
+                                                Swal.fire(
+                                                    'Unauthorized !',
+                                                    'You are not allowed to delete vehicles!',
+                                                    'error'
+                                                );
                                             }
                                         });
                                     }
                                 })
+                            }
+                            else {
+                                Swal.fire(
+                                    'No vehicles selected!',
+                                    'Please select at least one vehicle to delete.',
+                                    'warning'
+                                );
                             }
 
 
@@ -156,8 +157,8 @@
                     }
                 ],
                 "columnDefs": [
-                    {targets: [0], className: 'select-checkbox'},
-                    {targets: [0, 1, 2, 4, 8, 9, 10], orderable: false}
+                    {targets: [0, 1, 2, 4, 8, 9, 10], orderable: false},
+                    {targets: [0], className: 'select-checkbox sorting_disabled'},
 
 
                 ],
@@ -201,12 +202,86 @@
                 table.ajax.reload();
             });
 
+{{--            @if($role != 'admin')--}}
+{{--            $('#select_all_btn').parent().hide();--}}
+{{--            @endif--}}
 
-            @if($role != 'admin')
-            $('#select_all_btn').parent().hide();
-            @endif
+
+
+
+            $(".daterange").each(function(index) {
+                var startDate = $(this).val();
+                $(this).daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    startDate: startDate,
+                    locale: {
+                        format: "Y-MM-DD"
+                    }
+                });
+            });
+
+            //Submit form
+            $('#vehicle-detail-form').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+                var method = form.attr('method');
+                var data = form.serialize();
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: data,
+                    success: function(response) {
+                        table.ajax.reload();
+
+                        $('#modal-vehicle-detail').modal('hide');
+
+                        Swal.fire(
+                            'Success!',
+                            response.message,
+                            'success'
+                        );
+
+                    },
+                    error: function(response) {
+                        Swal.fire(
+                            'Error!',
+                            "Something went wrong!",
+                            'error'
+                        );
+                    }
+                });
+            });
+
 
         });
+
+        //After 3 seconds, remove one class from element whose class is select-checkbox
+        setTimeout(function () {
+            $('.select-checkbox').removeClass('sorting_asc');
+        }, 1000);
+
+        /**
+         * Vehicle Detail Form
+         */
+
+        $('#vehicles-table tbody').on('click', 'tr', function () {
+
+            $('#vehicle-detail-div').html('<div class="text-center">Please wait... Data is loading<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+
+            var vehicleId = '/vehicles/' + $(this).attr('id');
+            $.get( vehicleId + '/html', function(response) {
+                $('#vehicle-detail-div').html(response.html);
+            });
+
+            //Adding action attr to form
+            $('#vehicle-detail-form').attr('action', vehicleId );
+        });
+
+
+
+
     </script>
 @endsection
 
@@ -341,6 +416,9 @@
             </div>
         </div>
     </div>
+
+    @include('pages.vehicle.modal.modal-detail')
+
 @endsection
 
 

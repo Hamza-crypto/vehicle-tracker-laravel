@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\UserMeta;
 use App\Models\Vehicle;
+use App\Models\VehicleMetas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -75,6 +74,7 @@ class DatatableController extends Controller
             $vehicle->DT_RowId = $vehicle->id;
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
             $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
+            $edit = '';
             $alertTitle = __("Are you sure you want to delete vehicle with VIN ") . ' ' . $vehicle->vin;
             $delete = '
                     <form method="post" action="' . route('vehicles.destroy', $vehicle->id) . '" style="display: inline"
@@ -85,6 +85,7 @@ class DatatableController extends Controller
                     </form>
                     ';
 
+            $vehicle->description = sprintf("<a data-toggle='modal' data-target='#modal-vehicle-detail' data-id='%s'>%s</a>", $vehicle->id, $vehicle->description);
 
             $vehicle->purchase_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->purchase_lot, $vehicle->purchase_lot);
             $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
@@ -125,6 +126,68 @@ class DatatableController extends Controller
         return response()->json($data);
 
 
+    }
+
+    public function generateHtml(Vehicle $vehicle)
+    {
+        $vehicle_metas = VehicleMetas::where('vehicle_id', $vehicle->id)->get()->mapWithKeys(function ($item) {
+            return [$item['meta_key'] => $item['meta_value']];
+        });
+
+        $meta_keys = [
+            'claim_number',
+            'status',
+            'primary_damage',
+            'keys',
+            'drivability_rating',
+            'odometer',
+            'odometer_brand',
+            'days_in_yard',
+            'secondary_damage',
+            'sale_title_state',
+            'sale_title_type'
+        ];
+
+        $html = '';
+        $vehicleArray = $vehicle->toArray();
+
+        foreach ($vehicleArray as $key => $value) {
+            if ($key == 'updated_at') {
+                continue;
+            }
+            $html .= '<tr>';
+            $html .= '<td>' . strtoupper($key) . '</td>';
+            $html .= '<td>';
+            $html .= '<input type="text" class="form-control';
+            if (in_array($key, ['left_location', 'date_paid'])) {
+                $html .= ' daterange';
+            }
+            $html .= '"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . $value . '"';
+            $html .= ' placeholder="' . $value . '"';
+            if (in_array($key, ['id', 'created_at'])) {
+                $html .= ' readonly';
+            }
+            $html .= '>';
+            $html .= '</td>';
+            $html .= '</tr>';
+        }
+
+        foreach ($meta_keys as $key) {
+            $html .= '<tr>';
+            $html .= '<td>' . strtoupper($key) . '</td>';
+            $html .= '<td>';
+            $html .= '<input type="text" class="form-control"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . ($vehicle_metas[$key] ?? '') . '"';
+            $html .= ' placeholder="' . ($vehicle_metas[$key] ?? '') . '"';
+            $html .= '>';
+            $html .= '</td>';
+            $html .= '</tr>';
+        }
+
+        return response()->json(['html' => $html]);
     }
 
 

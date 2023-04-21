@@ -70,6 +70,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::get('api/v1/vehicles', [DatatableController::class, 'vehicles'])->name('vehicles.ajax');
+    //Render modal for vehicle details
+    Route::get('vehicles/{vehicle}/html', [DatatableController::class, 'generateHtml'])->name('vehicle.detail.html');
 
     Route::impersonate();
 

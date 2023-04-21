@@ -470,8 +470,7 @@ class VehicleController extends Controller
                 ]);
         }
 
-        Session::flash('success', "Vehicle updated successfully");
-        return back();
+        return response()->json(['message' => 'Vehicle updated successfully']);
     }
 
     public function destroy(Vehicle $vehicle)
