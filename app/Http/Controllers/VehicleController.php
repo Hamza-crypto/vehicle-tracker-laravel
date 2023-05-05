@@ -28,8 +28,9 @@ class VehicleController extends Controller
             ->where('meta_key', 'status')
             ->where('meta_value', '!=', 'Sold') //excluding sold status
             ->groupBy('meta_value')
+            ->orderBy('meta_value')
             ->get()
-            ->toArray();
+            ->pluck('meta_value');
 
         return view('pages.vehicle.index', compact('models', 'makes', 'statuses'));
     }
@@ -431,6 +432,9 @@ class VehicleController extends Controller
             'sale_title_state',
             'sale_title_type'
         ];
+
+
+        $locations = Vehicle::select('location')->distinct()->orderBy('location', 'asc')->get()->pluck('location');
 
         return view('pages.vehicle.detail', get_defined_vars());
     }

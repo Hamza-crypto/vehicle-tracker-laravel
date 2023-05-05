@@ -173,6 +173,46 @@ class DatatableController extends Controller
         $values = array_values($vehicleArray);
         $count = count($keys);
 
+        $locations = Vehicle::select('location')->distinct()->orderBy('location', 'asc')->get()->pluck('location');
+        $statuses = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'status')
+            ->where('meta_value', '!=', 'Sold') //excluding sold status
+            ->groupBy('meta_value')
+            ->orderBy('meta_value')
+            ->get()
+            ->pluck('meta_value');
+
+        $odometer = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'odometer')
+            ->groupBy('meta_value')
+            ->orderByRaw('CAST(meta_value AS DECIMAL(10,2))')
+            ->get()
+            ->pluck('meta_value');
+
+        $primary_damage = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'primary_damage')
+            ->groupBy('meta_value')
+            ->orderBy('meta_value')
+            ->get()
+            ->pluck('meta_value');
+
+        $secondary_damage = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'secondary_damage')
+            ->whereNotNull('meta_value')
+            ->groupBy('meta_value')
+            ->orderBy('meta_value')
+            ->get()
+            ->pluck('meta_value');
+
+        $extra_data = [
+            'location' => $locations,
+            'status' => $statuses,
+            'odometer' => $odometer,
+            'primary_damage' => $primary_damage,
+            'secondary_damage' => $secondary_damage,
+        ];
+
+
         for ($i = 0; $i < $count; $i += 2) {
             $first_key = $i;
             $second_key = $i + 1 >= $count ? $i : $i + 1;
@@ -181,11 +221,11 @@ class DatatableController extends Controller
             $html .= '<div class="row">'; //row started
 
             $html .= '<div class="col-6">';
-            $html = $this->getHtmlTwo_TD($keys[$first_key], $html, $values[$first_key]);
+            $html = $this->getHtmlTwo_TD($keys[$first_key], $html, $values[$first_key], $extra_data);
             $html .= '</div>'; //col-6 close
 
             $html .= '<div class="col-6">';
-            $html = $this->getHtmlTwo_TD($keys[$second_key], $html, $values[$second_key]);
+            $html = $this->getHtmlTwo_TD($keys[$second_key], $html, $values[$second_key], $extra_data);
             $html .= '</div>'; //col-6 close
 
             $html .= '</div>'; //row close
@@ -205,11 +245,11 @@ class DatatableController extends Controller
             $html .= '<div class="row r1">'; //row started
 
             $html .= '<div class="col-6 col1">';
-            $html = $this->getMetaHtmlTwo_TD($first_subset[$first_key], $html, $vehicle_metas[$first_subset[$first_key]]);
+            $html = $this->getMetaHtmlTwo_TD($first_subset[$first_key], $html, $vehicle_metas[$first_subset[$first_key]], $extra_data);
             $html .= '</div>'; //col-6 close
 
             $html .= '<div class="col-6 col2">';
-            $html = $this->getMetaHtmlTwo_TD($first_subset[$second_key], $html, $vehicle_metas[$first_subset[$second_key]]);
+            $html = $this->getMetaHtmlTwo_TD($first_subset[$second_key], $html, $vehicle_metas[$first_subset[$second_key]], $extra_data);
             $html .= '</div>'; //col-6 close
 
             $html .= '</div>'; //row close
@@ -325,34 +365,79 @@ class DatatableController extends Controller
         return response()->json(['html' => $html]);
     }
 
-    public function getHtmlTwo_TD($string, string $html, $values): string
+    public function getHtmlTwo_TD($string, string $html, $values, $extra_data = []): string
     {
         $html .= '<td>' . strtoupper($string) . '</td>';
         $html .= '<td>';
-        $html .= '<input type="text" class="form-control"';
-        $html .= ' name="' . $string . '"';
-        $html .= ' value="' . $values . '"';
-        $html .= ' placeholder="' . $values . '"';
-        $html .= ' style="width:auto"';
-        $html .= '>';
+
+        $dropdowns = ['location'];
+
+        if (in_array($string, $dropdowns)) {
+            $html .= '<select class="form-control select2"';
+            $html .= ' name="' . $string . '"';
+            $html .= ' value="' . $values . '"';
+            $html .= '>';
+            foreach ($extra_data[$string] as $location) {
+                $html .= '<option value="' . $location . '"';
+                if ($location == $values) $html .= ' selected';
+                $html .= '>';
+                $html .= $location . '</option>';
+            }
+
+            $html .= '</select>';
+
+
+        } else {
+            $html .= '<input type="text" class="form-control"';
+            $html .= ' name="' . $string . '"';
+            $html .= ' value="' . $values . '"';
+            $html .= ' placeholder="' . $values . '"';
+            $html .= ' style="width:auto"';
+            $html .= '>';
+        }
+
         $html .= '</td>';
         return $html;
     }
 
-    public function getMetaHtmlTwo_TD($key, string $html, $vehicle_metas): string
+    public function getMetaHtmlTwo_TD($key, string $html, $vehicle_metas, $extra_data = []): string
     {
         $html .= '<td>' . strtoupper($key) . '</td>';
         $html .= '<td>';
-        $html .= '<input type="text" class="form-control"';
-        $html .= ' name="' . $key . '"';
-        $html .= ' value="' . ($vehicle_metas ?? '') . '"';
-        $html .= ' placeholder="' . ($vehicle_metas ?? '') . '"';
-        $html .= '>';
+
+        $dropdowns = [ 'status', 'odometer', 'primary_damage'];
+
+        if (in_array($key, $dropdowns)) {
+
+            $html .= '<select class="form-control select2"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . $vehicle_metas . '"';
+            $html .= '>';
+
+            foreach ($extra_data[$key] as $location) {
+                $html .= '<option value="' . $location . '"';
+                if ($location == $vehicle_metas) $html .= ' selected';
+                $html .= '>';
+                $html .= $location . '</option>';
+            }
+
+            $html .= '</select>';
+
+
+        }
+        else{
+            $html .= '<input type="text" class="form-control"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . ($vehicle_metas ?? '') . '"';
+            $html .= ' placeholder="' . ($vehicle_metas ?? '') . '"';
+            $html .= '>';
+        }
+
         $html .= '</td>';
         return $html;
     }
 
-    function isMobileDev()
+    function isMobileDev(): bool
     {
         if (!empty($_SERVER['HTTP_USER_AGENT'])) {
             $user_ag = $_SERVER['HTTP_USER_AGENT'];
@@ -362,6 +447,4 @@ class DatatableController extends Controller
         };
         return false;
     }
-
-
 }

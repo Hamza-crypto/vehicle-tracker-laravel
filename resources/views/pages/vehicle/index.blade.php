@@ -289,6 +289,16 @@
             var vehicleId = '/vehicles/' + $(this).attr('id');
             $.get( vehicleId + '/html', function(response) {
                 $('#vehicle-detail-div').html(response.html);
+
+                //We are overriding select2 library
+                    $('.select2').select2({
+                        placeholder: "Select Location",
+                        tags: true,
+                        insertTag: function (data, tag) {
+                            data.push(tag);
+                        }
+                });
+
             });
 
             //Adding action attr to form
@@ -364,7 +374,7 @@
                                         <option value="-100"> Select Status </option>
                                         @foreach($statuses as $status)
                                             <option
-                                                value="{{ $status['meta_value']  }}" {{ request()->status == $status['meta_value'] ? 'selected' : '' }}>{{ $status['meta_value'] }}</option>
+                                                value="{{ $status  }}" {{ request()->status == $status ? 'selected' : '' }}>{{ $status }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -433,8 +443,8 @@
         </div>
     </div>
 
-    @include('pages.vehicle.modal.modal-detail')
 
+    @include('pages.vehicle.modal.modal-detail')
 @endsection
 
 
