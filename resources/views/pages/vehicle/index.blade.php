@@ -5,6 +5,14 @@
     $role = Auth()->user()->role;
     $query = str_replace(url()->current(), '',url()->full());
 @endphp
+
+@section('styles')
+    <style>
+        .modal-body {
+            padding: 0rem !important;
+        }
+        </style>
+@endsection
 @section('scripts')
     <script>
 
@@ -244,12 +252,20 @@
                         );
 
                     },
-                    error: function(response) {
+                    error: function(error) {
+
+                        const errors = error.responseJSON.errors;
+                        var errorString = '';
+                        $.each(errors, function(key, value) {
+                            errorString += '<li>' + value + '</li>';
+                        });
+
                         Swal.fire(
                             'Error!',
-                            "Something went wrong!",
+                            errorString,
                             'error'
                         );
+
                     }
                 });
             });

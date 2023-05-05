@@ -438,6 +438,12 @@ class VehicleController extends Controller
 
     public function update(Request $request, Vehicle $vehicle)
     {
+        $request->validate([
+            'vin' => 'required',
+            'location' => 'required',
+            'description' => 'required'
+        ]);
+
         $vehicle->vin = $request->vin;
         $vehicle->purchase_lot = $request->purchase_lot;
         $vehicle->auction_lot = $request->auction_lot;

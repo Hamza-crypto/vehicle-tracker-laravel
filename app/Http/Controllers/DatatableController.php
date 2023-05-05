@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DatatableController extends Controller
 {
-
     public function vehicles(Request $request)
     {
 
@@ -74,7 +73,7 @@ class DatatableController extends Controller
             $vehicle->DT_RowId = $vehicle->id;
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
             $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
-            $edit = '';
+            //$edit = '';
             $alertTitle = __("Are you sure you want to delete vehicle with VIN ") . ' ' . $vehicle->vin;
             $delete = '
                     <form method="post" action="' . route('vehicles.destroy', $vehicle->id) . '" style="display: inline"
@@ -90,10 +89,10 @@ class DatatableController extends Controller
             $vehicle->purchase_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->purchase_lot, $vehicle->purchase_lot);
             $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
 
-            $vehicle->invoice_amount = $vehicle->invoice_amount != null  ? "$" . $vehicle->invoice_amount : '';
+            $vehicle->invoice_amount = $vehicle->invoice_amount != null ? "$" . $vehicle->invoice_amount : '';
             $vehicle->date_paid = sprintf("<span> %s</span>", $vehicle->date_paid);
             $vehicle->actions .= $edit . $delete;
-            if($user_role == 'yard_manager') $vehicle->actions = $edit;
+            if ($user_role == 'yard_manager') $vehicle->actions = $edit;
 
             //Get meta data
             $vehicle_metas = collect($vehicle->metas);
@@ -128,6 +127,15 @@ class DatatableController extends Controller
 
     }
 
+    public function getVehicleDetails(Vehicle $vehicle)
+    {
+        if ($this->isMobileDev()) {
+            return $this->generateHtmlForMobile($vehicle);
+        } else {
+            return $this->generateHtml($vehicle);
+        }
+    }
+
     public function generateHtml(Vehicle $vehicle)
     {
         $vehicle_metas = VehicleMetas::where('vehicle_id', $vehicle->id)->get()->mapWithKeys(function ($item) {
@@ -148,7 +156,128 @@ class DatatableController extends Controller
             'sale_title_type'
         ];
 
-        $html = '';
+        $html = '            <div class="modal-body m-3">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th style="width:40%;">Key</th>
+                                                <th style="width:25%">Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>';
+        $vehicleArray = $vehicle->toArray();
+
+        $keys = array_keys($vehicleArray);
+        $values = array_values($vehicleArray);
+        $count = count($keys);
+
+        for ($i = 0; $i < $count; $i += 2) {
+            $first_key = $i;
+            $second_key = $i + 1 >= $count ? $i : $i + 1;
+            $html .= '<tr>';
+
+            $html .= '<div class="row">'; //row started
+
+            $html .= '<div class="col-6">';
+            $html = $this->getHtmlTwo_TD($keys[$first_key], $html, $values[$first_key]);
+            $html .= '</div>'; //col-6 close
+
+            $html .= '<div class="col-6">';
+            $html = $this->getHtmlTwo_TD($keys[$second_key], $html, $values[$second_key]);
+            $html .= '</div>'; //col-6 close
+
+            $html .= '</div>'; //row close
+
+            $html .= '</tr>';
+        }
+
+        $first_subset = array_slice($meta_keys, 0, 6);
+        $second_subset = array_slice($meta_keys, 6,);
+
+        $count = count($first_subset);
+        for ($i = 0; $i < 6; $i += 2) {
+            $first_key = $i;
+            $second_key = $i + 1 >= $count ? $i : $i + 1;
+
+            $html .= '<tr>';
+            $html .= '<div class="row r1">'; //row started
+
+            $html .= '<div class="col-6 col1">';
+            $html = $this->getMetaHtmlTwo_TD($first_subset[$first_key], $html, $vehicle_metas[$first_subset[$first_key]]);
+            $html .= '</div>'; //col-6 close
+
+            $html .= '<div class="col-6 col2">';
+            $html = $this->getMetaHtmlTwo_TD($first_subset[$second_key], $html, $vehicle_metas[$first_subset[$second_key]]);
+            $html .= '</div>'; //col-6 close
+
+            $html .= '</div>'; //row close
+
+            $html .= '</tr>';
+        }
+
+        $count = count($second_subset);
+        for ($i = 0; $i < 5; $i += 2) {
+            $first_key = $i;
+            $second_key = $i + 1 >= $count ? $i : $i + 1;
+
+            $html .= '<tr>';
+            $html .= '<div class="row">'; //row started
+
+            $html .= '<div class="col-6">';
+            $html = $this->getMetaHtmlTwo_TD($second_subset[$first_key], $html, $vehicle_metas[$second_subset[$first_key]] ?? '');
+            $html .= '</div>'; //col-6 close
+
+            $html .= '<div class="col-6">';
+            $html = $this->getMetaHtmlTwo_TD($second_subset[$second_key], $html, $vehicle_metas[$second_subset[$second_key]] ?? '');
+            $html .= '</div>'; //col-6 close
+
+            $html .= '</div>'; //row close
+
+            $html .= '</tr>';
+        }
+
+        $html .= ' </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>';
+
+        return response()->json(['html' => $html]);
+    }
+
+    public function generateHtmlForMobile(Vehicle $vehicle)
+    {
+        $vehicle_metas = VehicleMetas::where('vehicle_id', $vehicle->id)->get()->mapWithKeys(function ($item) {
+            return [$item['meta_key'] => $item['meta_value']];
+        });
+
+        $meta_keys = [
+            'claim_number',
+            'status',
+            'primary_damage',
+            'keys',
+            'drivability_rating',
+            'odometer',
+            'odometer_brand',
+            'days_in_yard',
+            'secondary_damage',
+            'sale_title_state',
+            'sale_title_type'
+        ];
+
+        $html = '            <div class="modal-body m-3">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th style="width:40%;">Key</th>
+                                                <th style="width:25%">Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>';
         $vehicleArray = $vehicle->toArray();
 
         foreach ($vehicleArray as $key => $value) {
@@ -156,8 +285,8 @@ class DatatableController extends Controller
                 continue;
             }
             $html .= '<tr>';
-            $html .= '<td>' . strtoupper($key) . '</td>';
-            $html .= '<td>';
+            $html .= '<td style="padding: 0rem !important;">' . strtoupper($key) . '</td>';
+            $html .= '<td style="padding: 0rem !important;">';
             $html .= '<input type="text" class="form-control';
             if (in_array($key, ['left_location', 'date_paid'])) {
                 $html .= ' daterange';
@@ -176,8 +305,8 @@ class DatatableController extends Controller
 
         foreach ($meta_keys as $key) {
             $html .= '<tr>';
-            $html .= '<td>' . strtoupper($key) . '</td>';
-            $html .= '<td>';
+            $html .= '<td style="padding: 0rem !important;">' . strtoupper($key) . '</td>';
+            $html .= '<td style="padding: 0rem !important;">';
             $html .= '<input type="text" class="form-control"';
             $html .= ' name="' . $key . '"';
             $html .= ' value="' . ($vehicle_metas[$key] ?? '') . '"';
@@ -187,7 +316,51 @@ class DatatableController extends Controller
             $html .= '</tr>';
         }
 
+        $html .= ' </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>';
+
         return response()->json(['html' => $html]);
+    }
+
+    public function getHtmlTwo_TD($string, string $html, $values): string
+    {
+        $html .= '<td>' . strtoupper($string) . '</td>';
+        $html .= '<td>';
+        $html .= '<input type="text" class="form-control"';
+        $html .= ' name="' . $string . '"';
+        $html .= ' value="' . $values . '"';
+        $html .= ' placeholder="' . $values . '"';
+        $html .= ' style="width:auto"';
+        $html .= '>';
+        $html .= '</td>';
+        return $html;
+    }
+
+    public function getMetaHtmlTwo_TD($key, string $html, $vehicle_metas): string
+    {
+        $html .= '<td>' . strtoupper($key) . '</td>';
+        $html .= '<td>';
+        $html .= '<input type="text" class="form-control"';
+        $html .= ' name="' . $key . '"';
+        $html .= ' value="' . ($vehicle_metas ?? '') . '"';
+        $html .= ' placeholder="' . ($vehicle_metas ?? '') . '"';
+        $html .= '>';
+        $html .= '</td>';
+        return $html;
+    }
+
+    function isMobileDev()
+    {
+        if (!empty($_SERVER['HTTP_USER_AGENT'])) {
+            $user_ag = $_SERVER['HTTP_USER_AGENT'];
+            if (preg_match('/(Mobile|Android|Tablet|GoBrowser|[0-9]x[0-9]*|uZardWeb\/|Mini|Doris\/|Skyfire\/|iPhone|Fennec\/|Maemo|Iris\/|CLDC\-|Mobi\/)/uis', $user_ag)) {
+                return true;
+            };
+        };
+        return false;
     }
 
 
