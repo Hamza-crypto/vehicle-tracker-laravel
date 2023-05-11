@@ -18,6 +18,13 @@
 
         $(document).ready(function () {
 
+
+
+
+
+
+
+
             // $("input[id=\"daterange\"]").daterangepicker({
             //
             //     autoUpdateInput: false,
@@ -29,7 +36,87 @@
 
 
 
-            var table = $('#vehicles-table').DataTable({
+
+
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('create') && urlParams.get('create') === 'new') {
+
+
+$.get( '/next_vehicle_id', function(response) {
+
+    var vehicle_id = response;
+    url = '/vehicles/' + vehicle_id;
+    console.log(url);
+    $.get( url + '/html', function(response) {
+    //replace ID with "Vehicle ID",keys with "Has Keys"
+
+    //create array which contains keys and values, all the keys will be replaced by their respective values in the response html
+    var replaceKeys = {
+        'ID': 'Vehicle ID',
+        'CREATED_AT': 'Date Entered',
+        'DESCRIPTION': 'Year-Make-Model',
+        'VIN': 'VIN Number',
+        'PURCHASE_LOT': 'Purchase Lot Number',
+        'DATE_PAID': 'Purchase Date',
+        'INVOICE_AMOUNT': 'Purchase Amount($)',
+        'LEFT_LOCATION': 'Left Location',
+        'AUCTION_LOT': 'Auction Lot Number',
+        'LOCATION': 'Current Location',
+        'CLAIM_NUMBER': 'Claim Number',
+        'STATUS': 'Current Status',
+        'ODOMETER': 'Mileage',
+        'ODOMETER_BRAND': 'Odometer',
+        'PRIMARY_DAMAGE': 'PRIMARY DAMAGE',
+        'SECONDARY_DAMAGE': 'SECONDARY DAMAGE',
+        'KEYS': 'Has Keys',
+        'DRIVABILITY_RATING': 'Engine',
+        'DAYS_IN_YARD': 'Days In Yard',
+        'SALE_TITLE_STATE': 'Sale Title State',
+        'SALE_TITLE_TYPE': 'Sale Title Type',
+    };
+    var new_response = response.html;
+
+    //iterate over the replaceKeys array and replace the keys with their respective values in the response html
+    $.each(replaceKeys, function(key, value) {
+        new_response = new_response.replace(key, value);
+    });
+
+    var requiredFields = ['vin', 'description', 'location'];
+    $.each(requiredFields, function(key, value) {
+        new_response = new_response.replace('name="' + value + '"', 'name="' + value + '" required');
+    });
+
+    //Apply pattern to vin field
+    new_response = new_response.replace('name="vin"', 'name="vin" pattern="[A-Za-z0-9]+" title="Only alphanumeric characters are allowed"');
+
+    $('#vehicle-detail-div2').html(new_response);
+
+           //We are overriding select2 library
+           $('.select2').select2({
+                        placeholder: "Select Location",
+                        tags: true,
+                        insertTag: function (data, tag) {
+                            data.push(tag);
+                        }
+                });
+
+
+});
+
+//Adding action attr to form
+$('#vehicle-detail-form2').attr('action', url );
+});
+
+
+
+
+$('#modal-vehicle-create').modal('show');
+
+
+}
+else{
+    var table = $('#vehicles-table').DataTable({
                 "dom": 'lrtBip',
                 "responsive": true,
                 "ordering": true,
@@ -59,6 +146,7 @@
                         var queryString = 'search=' + data.search.value + '&status=' + data.status;
                         var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + queryString;
                         window.history.pushState({path: newurl}, '', newurl);
+
 
                     },
                     dataSrc: function (data) {
@@ -178,6 +266,9 @@
             });
 
             $.fn.DataTable.ext.pager.numbers_length = 4;
+}
+
+
 
             // Attach click event to each row
             // $('#vehicles-table tbody').on('click', 'tr', function() {
@@ -230,7 +321,7 @@
             });
 
             //Submit form
-            $('#vehicle-detail-form').on('submit', function(e) {
+            $('.vehicle-detail-form').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);
                 var url = form.attr('action');
@@ -241,15 +332,16 @@
                     type: method,
                     data: data,
                     success: function(response) {
-                        table.ajax.reload();
 
-                        $('#modal-vehicle-detail').modal('hide');
+                        $('#modal-vehicle-create').modal('hide');
 
                         Swal.fire(
                             'Success!',
                             response.message,
                             'success'
                         );
+
+                        window.location.href = '/vehicles';
 
                     },
                     error: function(error) {
@@ -271,11 +363,14 @@
             });
 
 
+
         });
 
         //After 3 seconds, remove one class from element whose class is select-checkbox
         setTimeout(function () {
             $('.select-checkbox').removeClass('sorting_asc');
+
+
         }, 1000);
 
         /**
@@ -288,7 +383,48 @@
 
             var vehicleId = '/vehicles/' + $(this).attr('id');
             $.get( vehicleId + '/html', function(response) {
-                $('#vehicle-detail-div').html(response.html);
+                //replace ID with "Vehicle ID",keys with "Has Keys"
+
+                //create array which contains keys and values, all the keys will be replaced by their respective values in the response html
+                var replaceKeys = {
+                    'ID': 'Vehicle ID',
+                    'CREATED_AT': 'Date Entered',
+                    'DESCRIPTION': 'Year-Make-Model',
+                    'VIN': 'VIN Number',
+                    'PURCHASE_LOT': 'Purchase Lot Number',
+                    'DATE_PAID': 'Purchase Date',
+                    'INVOICE_AMOUNT': 'Purchase Amount($)',
+                    'LEFT_LOCATION': 'Left Location',
+                    'AUCTION_LOT': 'Auction Lot Number',
+                    'LOCATION': 'Current Location',
+                    'CLAIM_NUMBER': 'Claim Number',
+                    'STATUS': 'Current Status',
+                    'ODOMETER': 'Mileage',
+                    'ODOMETER_BRAND': 'Odometer',
+                    'PRIMARY_DAMAGE': 'PRIMARY DAMAGE',
+                    'SECONDARY_DAMAGE': 'SECONDARY DAMAGE',
+                    'KEYS': 'Has Keys',
+                    'DRIVABILITY_RATING': 'Engine',
+                    'DAYS_IN_YARD': 'Days In Yard',
+                    'SALE_TITLE_STATE': 'Sale Title State',
+                    'SALE_TITLE_TYPE': 'Sale Title Type',
+                };
+                var new_response = response.html;
+
+                //iterate over the replaceKeys array and replace the keys with their respective values in the response html
+                $.each(replaceKeys, function(key, value) {
+                    new_response = new_response.replace(key, value);
+                });
+
+                var requiredFields = ['vin', 'description', 'location'];
+                $.each(requiredFields, function(key, value) {
+                    new_response = new_response.replace('name="' + value + '"', 'name="' + value + '" required');
+                });
+
+                //Apply pattern to vin field
+                new_response = new_response.replace('name="vin"', 'name="vin" pattern="[A-Za-z0-9]+" title="Only alphanumeric characters are allowed"');
+
+                $('#vehicle-detail-div').html(new_response);
 
                 //We are overriding select2 library
                     $('.select2').select2({
@@ -304,6 +440,10 @@
             //Adding action attr to form
             $('#vehicle-detail-form').attr('action', vehicleId );
         });
+
+
+
+
 
 
 
@@ -444,7 +584,7 @@
     </div>
 
 
-    @include('pages.vehicle.modal.modal-detail')
+
 @endsection
 
 

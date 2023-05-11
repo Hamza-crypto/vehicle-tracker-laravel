@@ -32,6 +32,14 @@ class VehicleController extends Controller
             ->get()
             ->pluck('meta_value');
 
+        $drivability_rating = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'drivability_rating')
+            ->whereNotNull('meta_value')
+            ->groupBy('meta_value')
+            ->orderBy('meta_value')
+            ->get()
+            ->pluck('meta_value');
+//dd($drivability_rating);
         return view('pages.vehicle.index', compact('models', 'makes', 'statuses'));
     }
 
@@ -473,6 +481,9 @@ class VehicleController extends Controller
         ];
 
         foreach ($meta_keys as $key) {
+
+            if(empty($request->$key) || $request->$key == '-100') continue;
+
             VehicleMetas::updateOrCreate(
                 ['vehicle_id' => $vehicle->id, 'meta_key' => $key],
                 [
@@ -485,10 +496,7 @@ class VehicleController extends Controller
 
     public function destroy(Vehicle $vehicle)
     {
-        foreach ($vehicle->metas as $meta) {
-
-            $meta->delete();
-        }
+        $vehicle->metas()->delete();
 
         $vehicle->delete();
         Session::flash('success', __('Successfully Deleted'));
@@ -498,9 +506,14 @@ class VehicleController extends Controller
     public function delete_multiple_vehicles(Request $request)
     {
         $ids = $request->input('ids');
-        $deleted = Vehicle::whereIn('id', $ids)->delete();
+        $vehicles = Vehicle::whereIn('id', $ids)->get();
 
-        return response()->json(['message' => $deleted . ' vehicles have been deleted.']);
+        foreach ($vehicles as $vehicle) {
+            $vehicle->metas()->delete();
+            $vehicle->delete();
+        }
+
+        return response()->json(['message' => count($vehicles) . ' vehicles have been deleted.']);
     }
 
     public function get_makes()
@@ -546,6 +559,7 @@ class VehicleController extends Controller
 
     public function insert_in_db($request, $vehicle = null)
     {
+
         if (!$vehicle) {
             $vehicle = new Vehicle();
         }

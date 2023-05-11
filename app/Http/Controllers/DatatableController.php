@@ -129,11 +129,11 @@ class DatatableController extends Controller
 
     public function getVehicleDetails(Vehicle $vehicle)
     {
-        if ($this->isMobileDev()) {
-            return $this->generateHtmlForMobile($vehicle);
-        } else {
-            return $this->generateHtml($vehicle);
-        }
+            if ($this->isMobileDev()) {
+                return $this->generateHtmlForMobile($vehicle);
+            } else {
+                return $this->generateHtml($vehicle);
+            }
     }
 
     public function generateHtml(Vehicle $vehicle)
@@ -156,6 +156,14 @@ class DatatableController extends Controller
             'sale_title_type'
         ];
 
+        //if any of the meta keys is missing, add it to the array with empty value
+        foreach ($meta_keys as $meta_key) {
+            if (!$vehicle_metas->has($meta_key)) {
+                $vehicle_metas->put($meta_key, '');
+            }
+        }
+
+
         $html = '            <div class="modal-body m-3">
                                 <div class="row">
                                     <div class="col-12">
@@ -169,14 +177,14 @@ class DatatableController extends Controller
                                             <tbody>';
         $vehicleArray = $vehicle->toArray();
 
-        $keys = array_keys($vehicleArray);
+        $array_keys = array_keys($vehicleArray);
         $values = array_values($vehicleArray);
-        $count = count($keys);
+        $count = count($array_keys);
 
         $locations = Vehicle::select('location')->distinct()->orderBy('location', 'asc')->get()->pluck('location');
         $statuses = VehicleMetas::select('meta_value')
             ->where('meta_key', 'status')
-            ->where('meta_value', '!=', 'Sold') //excluding sold status
+           // ->where('meta_value', '!=', 'Sold') //excluding sold status
             ->groupBy('meta_value')
             ->orderBy('meta_value')
             ->get()
@@ -204,12 +212,30 @@ class DatatableController extends Controller
             ->get()
             ->pluck('meta_value');
 
+        $keys = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'keys')
+            ->whereNotNull('meta_value')
+            ->groupBy('meta_value')
+            ->orderBy('meta_value')
+            ->get()
+            ->pluck('meta_value');
+
+        $drivability_rating = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'drivability_rating')
+            ->whereNotNull('meta_value')
+            ->groupBy('meta_value')
+            ->orderBy('meta_value')
+            ->get()
+            ->pluck('meta_value');
+
+
         $extra_data = [
             'location' => $locations,
             'status' => $statuses,
             'odometer' => $odometer,
             'primary_damage' => $primary_damage,
-            'secondary_damage' => $secondary_damage,
+            'keys' => $keys,
+            'drivability_rating' => $drivability_rating,
         ];
 
 
@@ -221,11 +247,11 @@ class DatatableController extends Controller
             $html .= '<div class="row">'; //row started
 
             $html .= '<div class="col-6">';
-            $html = $this->getHtmlTwo_TD($keys[$first_key], $html, $values[$first_key], $extra_data);
+            $html = $this->getHtmlTwo_TD($array_keys[$first_key], $html, $values[$first_key], $extra_data);
             $html .= '</div>'; //col-6 close
 
             $html .= '<div class="col-6">';
-            $html = $this->getHtmlTwo_TD($keys[$second_key], $html, $values[$second_key], $extra_data);
+            $html = $this->getHtmlTwo_TD($array_keys[$second_key], $html, $values[$second_key], $extra_data);
             $html .= '</div>'; //col-6 close
 
             $html .= '</div>'; //row close
@@ -237,7 +263,8 @@ class DatatableController extends Controller
         $second_subset = array_slice($meta_keys, 6,);
 
         $count = count($first_subset);
-        for ($i = 0; $i < 6; $i += 2) {
+
+        for ($i = 0; $i < $count; $i += 2) {
             $first_key = $i;
             $second_key = $i + 1 >= $count ? $i : $i + 1;
 
@@ -258,7 +285,8 @@ class DatatableController extends Controller
         }
 
         $count = count($second_subset);
-        for ($i = 0; $i < 5; $i += 2) {
+
+        for ($i = 0; $i < $count; $i += 2) {
             $first_key = $i;
             $second_key = $i + 1 >= $count ? $i : $i + 1;
 
@@ -268,6 +296,8 @@ class DatatableController extends Controller
             $html .= '<div class="col-6">';
             $html = $this->getMetaHtmlTwo_TD($second_subset[$first_key], $html, $vehicle_metas[$second_subset[$first_key]] ?? '');
             $html .= '</div>'; //col-6 close
+
+            //if($i == 4) break; it will remove 2nd column of last row e.g. duplicated column
 
             $html .= '<div class="col-6">';
             $html = $this->getMetaHtmlTwo_TD($second_subset[$second_key], $html, $vehicle_metas[$second_subset[$second_key]] ?? '');
@@ -377,7 +407,9 @@ class DatatableController extends Controller
             $html .= ' name="' . $string . '"';
             $html .= ' value="' . $values . '"';
             $html .= '>';
+
             foreach ($extra_data[$string] as $location) {
+
                 $html .= '<option value="' . $location . '"';
                 if ($location == $values) $html .= ' selected';
                 $html .= '>';
@@ -405,7 +437,7 @@ class DatatableController extends Controller
         $html .= '<td>' . strtoupper($key) . '</td>';
         $html .= '<td>';
 
-        $dropdowns = [ 'status', 'odometer', 'primary_damage'];
+        $dropdowns = [ 'status', 'odometer', 'primary_damage','keys',  'drivability_rating'];
 
         if (in_array($key, $dropdowns)) {
 
@@ -413,6 +445,27 @@ class DatatableController extends Controller
             $html .= ' name="' . $key . '"';
             $html .= ' value="' . $vehicle_metas . '"';
             $html .= '>';
+
+            if($key == 'status'){
+                $html .= '<option value="-100">Select Status</option>';
+            }
+            elseif($key == 'odometer'){
+                $html .= '<option value="-100">Select Mileage</option>';
+            }
+            elseif($key == 'primary_damage'){
+                $html .= '<option value="-100">Select Damage</option>';
+            }
+            elseif($key == 'secondary_damage'){
+                $html .= '<option value="-100">Select Damage</option>';
+            }
+            elseif($key == 'drivability_rating'){
+                $html .= '<option value="-100">Select Engine</option>';
+            }
+            elseif($key == 'keys'){
+                $html .= '<option value="-100">Select Key</option>';
+            }
+
+
 
             foreach ($extra_data[$key] as $location) {
                 $html .= '<option value="' . $location . '"';
@@ -446,5 +499,12 @@ class DatatableController extends Controller
             };
         };
         return false;
+    }
+
+    function next_vehicle_id(){
+       $vehicle = new Vehicle();
+       $vehicle->vin = '';
+       $vehicle->save();
+       return $vehicle->id;
     }
 }

@@ -1,3 +1,8 @@
+@php
+    $role = Auth()->user()->role;
+
+@endphp
+
 <footer class="footer">
     <div class="container-fluid">
         <div class="row text-muted">
@@ -25,3 +30,6 @@
         </div>
     </div>
 </footer>
+
+@include('pages.vehicle.modal.modal-detail')
+@include('pages.vehicle.modal.modal-vehicle-create')

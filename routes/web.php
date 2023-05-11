@@ -120,6 +120,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 });
 
+Route::get('next_vehicle_id', [DatatableController::class, 'next_vehicle_id']);
+
 //Elections
 Route::get('elections', [ElectionController::class, 'index']);
 Route::get('update_election', [ElectionController::class, 'update_election']);
