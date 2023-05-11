@@ -39,7 +39,7 @@ class VehicleController extends Controller
             ->orderBy('meta_value')
             ->get()
             ->pluck('meta_value');
-//dd($drivability_rating);
+
         return view('pages.vehicle.index', compact('models', 'makes', 'statuses'));
     }
 
@@ -497,7 +497,6 @@ class VehicleController extends Controller
     public function destroy(Vehicle $vehicle)
     {
         $vehicle->metas()->delete();
-
         $vehicle->delete();
         Session::flash('success', __('Successfully Deleted'));
         return redirect()->back();
@@ -559,7 +558,6 @@ class VehicleController extends Controller
 
     public function insert_in_db($request, $vehicle = null)
     {
-
         if (!$vehicle) {
             $vehicle = new Vehicle();
         }

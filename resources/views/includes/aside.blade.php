@@ -64,7 +64,6 @@
                     </ul>
                 </li>
 
-
                 <li class="sidebar-item {{ request()->is('vehicles/create') ? 'active' : '' }}">
                     <a class="sidebar-link" href="{{ route('vehicles.index', ['create' => 'new']) }}">
                         <i class="align-middle" data-feather="plus-square"></i>

@@ -163,7 +163,6 @@ class DatatableController extends Controller
             }
         }
 
-
         $html = '            <div class="modal-body m-3">
                                 <div class="row">
                                     <div class="col-12">
@@ -409,7 +408,6 @@ class DatatableController extends Controller
             $html .= '>';
 
             foreach ($extra_data[$string] as $location) {
-
                 $html .= '<option value="' . $location . '"';
                 if ($location == $values) $html .= ' selected';
                 $html .= '>';
@@ -464,9 +462,6 @@ class DatatableController extends Controller
             elseif($key == 'keys'){
                 $html .= '<option value="-100">Select Key</option>';
             }
-
-
-
             foreach ($extra_data[$key] as $location) {
                 $html .= '<option value="' . $location . '"';
                 if ($location == $vehicle_metas) $html .= ' selected';

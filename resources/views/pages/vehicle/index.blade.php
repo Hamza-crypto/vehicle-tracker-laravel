@@ -18,13 +18,6 @@
 
         $(document).ready(function () {
 
-
-
-
-
-
-
-
             // $("input[id=\"daterange\"]").daterangepicker({
             //
             //     autoUpdateInput: false,
@@ -33,11 +26,6 @@
             // }).on('cancel.daterangepicker', function (ev, picker) {
             //     $(this).val('');
             // });
-
-
-
-
-
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('create') && urlParams.get('create') === 'new') {

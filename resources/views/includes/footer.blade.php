@@ -1,6 +1,5 @@
 @php
     $role = Auth()->user()->role;
-
 @endphp
 
 <footer class="footer">
