@@ -16,7 +16,7 @@ return [
 
     // config/services.php
     'telegram-bot-api' => [
-        'token' => env('TELEGRAM_BOT_TOKEN')
+        'token' => env('TELEGRAM_BOT_TOKEN'),
     ],
 
     'telegram_id' => env('TELEGRAM_ID'),

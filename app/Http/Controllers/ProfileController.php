@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
@@ -20,18 +18,16 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-
         return view('pages.profile.index', [
             'user' => $user,
             'tab' => $tab,
         ]);
     }
 
-
     public function account(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string'
+            'name' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -43,6 +39,7 @@ class ProfileController extends Controller
         $user->update(['name' => $request->name]);
 
         Session::flash('account', __('Account information successfully updated.'));
+
         return back();
     }
 
@@ -57,6 +54,7 @@ class ProfileController extends Controller
             ['meta_value' => $request->api_secret]);
 
         Session::flash('account', 'API Key updated successfully.');
+
         return redirect()->back();
     }
 
@@ -73,8 +71,8 @@ class ProfileController extends Controller
             ['meta_key' => 'availability'],
             ['meta_value' => $status]);
 
-
         Session::flash('account', 'Status updated successfully.');
+
         return redirect()->back();
     }
 }

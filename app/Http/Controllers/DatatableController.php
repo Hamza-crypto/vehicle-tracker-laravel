@@ -25,22 +25,21 @@ class DatatableController extends Controller
         //Put the columns in an array for which you want to apply the sorting,
         // index should be in accordance with the column index in the table
         $dbColumns = [
-            0 => "id",
-            3 => "left_location",
-            5 => "date_paid",
-            6 => "purchase_lot",
-            7 => "auction_lot",
+            0 => 'id',
+            3 => 'left_location',
+            5 => 'date_paid',
+            6 => 'purchase_lot',
+            7 => 'auction_lot',
 
             // sorting by meta value
-            8 => "days_in_yard",
-            9 => "claim_number"
+            8 => 'days_in_yard',
+            9 => 'claim_number',
         ];
 
         $orderColumnIndex = $request->input('order.0.column');
 
         $orderDbColumn = $dbColumns[$orderColumnIndex];
         $orderDirection = $request->input('order.0.dir');
-
 
         if (empty($request->input('search.value'))) {
             $vehicles = Vehicle::with('metas')->filters($request->all());
@@ -65,20 +64,20 @@ class DatatableController extends Controller
             $vehicles = $vehicles->skip($start)->take($limit);
         }
 
-//
+        //
         $data = [];
         $user_role = Auth::user()->role;
         foreach ($vehicles as &$vehicle) {
-            $vehicle->null = "";
+            $vehicle->null = '';
             $vehicle->DT_RowId = $vehicle->id;
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
-            $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
+            $edit = '<a href="'.route('vehicles.edit', $vehicle->id).'" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
             //$edit = '';
-            $alertTitle = __("Are you sure you want to delete vehicle with VIN ") . ' ' . $vehicle->vin;
+            $alertTitle = __('Are you sure you want to delete vehicle with VIN ').' '.$vehicle->vin;
             $delete = '
-                    <form method="post" action="' . route('vehicles.destroy', $vehicle->id) . '" style="display: inline"
-                        onsubmit="return confirmSubmission(this, \'' . $alertTitle . '\')">
-                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                    <form method="post" action="'.route('vehicles.destroy', $vehicle->id).'" style="display: inline"
+                        onsubmit="return confirmSubmission(this, \''.$alertTitle.'\')">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
                         <input type="hidden" name="_method" value="DELETE">
                         <button type="submit" class="btn text-danger"><i class="fa fa-trash"></i></button>
                     </form>
@@ -89,10 +88,12 @@ class DatatableController extends Controller
             $vehicle->purchase_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->purchase_lot, $vehicle->purchase_lot);
             $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
 
-            $vehicle->invoice_amount = $vehicle->invoice_amount != null ? "$" . $vehicle->invoice_amount : '';
-            $vehicle->date_paid = sprintf("<span> %s</span>", $vehicle->date_paid);
-            $vehicle->actions .= $edit . $delete;
-            if ($user_role == 'yard_manager') $vehicle->actions = $edit;
+            $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$'.$vehicle->invoice_amount : '';
+            $vehicle->date_paid = sprintf('<span> %s</span>', $vehicle->date_paid);
+            $vehicle->actions .= $edit.$delete;
+            if ($user_role == 'yard_manager') {
+                $vehicle->actions = $edit;
+            }
 
             //Get meta data
             $vehicle_metas = collect($vehicle->metas);
@@ -104,36 +105,33 @@ class DatatableController extends Controller
 
         }
 
-
         $extraInfo = [
             'total_orders_count' => $totalFiltered,
             'orders_status_accepted' => $totalOrderCount['accepted'],
             'orders_status_pending' => $totalOrderCount['pending'],
             'orders_status_declined' => $totalOrderCount['declined'],
-            'user_rate' => ''
+            'user_rate' => '',
         ];
 
-
         $data = [
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => $totalData,
-            "recordsFiltered" => $totalFiltered,
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalData,
+            'recordsFiltered' => $totalFiltered,
             'data' => $data,
-            'extra_info' => $extraInfo
+            'extra_info' => $extraInfo,
         ];
 
         return response()->json($data);
-
 
     }
 
     public function getVehicleDetails(Vehicle $vehicle)
     {
-            if ($this->isMobileDev()) {
-                return $this->generateHtmlForMobile($vehicle);
-            } else {
-                return $this->generateHtml($vehicle);
-            }
+        if ($this->isMobileDev()) {
+            return $this->generateHtmlForMobile($vehicle);
+        } else {
+            return $this->generateHtml($vehicle);
+        }
     }
 
     public function generateHtml(Vehicle $vehicle)
@@ -153,12 +151,12 @@ class DatatableController extends Controller
             'days_in_yard',
             'secondary_damage',
             'sale_title_state',
-            'sale_title_type'
+            'sale_title_type',
         ];
 
         //if any of the meta keys is missing, add it to the array with empty value
         foreach ($meta_keys as $meta_key) {
-            if (!$vehicle_metas->has($meta_key)) {
+            if (! $vehicle_metas->has($meta_key)) {
                 $vehicle_metas->put($meta_key, '');
             }
         }
@@ -227,7 +225,6 @@ class DatatableController extends Controller
             ->get()
             ->pluck('meta_value');
 
-
         $extra_data = [
             'location' => $locations,
             'status' => $statuses,
@@ -236,7 +233,6 @@ class DatatableController extends Controller
             'keys' => $keys,
             'drivability_rating' => $drivability_rating,
         ];
-
 
         for ($i = 0; $i < $count; $i += 2) {
             $first_key = $i;
@@ -259,7 +255,7 @@ class DatatableController extends Controller
         }
 
         $first_subset = array_slice($meta_keys, 0, 6);
-        $second_subset = array_slice($meta_keys, 6,);
+        $second_subset = array_slice($meta_keys, 6);
 
         $count = count($first_subset);
 
@@ -333,7 +329,7 @@ class DatatableController extends Controller
             'days_in_yard',
             'secondary_damage',
             'sale_title_state',
-            'sale_title_type'
+            'sale_title_type',
         ];
 
         $html = '            <div class="modal-body m-3">
@@ -354,16 +350,16 @@ class DatatableController extends Controller
                 continue;
             }
             $html .= '<tr>';
-            $html .= '<td style="padding: 0rem !important;">' . strtoupper($key) . '</td>';
+            $html .= '<td style="padding: 0rem !important;">'.strtoupper($key).'</td>';
             $html .= '<td style="padding: 0rem !important;">';
             $html .= '<input type="text" class="form-control';
             if (in_array($key, ['left_location', 'date_paid'])) {
                 $html .= ' daterange';
             }
             $html .= '"';
-            $html .= ' name="' . $key . '"';
-            $html .= ' value="' . $value . '"';
-            $html .= ' placeholder="' . $value . '"';
+            $html .= ' name="'.$key.'"';
+            $html .= ' value="'.$value.'"';
+            $html .= ' placeholder="'.$value.'"';
             if (in_array($key, ['id', 'created_at'])) {
                 $html .= ' readonly';
             }
@@ -374,12 +370,12 @@ class DatatableController extends Controller
 
         foreach ($meta_keys as $key) {
             $html .= '<tr>';
-            $html .= '<td style="padding: 0rem !important;">' . strtoupper($key) . '</td>';
+            $html .= '<td style="padding: 0rem !important;">'.strtoupper($key).'</td>';
             $html .= '<td style="padding: 0rem !important;">';
             $html .= '<input type="text" class="form-control"';
-            $html .= ' name="' . $key . '"';
-            $html .= ' value="' . ($vehicle_metas[$key] ?? '') . '"';
-            $html .= ' placeholder="' . ($vehicle_metas[$key] ?? '') . '"';
+            $html .= ' name="'.$key.'"';
+            $html .= ' value="'.($vehicle_metas[$key] ?? '').'"';
+            $html .= ' placeholder="'.($vehicle_metas[$key] ?? '').'"';
             $html .= '>';
             $html .= '</td>';
             $html .= '</tr>';
@@ -396,110 +392,111 @@ class DatatableController extends Controller
 
     public function getHtmlTwo_TD($string, string $html, $values, $extra_data = []): string
     {
-        $html .= '<td>' . strtoupper($string) . '</td>';
+        $html .= '<td>'.strtoupper($string).'</td>';
         $html .= '<td>';
 
         $dropdowns = ['location'];
 
         if (in_array($string, $dropdowns)) {
             $html .= '<select class="form-control select2"';
-            $html .= ' name="' . $string . '"';
-            $html .= ' value="' . $values . '"';
+            $html .= ' name="'.$string.'"';
+            $html .= ' value="'.$values.'"';
             $html .= '>';
 
             foreach ($extra_data[$string] as $location) {
-                $html .= '<option value="' . $location . '"';
-                if ($location == $values) $html .= ' selected';
+                $html .= '<option value="'.$location.'"';
+                if ($location == $values) {
+                    $html .= ' selected';
+                }
                 $html .= '>';
-                $html .= $location . '</option>';
+                $html .= $location.'</option>';
             }
 
             $html .= '</select>';
 
-
         } else {
             $html .= '<input type="text" class="form-control"';
-            $html .= ' name="' . $string . '"';
-            $html .= ' value="' . $values . '"';
-            $html .= ' placeholder="' . $values . '"';
+            $html .= ' name="'.$string.'"';
+            $html .= ' value="'.$values.'"';
+            $html .= ' placeholder="'.$values.'"';
             $html .= ' style="width:auto"';
             $html .= '>';
         }
 
         $html .= '</td>';
+
         return $html;
     }
 
     public function getMetaHtmlTwo_TD($key, string $html, $vehicle_metas, $extra_data = []): string
     {
-        $html .= '<td>' . strtoupper($key) . '</td>';
+        $html .= '<td>'.strtoupper($key).'</td>';
         $html .= '<td>';
 
-        $dropdowns = [ 'status', 'odometer', 'primary_damage','keys',  'drivability_rating'];
+        $dropdowns = ['status', 'odometer', 'primary_damage', 'keys',  'drivability_rating'];
 
         if (in_array($key, $dropdowns)) {
 
             $html .= '<select class="form-control select2"';
-            $html .= ' name="' . $key . '"';
-            $html .= ' value="' . $vehicle_metas . '"';
+            $html .= ' name="'.$key.'"';
+            $html .= ' value="'.$vehicle_metas.'"';
             $html .= '>';
 
-            if($key == 'status'){
+            if ($key == 'status') {
                 $html .= '<option value="-100">Select Status</option>';
-            }
-            elseif($key == 'odometer'){
+            } elseif ($key == 'odometer') {
                 $html .= '<option value="-100">Select Mileage</option>';
-            }
-            elseif($key == 'primary_damage'){
+            } elseif ($key == 'primary_damage') {
                 $html .= '<option value="-100">Select Damage</option>';
-            }
-            elseif($key == 'secondary_damage'){
+            } elseif ($key == 'secondary_damage') {
                 $html .= '<option value="-100">Select Damage</option>';
-            }
-            elseif($key == 'drivability_rating'){
+            } elseif ($key == 'drivability_rating') {
                 $html .= '<option value="-100">Select Engine</option>';
-            }
-            elseif($key == 'keys'){
+            } elseif ($key == 'keys') {
                 $html .= '<option value="-100">Select Key</option>';
             }
             foreach ($extra_data[$key] as $location) {
-                $html .= '<option value="' . $location . '"';
-                if ($location == $vehicle_metas) $html .= ' selected';
+                $html .= '<option value="'.$location.'"';
+                if ($location == $vehicle_metas) {
+                    $html .= ' selected';
+                }
                 $html .= '>';
-                $html .= $location . '</option>';
+                $html .= $location.'</option>';
             }
 
             $html .= '</select>';
 
-
-        }
-        else{
+        } else {
             $html .= '<input type="text" class="form-control"';
-            $html .= ' name="' . $key . '"';
-            $html .= ' value="' . ($vehicle_metas ?? '') . '"';
-            $html .= ' placeholder="' . ($vehicle_metas ?? '') . '"';
+            $html .= ' name="'.$key.'"';
+            $html .= ' value="'.($vehicle_metas ?? '').'"';
+            $html .= ' placeholder="'.($vehicle_metas ?? '').'"';
             $html .= '>';
         }
 
         $html .= '</td>';
+
         return $html;
     }
 
-    function isMobileDev(): bool
+    public function isMobileDev(): bool
     {
-        if (!empty($_SERVER['HTTP_USER_AGENT'])) {
+        if (! empty($_SERVER['HTTP_USER_AGENT'])) {
             $user_ag = $_SERVER['HTTP_USER_AGENT'];
             if (preg_match('/(Mobile|Android|Tablet|GoBrowser|[0-9]x[0-9]*|uZardWeb\/|Mini|Doris\/|Skyfire\/|iPhone|Fennec\/|Maemo|Iris\/|CLDC\-|Mobi\/)/uis', $user_ag)) {
                 return true;
-            };
-        };
+            }
+        }
+
         return false;
     }
 
-    function next_vehicle_id(){
-       $vehicle = new Vehicle();
-       $vehicle->vin = '';
-       $vehicle->save();
-       return $vehicle->id;
+    public function next_vehicle_id()
+    {
+        $vehicle = new Vehicle();
+        $vehicle->vin = '';
+        $vehicle->save();
+
+        return $vehicle->id;
     }
 }

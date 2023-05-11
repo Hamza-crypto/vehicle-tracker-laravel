@@ -2,37 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Api\TransactionGatewayController;
 use App\Http\Requests\UserRequest;
-use App\Models\Gateway;
-use App\Models\ManualFeedback;
-use App\Models\Message;
-use App\Models\OrderCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use Mockery\Exception;
-use phpDocumentor\Reflection\Types\Null_;
 
 class UsersController extends Controller
 {
-
     public function index()
     {
-       $users = User::all();
-       return view('pages.users.index', compact('users'));
-    }
+        $users = User::all();
 
+        return view('pages.users.index', compact('users'));
+    }
 
     public function create()
     {
-         $users = User::all();
+        $users = User::all();
 
         return view('pages.users.add', compact('users'));
     }
-
 
     public function store(UserRequest $request)
     {
@@ -50,9 +40,9 @@ class UsersController extends Controller
             ]);
 
         Session::flash('success', 'User successfully added.');
+
         return redirect()->route('users.create');
     }
-
 
     public function edit(User $user)
     {
@@ -68,10 +58,9 @@ class UsersController extends Controller
 
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'unique:users,email,' . $user->id,
+            'email' => 'unique:users,email,'.$user->id,
             'role' => 'required',
         ]);
-
 
         $user->update([
             'name' => $request->name,
@@ -79,12 +68,11 @@ class UsersController extends Controller
             'role' => $request->role,
         ]);
 
-
         Session::flash('success', __('Account information successfully updated.'));
+
         return back();
         //return redirect()->route('users.edit', $user->id);
     }
-
 
     public function password_update(Request $request, User $user)
     {
@@ -92,20 +80,20 @@ class UsersController extends Controller
             'password' => 'required|confirmed',
         ]);
 
-
         $user->update([
             'password' => Hash::make($request->password),
         ]);
         Session::flash('password_update', 'Password updated successfully.');
+
         return redirect()->route('users.index');
 
     }
-
 
     public function destroy(User $user)
     {
         $user->delete();
         Session::flash('success', 'User deleted successfully.');
+
         return redirect()->route('users.index');
     }
 
@@ -141,8 +129,8 @@ class UsersController extends Controller
                 ['meta_value' => $user->rate]);
         }
 
-
         Session::flash('account', 'Wallet info updated successfully.');
+
         return redirect()->back();
     }
 
@@ -156,8 +144,8 @@ class UsersController extends Controller
                 ['meta_value' => $request->gateway_id]);
         }
 
-
         Session::flash('account', 'Gateway updated successfully.');
+
         return redirect()->back();
     }
 
@@ -166,10 +154,9 @@ class UsersController extends Controller
 
         if (Auth()->user()->role == 'admin') {
 
-            if($request->parent == 0){
+            if ($request->parent == 0) {
                 $parent_id = null;
-            }
-            else{
+            } else {
                 $parent_id = $request->parent;
             }
             $user->updateOrCreate(
@@ -178,6 +165,7 @@ class UsersController extends Controller
         }
 
         Session::flash('account', 'Successfully assigned.');
+
         return redirect()->back();
     }
 
@@ -188,6 +176,7 @@ class UsersController extends Controller
             ['meta_value' => $request->category]);
 
         Session::flash('account', 'Order Category updated successfully.');
+
         return redirect()->back();
 
     }
@@ -204,6 +193,7 @@ class UsersController extends Controller
             ['meta_value' => $status]);
 
         Session::flash('account', 'Successfully updated.');
+
         return redirect()->back();
 
     }

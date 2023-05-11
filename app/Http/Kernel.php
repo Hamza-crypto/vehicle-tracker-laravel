@@ -3,7 +3,6 @@
 namespace App\Http;
 
 use App\Http\Middleware\AdminMiddleware;
-use App\Http\Middleware\ManagerMiddleware;
 use App\Http\Middleware\VehicleManagerMiddleware;
 use App\Http\Middleware\YardManagerMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;

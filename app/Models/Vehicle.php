@@ -23,12 +23,13 @@ class Vehicle extends Model
     ];
 
     protected $dates = [
-        'created_at'
+        'created_at',
     ];
 
     public function getInvoiceDateAttribute($date)
     {
         $date = Carbon::parse($date);
+
         return $date->format('Y-m-d');
     }
 
@@ -85,22 +86,20 @@ class Vehicle extends Model
             ->where('meta_key', 'number_of_runs');
     }
 
-
-
     public function scopeFilters($query, $request)
     {
-        if (isset($request['make']) && $request['make' ] != -100 && $request['make'] != 'undefined') {
+        if (isset($request['make']) && $request['make'] != -100 && $request['make'] != 'undefined') {
             $query->where('make', $request['make']);
         }
 
-        if (isset($request['model']) && $request['model' ] != -100 && $request['model'] != 'undefined') {
+        if (isset($request['model']) && $request['model'] != -100 && $request['model'] != 'undefined') {
             $query->where('model', $request['model']);
         }
 
         if (isset($request['status']) && $request['status'] != -100) {
 
             $search = $request['status'];
-            $query->whereHas('metas',function ($q1) use ($search) {
+            $query->whereHas('metas', function ($q1) use ($search) {
                 $q1->where('meta_value', 'LIKE', "%$search%");
             });
 
@@ -111,12 +110,10 @@ class Vehicle extends Model
             $query->whereBetween('created_at', [Carbon::parse($dateRange[0])->format('Y-m-d'), Carbon::parse($dateRange[1])->format('Y-m-d')]);
         }
 
-
         $query->whereDoesntHave('metas', function ($q1) {
             $q1->where('meta_key', 'status')
                 ->where('meta_value', 'Sold');
         });
-
 
         $query->orderBy('id', 'desc');
     }

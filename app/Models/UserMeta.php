@@ -10,12 +10,11 @@ class UserMeta extends Model
 {
     use HasFactory, Encryptable;
 
-    protected $fillable = ['user_id','meta_key', 'meta_value'];
+    protected $fillable = ['user_id', 'meta_key', 'meta_value'];
 
     protected $encryptable = [
         'meta_value',
     ];
-
 
     public function user()
     {

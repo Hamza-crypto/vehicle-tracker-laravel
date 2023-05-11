@@ -11,7 +11,9 @@ trait Encryptable
         $value = parent::getAttribute($key);
 
         if (in_array($key, $this->encryptable)) {
-            if (isset($value) && !empty($value)) $value = Crypt::decrypt($value);
+            if (isset($value) && ! empty($value)) {
+                $value = Crypt::decrypt($value);
+            }
 
             return $value;
         }

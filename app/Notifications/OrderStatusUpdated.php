@@ -3,8 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramChannel;
@@ -16,7 +14,7 @@ class OrderStatusUpdated extends Notification
 
     public function __construct()
     {
-       //
+        //
     }
 
     public function via($notifiable)
@@ -27,7 +25,7 @@ class OrderStatusUpdated extends Notification
 
     public function toTelegram($notifiable)
     {
-        $message = "Your card #: " . $notifiable->card_number . " " . $notifiable->status;
+        $message = 'Your card #: '.$notifiable->card_number.' '.$notifiable->status;
         $TELEGRAM_ID = $notifiable->user->channel_id();
 
         return TelegramMessage::create()
@@ -37,7 +35,8 @@ class OrderStatusUpdated extends Notification
 
     public function toSlack($notifiable)
     {
-        $message = "Your card #: " . $notifiable->card_number . " " . $notifiable->status;
+        $message = 'Your card #: '.$notifiable->card_number.' '.$notifiable->status;
+
         return (new SlackMessage)
             ->content($message);
     }

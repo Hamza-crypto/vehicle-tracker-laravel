@@ -134,7 +134,7 @@ return [
     |
     */
 
-    'providers' => array(
+    'providers' => [
 
         /*
          * Laravel Framework Service Providers...
@@ -169,7 +169,6 @@ return [
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
         Lab404\Impersonate\ImpersonateServiceProvider::class,
 
-
         /*
          * Application Service Providers...
          */
@@ -177,7 +176,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------

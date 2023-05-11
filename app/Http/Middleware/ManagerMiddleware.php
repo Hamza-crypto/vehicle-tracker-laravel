@@ -11,8 +11,6 @@ class ManagerMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
@@ -20,6 +18,7 @@ class ManagerMiddleware
         if (Auth::user()->role != 'admin' && Auth::user()->role != 'manager') {
             abort(401);
         }
+
         return $next($request);
     }
 }

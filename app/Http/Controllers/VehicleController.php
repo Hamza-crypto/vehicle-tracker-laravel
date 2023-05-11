@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Location;
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-
 
 class VehicleController extends Controller
 {
@@ -83,13 +81,13 @@ class VehicleController extends Controller
         unset($csvFile[0]);
 
         $requiredColumns = [
-            "VIN",
-            "Lot/Inv #",
-            "Location",
-            "Description",
-            "Left Location",
-            "Date Paid",
-            "Invoice Amount"
+            'VIN',
+            'Lot/Inv #',
+            'Location',
+            'Description',
+            'Left Location',
+            'Date Paid',
+            'Invoice Amount',
         ];
         $positions = [];
 
@@ -97,7 +95,8 @@ class VehicleController extends Controller
         foreach ($requiredColumns as $columnName) {
             $position = array_search($columnName, $headers);
             if ($position === false) {
-                Session::flash('error', "CSV file header is not correct");
+                Session::flash('error', 'CSV file header is not correct');
+
                 return view('pages.vehicle.buy.upload')->with('csv_header', $requiredColumns);
             }
             $positions[$columnName] = $position;
@@ -111,7 +110,7 @@ class VehicleController extends Controller
                 continue;
             }
 
-            if (!in_array($vin, $vehicles_vins)) {
+            if (! in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
                 $vehicle->vin = $vin;
                 $vehicle->purchase_lot = $row[$positions['Lot/Inv #']];
@@ -124,7 +123,8 @@ class VehicleController extends Controller
             }
         }
 
-        Session::flash('success', "Successfully inserted");
+        Session::flash('success', 'Successfully inserted');
+
         return redirect()->route('upload.create.buy');
 
     }
@@ -138,26 +138,26 @@ class VehicleController extends Controller
         unset($csvFile[0]);
 
         $requiredColumns = [
-            "VIN",
-            "Stock",
-            "Stock#",
-            "Branch",
-            "Description",
-            "Year",
-            "Make",
-            "Model",
-            "Date Picked Up",
-            "Date Paid",
-            "Total Paid",
-            "Total Amount",
-            "Item#"
+            'VIN',
+            'Stock',
+            'Stock#',
+            'Branch',
+            'Description',
+            'Year',
+            'Make',
+            'Model',
+            'Date Picked Up',
+            'Date Paid',
+            'Total Paid',
+            'Total Amount',
+            'Item#',
         ];
 
-        if (!in_array("Item#", $headers)) {
+        if (! in_array('Item#', $headers)) {
             unset($requiredColumns[12]);
         }
 
-        if (in_array("Description", $headers)) {
+        if (in_array('Description', $headers)) {
             unset($requiredColumns[5]);
             unset($requiredColumns[6]);
             unset($requiredColumns[7]);
@@ -165,13 +165,13 @@ class VehicleController extends Controller
             unset($requiredColumns[4]);
         }
 
-        if (in_array("Stock", $headers)) {
+        if (in_array('Stock', $headers)) {
             unset($requiredColumns[2]);
         } else {
             unset($requiredColumns[1]);
         }
 
-        if (in_array("Total Paid", $headers)) {
+        if (in_array('Total Paid', $headers)) {
             unset($requiredColumns[11]);
         } else {
             unset($requiredColumns[10]);
@@ -182,7 +182,8 @@ class VehicleController extends Controller
         foreach ($requiredColumns as $columnName) {
             $position = array_search($columnName, $headers);
             if ($position === false) {
-                Session::flash('error', "CSV file header is not correct");
+                Session::flash('error', 'CSV file header is not correct');
+
                 return view('pages.vehicle.buy.upload')->with('csv_header', $requiredColumns);
             }
             $positions[$columnName] = $position;
@@ -192,19 +193,21 @@ class VehicleController extends Controller
 
         foreach ($csvFile as $row) {
 
-            if (!isset($positions['Item#']) || empty($row[$positions['Item#']])){ //if item# is not present in csv file
+            if (! isset($positions['Item#']) || empty($row[$positions['Item#']])) { //if item# is not present in csv file
                 continue;
             }
 
             $vin = $row[$positions['VIN']];
-            if (empty($vin)) continue;
+            if (empty($vin)) {
+                continue;
+            }
 
-            if (!in_array($vin, $vehicles_vins)) {
+            if (! in_array($vin, $vehicles_vins)) {
                 $vehicle = new Vehicle();
                 $vehicle->vin = $vin;
                 $vehicle->purchase_lot = isset($positions['Stock']) ? $row[$positions['Stock']] : $row[$positions['Stock#']];
                 $vehicle->location = $row[$positions['Branch']];
-                $vehicle->description = isset($positions['Description']) ? $row[$positions['Description']] : sprintf("%s %s %s", $row[$positions['Year']], $row[$positions['Make']], $row[$positions['Model']]); //year_make_model
+                $vehicle->description = isset($positions['Description']) ? $row[$positions['Description']] : sprintf('%s %s %s', $row[$positions['Year']], $row[$positions['Make']], $row[$positions['Model']]); //year_make_model
                 $vehicle->left_location = Carbon::parse($row[$positions['Date Picked Up']])->format('Y-m-d');
                 $vehicle->date_paid = Carbon::parse($row[$positions['Date Paid']])->format('Y-m-d');
                 $vehicle->invoice_amount = isset($positions['Total Amount']) ? $this->format_amount($row[$positions['Total Amount']]) : $this->format_amount($row[$positions['Total Paid']]);
@@ -212,7 +215,8 @@ class VehicleController extends Controller
             }
         }
 
-        Session::flash('success', "Successfully inserted");
+        Session::flash('success', 'Successfully inserted');
+
         return redirect()->route('upload.create.buy');
     }
 
@@ -229,21 +233,21 @@ class VehicleController extends Controller
         unset($csvFile[0]);
 
         $requiredColumns = [
-            "Lot #",
-            "Claim #",
-            "Status",
-            "Description",
-            "VIN",
-            "Primary Damage",
-            "Secondary Damage",
-            "Keys",
-            "Drivability Rating",
-            "Odometer",
-            "Odometer Brand",
-            "Sale Title State",
-            "Sale Title Type",
-            "Location",
-            "Days in Yard",
+            'Lot #',
+            'Claim #',
+            'Status',
+            'Description',
+            'VIN',
+            'Primary Damage',
+            'Secondary Damage',
+            'Keys',
+            'Drivability Rating',
+            'Odometer',
+            'Odometer Brand',
+            'Sale Title State',
+            'Sale Title Type',
+            'Location',
+            'Days in Yard',
         ];
 
         $positions = [];
@@ -252,15 +256,16 @@ class VehicleController extends Controller
         foreach ($requiredColumns as $columnName) {
             $position = array_search($columnName, $headers);
             if ($position === false) {
-                Session::flash('error', "CSV file header is not correct");
+                Session::flash('error', 'CSV file header is not correct');
+
                 return view('pages.vehicle.inventory.upload')->with('csv_header', $requiredColumns);
             }
             $positions[$columnName] = $position;
         }
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
 
-//        $today = now();
-//        $past_auction_date = [];
+        //        $today = now();
+        //        $past_auction_date = [];
 
         $count = 0;
         foreach ($csvFile as $row) {
@@ -270,18 +275,18 @@ class VehicleController extends Controller
             /*
              * Check if auction date is past date
              */
-//            $auction_date = Carbon::parse($row[23]);
-//            if ($auction_date < $today) {
-//                $past_auction_date[] = ['vin' => $vin, 'auction_date' => $auction_date->format('Y-m-d')];
-//
-//                $count++;
-//                if ($count > 10) {
-//                    return view('pages.vehicle.inventory.upload')->with('past_auction_date', $past_auction_date);
-//                }
-//                continue;
-//            }
-//            return view('pages.vehicle.inventory.upload')->with('past_auction_date', $past_auction_date);
-            if (!in_array($vin, $vehicles_vins)) {
+            //            $auction_date = Carbon::parse($row[23]);
+            //            if ($auction_date < $today) {
+            //                $past_auction_date[] = ['vin' => $vin, 'auction_date' => $auction_date->format('Y-m-d')];
+            //
+            //                $count++;
+            //                if ($count > 10) {
+            //                    return view('pages.vehicle.inventory.upload')->with('past_auction_date', $past_auction_date);
+            //                }
+            //                continue;
+            //            }
+            //            return view('pages.vehicle.inventory.upload')->with('past_auction_date', $past_auction_date);
+            if (! in_array($vin, $vehicles_vins)) {
                 //insert new vehicle
                 $vehicle = new Vehicle();
                 $vehicle->vin = $vin;
@@ -304,7 +309,8 @@ class VehicleController extends Controller
 
         }
 
-        Session::flash('success', "Successfully inserted");
+        Session::flash('success', 'Successfully inserted');
+
         return redirect()->route('upload.create.inventory');
     }
 
@@ -320,13 +326,13 @@ class VehicleController extends Controller
             'odometer_brand' => $row[$positions['Odometer Brand']],
             'days_in_yard' => $row[$positions['Days in Yard']],
         ];
-        if (!empty($row[6])) {
+        if (! empty($row[6])) {
             $necessary_meta_fields['secondary_damage'] = $row[$positions['Secondary Damage']];
         }
-        if (!empty($row[20])) {
+        if (! empty($row[20])) {
             $necessary_meta_fields['sale_title_type'] = $row[$positions['Sale Title State']];
         }
-        if (!empty($row[19])) {
+        if (! empty($row[19])) {
             $necessary_meta_fields['sale_title_state'] = $row[$positions['Sale Title Type']];
         }
 
@@ -355,34 +361,34 @@ class VehicleController extends Controller
         $data = array_map('str_getcsv', file($path));
 
         $required_header = [
-            "Lot #",
-            "Claim #",
-            "Status",
-            "Location",
-            "Sale Date",
-            "Description",
-            "Title State",
-            "Title Type",
-            "Odometer",
-            "Odometer Brand",
-            "Primary Damage",
-            "Loss Type",
-            "Keys",
-            "Drivability Rating",
-            "ACV",
-            "Repair Cost",
-            "Sale Price",
-            "Return %"
+            'Lot #',
+            'Claim #',
+            'Status',
+            'Location',
+            'Sale Date',
+            'Description',
+            'Title State',
+            'Title Type',
+            'Odometer',
+            'Odometer Brand',
+            'Primary Damage',
+            'Loss Type',
+            'Keys',
+            'Drivability Rating',
+            'ACV',
+            'Repair Cost',
+            'Sale Price',
+            'Return %',
         ];
 
         foreach ($data[0] as $value) {
             $value = trim($value);
-            if (!in_array($value, $required_header)) {
-                Session::flash('error', "CSV file header is not correct");
+            if (! in_array($value, $required_header)) {
+                Session::flash('error', 'CSV file header is not correct');
+
                 return view('pages.vehicle.sold.upload')->with('csv_header', $required_header);
             }
         }
-
 
         unset($data[0]); // Remove header
         $auction_lot = Vehicle::whereNotNull('auction_lot')->pluck('auction_lot')->toArray();
@@ -397,17 +403,17 @@ class VehicleController extends Controller
                 VehicleMetas::updateOrCreate(
                     ['vehicle_id' => $vehicle->id, 'meta_key' => 'sale_date'],
                     [
-                        'meta_value' => Carbon::parse($row[4])->format('Y-m-d') //sale_date
+                        'meta_value' => Carbon::parse($row[4])->format('Y-m-d'), //sale_date
                     ]);
                 VehicleMetas::updateOrCreate(
                     ['vehicle_id' => $vehicle->id, 'meta_key' => 'sale_price'],
                     [
-                        'meta_value' => $row[16] //sale_price
+                        'meta_value' => $row[16], //sale_price
                     ]);
                 VehicleMetas::updateOrCreate(
                     ['vehicle_id' => $vehicle->id, 'meta_key' => 'status'],
                     [
-                        'meta_value' => 'SOLD' //sale_price
+                        'meta_value' => 'SOLD', //sale_price
                     ]);
             } else {
                 $vehicles_not_found[] = ['lot' => $lot];
@@ -415,17 +421,17 @@ class VehicleController extends Controller
 
         }
 
-        Session::flash('success', "Successfully updated");
+        Session::flash('success', 'Successfully updated');
+
         return view('pages.vehicle.sold.upload')->with('vehicles_not_found', $vehicles_not_found);
 
     }
 
-
     public function edit(Vehicle $vehicle)
     {
         $vehicle_metas = VehicleMetas::where('vehicle_id', $vehicle->id)->get()->mapWithKeys(function ($item) {
-        return [$item['meta_key'] => $item['meta_value']];
-    });
+            return [$item['meta_key'] => $item['meta_value']];
+        });
 
         $meta_keys = [
             'claim_number',
@@ -438,22 +444,20 @@ class VehicleController extends Controller
             'days_in_yard',
             'secondary_damage',
             'sale_title_state',
-            'sale_title_type'
+            'sale_title_type',
         ];
-
 
         $locations = Vehicle::select('location')->distinct()->orderBy('location', 'asc')->get()->pluck('location');
 
         return view('pages.vehicle.detail', get_defined_vars());
     }
 
-
     public function update(Request $request, Vehicle $vehicle)
     {
         $request->validate([
             'vin' => 'required',
             'location' => 'required',
-            'description' => 'required'
+            'description' => 'required',
         ]);
 
         $vehicle->vin = $request->vin;
@@ -477,17 +481,19 @@ class VehicleController extends Controller
             'days_in_yard',
             'secondary_damage',
             'sale_title_state',
-            'sale_title_type'
+            'sale_title_type',
         ];
 
         foreach ($meta_keys as $key) {
 
-            if(empty($request->$key) || $request->$key == '-100') continue;
+            if (empty($request->$key) || $request->$key == '-100') {
+                continue;
+            }
 
             VehicleMetas::updateOrCreate(
                 ['vehicle_id' => $vehicle->id, 'meta_key' => $key],
                 [
-                    'meta_value' => $request->$key
+                    'meta_value' => $request->$key,
                 ]);
         }
 
@@ -499,6 +505,7 @@ class VehicleController extends Controller
         $vehicle->metas()->delete();
         $vehicle->delete();
         Session::flash('success', __('Successfully Deleted'));
+
         return redirect()->back();
     }
 
@@ -512,7 +519,7 @@ class VehicleController extends Controller
             $vehicle->delete();
         }
 
-        return response()->json(['message' => count($vehicles) . ' vehicles have been deleted.']);
+        return response()->json(['message' => count($vehicles).' vehicles have been deleted.']);
     }
 
     public function get_makes()
@@ -553,12 +560,13 @@ class VehicleController extends Controller
         $invoice_amount = str_replace('$', '', $amount);
         $invoice_amount = str_replace('USD', '', $invoice_amount);
         $invoice_amount = str_replace(',', '', $invoice_amount);
+
         return $invoice_amount;
     }
 
     public function insert_in_db($request, $vehicle = null)
     {
-        if (!$vehicle) {
+        if (! $vehicle) {
             $vehicle = new Vehicle();
         }
 
@@ -567,14 +575,15 @@ class VehicleController extends Controller
         $vehicle->purchase_lot = $request->purchase_lot;
         $vehicle->auction_lot = $request->auction_lot;
         $vehicle->vin = $request->vin;
-        $vehicle->description = sprintf("%s %s %s", $request->year, $request->make, $request->model);
+        $vehicle->description = sprintf('%s %s %s', $request->year, $request->make, $request->model);
         $vehicle->location = $request->location;
         $vehicle->left_location = $request->left_location;
         $vehicle->save();
 
         $vehicle->metas()->updateOrCreate(['meta_key' => 'location'], ['meta_value' => $request->location]);
         $vehicle->metas()->updateOrCreate(['meta_key' => 'invoice_amount'], ['meta_value' => $request->invoice_amount]);
+
         return $vehicle;
-//        $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $request->pickup_date]);
+        //        $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $request->pickup_date]);
     }
 }

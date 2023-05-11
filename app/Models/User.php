@@ -15,6 +15,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable, Impersonate;
 
     public $rate = 89;
+
     public $default_chat_id = '-1001456845228';
 
     public function canImpersonate()
@@ -22,7 +23,6 @@ class User extends Authenticatable implements MustVerifyEmail
         // For example
         return $this->role == 'admin';
     }
-
 
     protected $fillable = [
         'name',
@@ -63,8 +63,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'admin' => 'Admin',
         'vehicle_manager' => 'Vehicle Manager',
         'yard_manager' => 'Yard Manager',
-        'viewer' => 'Viewer'
-        ];
-
-
+        'viewer' => 'Viewer',
+    ];
 }

@@ -45,7 +45,7 @@ class DashboardController extends Controller
         }
 
         foreach ($datePeriods as $index => $d) {
-            if (!isset($pending_array[$d])) {
+            if (! isset($pending_array[$d])) {
                 $pending_array[$d] = 0;
                 $rejected_array[$d] = 0;
                 $accepted_array[$d] = 0;
@@ -61,55 +61,27 @@ class DashboardController extends Controller
         $accepted = $accepted_array;
         $rejected = $rejected_array;
 
+        //dd($labels,$accepted_array, $pending_array, $rejected_array);
 
-       //dd($labels,$accepted_array, $pending_array, $rejected_array);
-
-            $customer_status = UserMeta::select('meta_value')
-            ->where('meta_key','availability')
+        $customer_status = UserMeta::select('meta_value')
+            ->where('meta_key', 'availability')
             ->where('user_id', 2)
             ->first();
 
-//        if($customer_status){
-//            $customer_status = $customer_status->meta_value;
-//        }
-//        else{
-//            $customer_status = 0;
-//        }
+        //        if($customer_status){
+        //            $customer_status = $customer_status->meta_value;
+        //        }
+        //        else{
+        //            $customer_status = 0;
+        //        }
 
         $order_controller = new OrderController();
         $customer_status = $order_controller->is_open_hour();
 
-
-        return view('pages.dashboard.index', compact("rejected", "accepted", "pending","labels","customer_status"));
-
+        return view('pages.dashboard.index', compact('rejected', 'accepted', 'pending', 'labels', 'customer_status'));
 
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //foreach ($orders_with_day as $day => $orders) {
 //    foreach ($orders as $order) {

@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\ElectionController;
@@ -10,12 +9,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
 use App\Models\VehicleMetas;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
-
-use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,12 +23,12 @@ use App\Http\Controllers\ProductController;
 | contains the "web" middleware group. Now create something great!
 |
  */
-Route::get('/test', function (){
+Route::get('/test', function () {
 
-   dd('Deploy completed');
+    dd('Deploy completed');
 });
 
-Route::get('/test2', function (){
+Route::get('/test2', function () {
     $flight = VehicleMetas::updateOrCreate(
         ['vehicle_id' => 2, 'meta_key' => 'keys'],
         ['meta_value' => 'Yes 2']
@@ -41,13 +37,11 @@ Route::get('/test2', function (){
 
 Route::redirect('/', '/dashboard');
 
-
-Route::get('/reset', function (){
+Route::get('/reset', function () {
     DB::table('vehicles')->truncate();
     DB::table('vehicle_metas')->truncate();
     dd('Database cleared');
 });
-
 
 Route::group(['middleware' => ['auth']], function () {
 
@@ -59,15 +53,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
-
-
-//    Route::post('images', [ImageController::class, 'store'])->name('images.store');
-//    Route::post('images/feedback', [ImageController::class, 'store_feedback'])->name('images.store_feedback');
+    //    Route::post('images', [ImageController::class, 'store'])->name('images.store');
+    //    Route::post('images/feedback', [ImageController::class, 'store_feedback'])->name('images.store_feedback');
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-
-
-
 
     Route::get('api/v1/vehicles', [DatatableController::class, 'vehicles'])->name('vehicles.ajax');
     //Render modal for vehicle details
@@ -75,25 +64,18 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::impersonate();
 
-
     Route::group(
         ['middleware' => 'admin',
         ], function () {
-        Route::get('logs', [LogViewerController::class, 'index']);
+            Route::get('logs', [LogViewerController::class, 'index']);
 
+            //        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
+            //        Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
 
+            Route::resource('users', UsersController::class);
+            Route::post('password/{user}', [UsersController::class, 'password_update'])->name('user.password_update');
 
-
-//        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
-//        Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
-
-
-
-
-        Route::resource('users', UsersController::class);
-        Route::post('password/{user}', [UsersController::class, 'password_update'])->name('user.password_update');
-
-    });
+        });
 
     Route::group(['middleware' => 'vehicle_manager'], function () {
 
@@ -129,8 +111,3 @@ Route::get('update_election', [ElectionController::class, 'update_election']);
 //Guru
 Route::get('token', [GuruController::class, 'getAccessToken']);
 Route::get('jobs', [GuruController::class, 'getJobs']);
-
-
-
-
-

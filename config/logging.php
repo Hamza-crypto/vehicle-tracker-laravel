@@ -116,7 +116,7 @@ return [
             'path' => storage_path('logs/gateway_transactions.log'),
         ],
 
-         'balance_checking' => [
+        'balance_checking' => [
             'driver' => 'single',
             'path' => storage_path('logs/balance_checking.log'),
         ],

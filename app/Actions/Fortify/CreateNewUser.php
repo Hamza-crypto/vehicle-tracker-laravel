@@ -15,12 +15,10 @@ class CreateNewUser implements CreatesNewUsers
     /**
      * Validate and create a newly registered user.
      *
-     * @param  array  $input
      * @return \App\Models\User
      */
     public function create(array $input)
     {
-
 
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
@@ -33,7 +31,6 @@ class CreateNewUser implements CreatesNewUsers
             ],
             'password' => $this->passwordRules(),
         ])->validate();
-
 
         return User::create([
             'name' => $input['name'],

@@ -9,7 +9,7 @@ class VehicleMetas extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['vehicle_id','meta_key', 'meta_value'];
+    protected $fillable = ['vehicle_id', 'meta_key', 'meta_value'];
 
     protected $hidden = ['id', 'created_at', 'updated_at'];
 
