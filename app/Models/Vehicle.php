@@ -140,7 +140,7 @@ class Vehicle extends Model
             $query->whereBetween('created_at', [Carbon::parse($dateRange[0])->format('Y-m-d'), Carbon::parse($dateRange[1])->format('Y-m-d')]);
         }
 
-        $query->orderBy('id', 'desc');
+        // $query->orderBy('id', 'desc');
 
         return $query;
     }

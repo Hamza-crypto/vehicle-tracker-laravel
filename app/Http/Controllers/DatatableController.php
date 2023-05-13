@@ -47,6 +47,7 @@ class DatatableController extends Controller
         if (empty($request->input('search.value'))) {
             $vehicles = Vehicle::with('metas')->filters($request->all());
 
+
             $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
 
             $vehicles = $vehicles->offset($start)->limit($limit)->get();
@@ -145,10 +146,8 @@ class DatatableController extends Controller
         // index should be in accordance with the column index in the table
         $dbColumns = [
             0 => 'id',
-
-            // sorting by meta value
-            7 => 'days_in_yard',
-
+            3 => 'auction_lot',
+            5 => 'invoice_amount'
         ];
 
         $orderColumnIndex = $request->input('order.0.column');
