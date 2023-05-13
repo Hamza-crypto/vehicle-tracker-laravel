@@ -13,7 +13,7 @@
                             <div id="vehicle-detail-div2"></div>
 
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" id="close-modal-btn"
+                                <button type="button" class="btn btn-secondary" id="close-modal-btn-vehicle-create"
                                         data-dismiss="modal">Close
                                 </button>
                                 <button type="submit" class="btn btn-primary"

@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
+use App\Models\VehicleNote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Auth;
 
 class DatatableController extends Controller
@@ -72,7 +75,7 @@ class DatatableController extends Controller
             $vehicle->DT_RowId = $vehicle->id;
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
             $edit = '<a href="'.route('vehicles.edit', $vehicle->id).'" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
-            //$edit = '';
+            $edit = '';
             $alertTitle = __('Are you sure you want to delete vehicle with VIN ').' '.$vehicle->vin;
             $delete = '
                     <form method="post" action="'.route('vehicles.destroy', $vehicle->id).'" style="display: inline"
@@ -100,6 +103,120 @@ class DatatableController extends Controller
             $vehicle->claim_number = $vehicle_metas->where('meta_key', 'claim_number')->pluck('meta_value')->first();
             $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
             $vehicle->status = $vehicle_metas->where('meta_key', 'status')->pluck('meta_value')->first();
+
+            $data[] = $vehicle;
+
+        }
+
+        $extraInfo = [
+            'total_orders_count' => $totalFiltered,
+            'orders_status_accepted' => $totalOrderCount['accepted'],
+            'orders_status_pending' => $totalOrderCount['pending'],
+            'orders_status_declined' => $totalOrderCount['declined'],
+            'user_rate' => '',
+        ];
+
+        $data = [
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalData,
+            'recordsFiltered' => $totalFiltered,
+            'data' => $data,
+            'extra_info' => $extraInfo,
+        ];
+
+        return response()->json($data);
+
+    }
+
+    public function vehicles_sold(Request $request)
+    {
+
+        $totalData = Vehicle::sold($request->all())->count();
+
+        // Widget for Orders index page
+        $totalOrderCount = ['accepted' => 0, 'pending' => 0, 'declined' => 0];
+
+        $totalFiltered = $totalData;
+
+        $start = $request->length == -1 ? 0 : $request->start;
+        $limit = $request->length == -1 ? $totalData : $request->length;
+
+        //Put the columns in an array for which you want to apply the sorting,
+        // index should be in accordance with the column index in the table
+        $dbColumns = [
+            0 => 'id',
+
+            // sorting by meta value
+            7 => 'days_in_yard',
+
+        ];
+
+        $orderColumnIndex = $request->input('order.0.column');
+
+        $orderDbColumn = $dbColumns[$orderColumnIndex];
+        $orderDirection = $request->input('order.0.dir');
+
+        if (empty($request->input('search.value'))) {
+
+            $vehicles = Vehicle::with('metas')->sold($request->all());
+
+            $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
+
+            $vehicles = $vehicles->offset($start)->limit($limit)->get();
+
+
+        } else {
+            $search = $request->input('search.value');
+            $vehicles = Vehicle::with('metas')->sold($request->all());
+            $vehicles = $vehicles->where(function ($q1) use ($search) {
+                $q1->where('vin', 'LIKE', "%$search%")
+                    ->orWhere('purchase_lot', 'LIKE', "%$search%")
+                    ->orWhere('auction_lot', 'LIKE', "%$search%")
+                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
+
+            })
+                ->get();
+
+            $totalFiltered = count($vehicles);
+            $vehicles = $vehicles->skip($start)->take($limit);
+        }
+
+        //
+        $data = [];
+        $user_role = Auth::user()->role;
+        foreach ($vehicles as &$vehicle) {
+            $vehicle->null = '';
+            $vehicle->DT_RowId = $vehicle->id;
+            $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
+            $edit = '<a href="'.route('vehicles.edit', $vehicle->id).'" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
+            $edit = '';
+            $alertTitle = __('Are you sure you want to delete vehicle with VIN ').' '.$vehicle->vin;
+
+            $delete = '
+                    <form method="post" action="'.route('vehicles.destroy', $vehicle->id).'" style="display: inline"
+                        onsubmit="return confirmSubmission(this, \''.$alertTitle.'\')">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn text-danger"><i class="fa fa-trash"></i></button>
+                    </form>
+                    ';
+
+            $vehicle->description = sprintf("<a data-toggle='modal' data-target='#modal-vehicle-detail' data-id='%s'>%s</a>", $vehicle->id, $vehicle->description);
+
+            $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
+
+            $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$'.$vehicle->invoice_amount : '';
+
+            $vehicle->actions .= $edit.$delete;
+            if ($user_role == 'yard_manager') {
+                $vehicle->actions = $edit;
+            }
+
+            //Get meta data
+            $vehicle_metas = collect($vehicle->metas);
+            $vehicle->sale_date = $vehicle_metas->where('meta_key', 'sale_date')->pluck('meta_value')->first();
+            $vehicle->sale_price = $vehicle_metas->where('meta_key', 'sale_price')->pluck('meta_value')->first();
+            $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
 
             $data[] = $vehicle;
 
@@ -303,6 +420,8 @@ class DatatableController extends Controller
             $html .= '</tr>';
         }
 
+        $html = $this->getVehicleNotes($html, $vehicle);
+
         $html .= ' </tbody>
                                         </table>
                                     </div>
@@ -355,6 +474,8 @@ class DatatableController extends Controller
             $html .= '<input type="text" class="form-control';
             if (in_array($key, ['left_location', 'date_paid'])) {
                 $html .= ' daterange';
+                $value = now()->format('Y-m-d'); //if date is empty, then datapicker gives NAN for all values in datepicker widget
+
             }
             $html .= '"';
             $html .= ' name="'.$key.'"';
@@ -396,6 +517,7 @@ class DatatableController extends Controller
         $html .= '<td>';
 
         $dropdowns = ['location'];
+        $date_ranges = ['left_location', 'date_paid'];
 
         if (in_array($string, $dropdowns)) {
             $html .= '<select class="form-control select2"';
@@ -415,7 +537,16 @@ class DatatableController extends Controller
             $html .= '</select>';
 
         } else {
-            $html .= '<input type="text" class="form-control"';
+            $html .= '<input type="text" class="form-control';
+            if (in_array($string, $date_ranges)) {
+                $html .= ' daterange';
+                $values = now()->format('Y-m-d'); //if date is empty, then datapicker gives NAN for all values in datepicker widget
+            }
+            $html .= '"';
+
+            if ($string == 'created_at') {
+                $html .= ' disabled';
+            }
             $html .= ' name="'.$string.'"';
             $html .= ' value="'.$values.'"';
             $html .= ' placeholder="'.$values.'"';
@@ -498,5 +629,92 @@ class DatatableController extends Controller
         $vehicle->save();
 
         return $vehicle->id;
+    }
+
+    public function getVehicleNotes($html, $vehicle)
+    {
+        //Notes Heading
+        $html .= '<tr>';
+        $html .= '<div class="row">'; //row started
+        $html .= '<div class="col-6">';
+
+        $html .= '<td>';
+        $html .= '<strong>Notes</strong>';
+        $html .= '</td>';
+
+        $html .= '</div>';
+        $html .= '</div >'; //row ended
+        $html .= '</tr>';
+        //Notes Heading End
+
+        $notes = VehicleNote::where('vehicle_id', $vehicle->id)->get();
+
+        $show_blank_note = true;
+        foreach ($notes as $note) {
+            $html = $this->singleNoteRow($html, $note);
+            if(Auth::id() == $note->user_id)
+            $show_blank_note = false;
+        }
+
+        //if user role is not 'viewer', then show blank note row
+        if($show_blank_note){
+            if(Auth::user()->role != 'viewer')
+            $html = $this->blankSingleNoteRow($html);
+        }
+
+
+
+
+        return $html;
+
+    }
+
+    public function singleNoteRow($html, $note){
+        $html .= '<tr>';
+        $html .= '<div class="row">'; //row started
+        $html .= '<div class="col-6">';
+
+        $html .= '<td>';
+        $html .= sprintf("Added by: <strong>%s</strong> <br> %s", get_username($note->user_id ?? ''),  $note->created_at ? $note->created_at->format("d/m/Y H:i:s") : '');
+        $html .= '</td>';
+
+        $html .= '<td colspan=3>';
+        $html .= '<textarea class="form-control form-control-lg" name="notes[]"';
+
+        //readonly
+        if(Auth::id() != $note->user_id)
+        $html .= ' disabled';
+
+        $html .= '>';
+        $html .= $note->note  ?? null;
+        $html .= '</textarea>';
+        $html .= '</td>';
+
+        $html .= '</div>';
+        $html .= '</div >'; //row ended
+        $html .= '</tr>';
+
+        return $html;
+    }
+
+    public function blankSingleNoteRow($html){
+        $html .= '<tr>';
+        $html .= '<div class="row">'; //row started
+        $html .= '<div class="col-6">';
+
+        $html .= '<td>';
+        $html .= 'Add New Note';
+        $html .= '</td>';
+
+        $html .= '<td colspan=3>';
+        $html .= '<textarea class="form-control form-control-lg" name="notes[]">';
+        $html .= '</textarea>';
+        $html .= '</td>';
+
+        $html .= '</div>';
+        $html .= '</div >'; //row ended
+        $html .= '</tr>';
+
+        return $html;
     }
 }

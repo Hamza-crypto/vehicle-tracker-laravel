@@ -1,10 +1,22 @@
 <?php
 
-function order_activity($title, $order)
-{
-    $order->activities()->create([
-        'order_id' => $order->id,
-        'title' => $title,
 
-    ]);
+if(!function_exists('get_username')){
+    function get_username( $user_id ) {
+
+        $user = \App\Models\User::select('name')
+            ->where('id',$user_id )
+            ->first();
+
+        try {
+            return $user['name'];
+        }
+        catch (\Exception $e) {
+            return "";
+        }
+
+    }
 }
+
+
+

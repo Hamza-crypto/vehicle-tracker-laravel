@@ -79,32 +79,14 @@
 
                     $('#vehicle-detail-div2').html(new_response);
 
-                    //We are overriding select2 library
-                    $('.select2').select2({
-                                    placeholder: "Select Location",
-                                    tags: true,
-                                    insertTag: function (data, tag) {
-                                        data.push(tag);
-                                    }
-                            });
-
-
-
-                    var startDate;
-                    $('.daterange').each(function(index) {
-                    startDate = $(this).val();
-
-                    $(this).daterangepicker({
-                        singleDatePicker: true,
-                        showDropdowns: true,
-                        startDate: startDate,
-                        locale: {
-                            format: "YYYY-MM-DD"
-                        }
-                    });
-            });
-
-
+                        //We are overriding select2 library
+                        $('.select2').select2({
+                                        placeholder: "Select Location",
+                                        tags: true,
+                                        insertTag: function (data, tag) {
+                                            data.push(tag);
+                                        }
+                                });
 
 
                 });
@@ -126,7 +108,7 @@
                 'processing': true,
                 'serverSide': true,
                 'ajax': {
-                    'url': "{{  route('vehicles.ajax')  }}",
+                    'url': "{{  route('vehicles.sold.ajax')  }}",
                     "dataType": "json",
                     "type": "GET",
                     "data": function (data) {
@@ -160,13 +142,11 @@
                     {"data": "null"},
                     {"data": "description"},
                     {"data": "vin"},
-                    {"data": "left_location"},
-                    {"data": "location"},
-                    {"data": "date_paid"},
-                    {"data": "purchase_lot"}, //purchase lot
                     {"data": "auction_lot"}, //auction lot
+                    {"data": "sale_date"},
+                    {"data": "invoice_amount"},
+                    {"data": "sale_price"},
                     {"data": "days_in_yard"},
-                    {"data": "claim_number"},
                     {"data": "actions", "className": 'table-action'},
                     // {"data": "status"},
                     // {"data": "id"},
@@ -176,7 +156,7 @@
                     var role = "<?php echo Auth()->user()->role ?>";
 
                     if (role == 'viewer') {
-                        api.columns([9]).visible(false);
+                        //api.columns([9]).visible(false);
                     }
                 },
                 "buttons": [
@@ -256,11 +236,9 @@
                     }
                 ],
                 "columnDefs": [
-                    {targets: [0, 1, 2, 4, 8, 9, 10], orderable: false},
+                    {targets: [0, 1, 2, 3, 4, 5, 6, 7, 8], orderable: false},
                     {targets: [0], className: 'select-checkbox sorting_disabled'},
-
-
-                ],
+ ],
                 "select": {
                     style: 'multi',
                     selector: 'td:first-child'
@@ -296,7 +274,6 @@
 
             //Submit form
             $('.vehicle-detail-form').on('submit', function(e) {
-
                 e.preventDefault();
                 var form = $(this);
                 var url = form.attr('action');
@@ -307,30 +284,16 @@
                     type: method,
                     data: data,
                     success: function(response) {
+                        console.log(response);
+                        $('#modal-vehicle-create').modal('hide');
 
-                        if(response.status == 'success'){
-                            Swal.fire(
+                        Swal.fire(
                             'Success!',
                             response.message,
                             'success'
                         );
 
-                        $('#modal-vehicle-create').modal('hide');
-                        window.location.href = '/vehicles';
-                        }
-
-                        else
-                        {
-                            Swal.fire(
-                            'Error!',
-                            'Something went wrong',
-                            'error'
-                        );
-                        console.log( response.message );
-
-
-                        }
-
+                        // window.location.href = '/vehicles';
 
                     },
                     error: function(error) {
@@ -428,7 +391,9 @@
                 var startDate;
                 $('.daterange').each(function(index) {
                 startDate = $(this).val();
-
+                if(startDate == '') {
+                    startDate = moment().format('YYYY-MM-DD');
+                }
                 console.log(startDate);
                 $(this).daterangepicker({
                     singleDatePicker: true,
@@ -444,20 +409,6 @@
 
             //Adding action attr to form
             $('#vehicle-detail-form').attr('action', vehicleId );
-        });
-
-
-        $('#close-modal-btn-vehicle-create').on('click', function () {
-
-            $.ajax({
-                    url: '/delete_unsaved_vehicles',
-                    type: 'GET',
-                    success: function(response) {
-                    },
-
-                });
-                window.location.href = '/vehicles';
-
         });
 
 
@@ -480,96 +431,7 @@
     @endif
 
 
-    <h1 class="h3 mb-3">All Vehicles</h1>
-
-{{--    @include('pages.order._inc.stats')--}}
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <form>
-                        <input type="hidden" class="d-none" name="filter" value="true" hidden>
-                        <div class="row">
-
-
-
-{{--                                <div class="col-sm">--}}
-{{--                                    <div class="form-group">--}}
-{{--                                        <label class="form-label" for="status"> Make </label>--}}
-{{--                                        <select name="makes" id="make"--}}
-{{--                                                class="form-control form-select custom-select select2"--}}
-{{--                                                data-toggle="select2">--}}
-{{--                                            <option value="-100"> Select Make </option>--}}
-{{--                                            @foreach($makes as $make)--}}
-{{--                                                <option--}}
-{{--                                                    value="{{ $make['make'] }}" {{ request()->user == $make['make'] ? 'selected' : '' }}>{{ $make['make'] }}</option>--}}
-{{--                                            @endforeach--}}
-{{--                                        </select>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-
-{{--                            <div class="col-sm">--}}
-{{--                                    <div class="form-group">--}}
-{{--                                        <label class="form-label" for="status"> Model </label>--}}
-{{--                                        <select name="models" id="model"--}}
-{{--                                                class="form-control form-select custom-select select2"--}}
-{{--                                                data-toggle="select2">--}}
-{{--                                            <option value="-100"> Select Model </option>--}}
-{{--                                            @foreach($models as $model)--}}
-{{--                                                <option--}}
-{{--                                                    value="{{ $model['model'] }}" {{ request()->user == $model['model'] ? 'selected' : '' }}>{{ $model['model'] }}</option>--}}
-{{--                                            @endforeach--}}
-{{--                                        </select>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-
-                            <div class="col-sm">
-                                <div class="form-group">
-                                    <label class="form-label" for="status"> Status </label>
-                                    <select name="status" id="status"
-                                            class="form-control form-select custom-select select2"
-                                            data-toggle="select2">
-                                        <option value="-100"> Select Status </option>
-                                        @foreach($statuses as $status)
-                                            <option
-                                                value="{{ $status  }}" {{ request()->status == $status ? 'selected' : '' }}>{{ $status }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-{{--                            <div class="col-sm">--}}
-{{--                                <div class="form-group">--}}
-{{--                                    <label class="form-label" for="daterange">{{ __('Date Range') }}</label>--}}
-{{--                                    <input id="daterange" class="form-control" type="text" name="daterange"--}}
-{{--                                           value="{{ request()->daterange }}"--}}
-{{--                                           placeholder="{{ __('Select Date range') }}"/>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm mt-4">
-                                <button type="button"
-                                        class="btn btn-sm btn-primary apply-dt-filters mt-2">{{ __('Apply') }}</button>
-                                <button type="button"
-                                        class="btn btn-sm btn-secondary clear-dt-filters mt-2">{{ __('Clear') }}</button>
-
-{{--                                <button type="button" class="btn btn-sm btn-secondary mt-2"--}}
-{{--                                        onclick="get_query_params2()"--}}
-{{--                                >{{ 'Export ' }}</button>--}}
-
-                            </div>
-                        </div>
-
-
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
+    <h1 class="h3 mb-3">Sold Vehicles</h1>
 
     <div class="row">
         <div class="col-12">
@@ -582,16 +444,13 @@
                             <th></th>
                             <th>Year-Make-Model</th>
                             <th>VIN</th>
-                            <th>Left Location</th>
-                            <th>Current Location</th>
-                            <th>Purchase Date</th>
-                            <th>Purchase Lot #</th>
                             <th>Auction Lot #</th>
+                            <th>Sale Date</th>
+                            <th>Purchased ($)</th>
+                            <th>Sale Price</th>
                             <th>Days in Yard</th>
-                            <th>Claim Number</th>
                             <th>Actions</th>
-{{--                            <th>Status</th>--}}
-{{--                            <th>ID</th>--}}
+
                         </tr>
                         </thead>
                         <tbody>
@@ -601,8 +460,6 @@
             </div>
         </div>
     </div>
-
-
 
 @endsection
 

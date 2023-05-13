@@ -8,6 +8,7 @@ use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
+use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -25,7 +26,19 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
  */
 Route::get('/test', function () {
 
-    dd('Deploy completed');
+
+    $vehicles_sold = Vehicle::join('vehicle_metas', 'vehicles.ID', '=', 'vehicle_metas.vehicle_id')
+    // ->select(['vin', 'meta_value'])
+    ->where('meta_key', 'status')
+    ->where('meta_value', 'SOLD')
+    ->orderBy('vehicle_metas.id', 'DESC')
+    ->limit(30)
+    ->get();
+
+    dd($vehicles_sold->toArray());
+
+
+
 });
 
 Route::get('/test2', function () {
@@ -40,6 +53,7 @@ Route::redirect('/', '/dashboard');
 Route::get('/reset', function () {
     DB::table('vehicles')->truncate();
     DB::table('vehicle_metas')->truncate();
+    DB::table('vehicle_notes')->truncate();
     dd('Database cleared');
 });
 
@@ -59,6 +73,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::get('api/v1/vehicles', [DatatableController::class, 'vehicles'])->name('vehicles.ajax');
+    Route::get('api/v1/vehicles/sold', [DatatableController::class, 'vehicles_sold'])->name('vehicles.sold.ajax');
     //Render modal for vehicle details
     Route::get('vehicles/{vehicle}/html', [DatatableController::class, 'getVehicleDetails'])->name('vehicle.detail.html');
 
@@ -94,6 +109,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('vehicle/location/{location}', [LocationsController::class, 'add_new_location'])->name('location.add');
 
         Route::delete('vehicles/delete-multiple', [VehicleController::class, 'delete_multiple_vehicles'])->name('vehicles.delete-multiple');
+        Route::get('vehicles/sold', [VehicleController::class, 'sold_vehicles'])->name('vehicles.sold');
         Route::resource('vehicles', VehicleController::class)->except('index');
         Route::resource('locations', LocationsController::class);
     });
@@ -103,6 +119,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('next_vehicle_id', [DatatableController::class, 'next_vehicle_id']);
+Route::get('delete_unsaved_vehicles', [VehicleController::class, 'delete_unsaved_vehicles']);
 
 //Elections
 Route::get('elections', [ElectionController::class, 'index']);

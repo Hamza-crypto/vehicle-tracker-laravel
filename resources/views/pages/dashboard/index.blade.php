@@ -10,4 +10,5 @@
     <h1 class="h3 mb-3">Dashboard</h1>
 
     @include('pages.dashboard._inc.stats')
+    @include('pages.dashboard._inc.sold-table')
 @endsection

@@ -226,6 +226,13 @@
                                 </div>
                             </div>
 
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="location">Notes</label>
+                                    <textarea class="form-control form-control-lg" name="notes"></textarea>
+                                </div>
+                            </div>
+
 
                         </div>
                         <div class="form-group">

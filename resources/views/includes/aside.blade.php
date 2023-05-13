@@ -21,16 +21,41 @@
             <li class="sidebar-header">
                 Vehicles
             </li>
-            <li class="sidebar-item {{ request()->is('vehicles') ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ route('vehicles.index') }}">
-                    <i class="align-middle" data-feather="truck"></i>
-                    <span class="align-middle">All Vehicles</span>
+
+
+            <li class="sidebar-item {{ request()->is('vehicles/sold') || request()->is('vehicles')  ? 'active' : '' }} ">
+                <a data-target="#vehicles" data-toggle="collapse" class="sidebar-link {{ request()->is('vehicles/sold') || request()->is('vehicles') ? 'collapsed' : '' }}">
+                    <i class="align-middle" data-feather="plus-square"></i>
+                    <span class="align-middle">Vehicles</span>
                 </a>
+                <ul id="vehicles"
+                    class="sidebar-dropdown list-unstyled collapse {{ request()->is('vehicles/sold') || request()->is('vehicles') ? 'show' : '' }}"
+                    data-parent="#sidebar">
+
+                    <li class="sidebar-item {{ request()->is('vehicles') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('vehicles.index') }}">
+                            <i class="align-middle" data-feather="truck"></i>
+                            <span class="align-middle">All Vehicles</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item {{ request()->is('vehicles/sold') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('vehicles.sold') }}">
+                            <i class="align-middle" data-feather="truck"></i>
+                            <span class="align-middle">Sold Vehicles</span>
+                        </a>
+                    </li>
+
+
+
+
+
+                </ul>
             </li>
             @if( $role != 'viewer')
 
                 <li class="sidebar-item {{ request()->is('vehicles/upload*') ? 'active' : '' }} ">
-                    <a data-target="#upload" data-toggle="collapse" class="sidebar-link {{ request()->is('users/*') ? 'collapsed' : '' }}">
+                    <a data-target="#upload" data-toggle="collapse" class="sidebar-link {{ request()->is('vehicles/upload/*') ? 'collapsed' : '' }}">
                         <i class="align-middle" data-feather="plus-square"></i>
                         <span class="align-middle">Upload Files</span>
                     </a>

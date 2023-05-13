@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
+use App\Models\VehicleNote;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
+
+use function PHPUnit\Framework\isNull;
 
 class VehicleController extends Controller
 {
@@ -39,6 +43,19 @@ class VehicleController extends Controller
             ->pluck('meta_value');
 
         return view('pages.vehicle.index', compact('models', 'makes', 'statuses'));
+    }
+
+    public function sold_vehicles()
+    {
+        $statuses = VehicleMetas::select('meta_value')
+            ->where('meta_key', 'status')
+            ->where('meta_value', 'Sold')
+            ->groupBy('meta_value')
+            ->orderBy('meta_value')
+            ->get()
+            ->pluck('meta_value');
+
+        return view('pages.vehicle.sold', compact( 'statuses'));
     }
 
     public function create_upload_buy()
@@ -460,16 +477,6 @@ class VehicleController extends Controller
             'description' => 'required',
         ]);
 
-        $vehicle->vin = $request->vin;
-        $vehicle->purchase_lot = $request->purchase_lot;
-        $vehicle->auction_lot = $request->auction_lot;
-        $vehicle->location = $request->location;
-        $vehicle->description = $request->description;
-        $vehicle->left_location = $request->left_location;
-        $vehicle->date_paid = $request->date_paid;
-        $vehicle->invoice_amount = $request->invoice_amount;
-        $vehicle->save();
-
         $meta_keys = [
             'claim_number',
             'status',
@@ -484,20 +491,54 @@ class VehicleController extends Controller
             'sale_title_type',
         ];
 
-        foreach ($meta_keys as $key) {
 
-            if (empty($request->$key) || $request->$key == '-100') {
-                continue;
+        $amount = $request->invoice_amount;
+        try{
+            $vehicle->vin = $request->vin;
+            $vehicle->purchase_lot = $request->purchase_lot;
+            $vehicle->auction_lot = $request->auction_lot;
+            $vehicle->location = $request->location;
+            $vehicle->description = $request->description;
+            $vehicle->left_location = $request->left_location;
+            $vehicle->date_paid = $request->date_paid;
+
+            $amount = str_replace('$', '', $amount );
+            $vehicle->invoice_amount = (int)str_replace(' ', '', $amount);
+            $vehicle->save();
+
+            foreach ($meta_keys as $key) {
+
+                if (empty($request->$key) || $request->$key == '-100') {
+                    continue;
+                }
+
+                VehicleMetas::updateOrCreate(
+                    ['vehicle_id' => $vehicle->id, 'meta_key' => $key],
+                    [
+                        'meta_value' => $request->$key,
+                    ]);
             }
 
-            VehicleMetas::updateOrCreate(
-                ['vehicle_id' => $vehicle->id, 'meta_key' => $key],
-                [
-                    'meta_value' => $request->$key,
-                ]);
+            foreach ($request->notes as $note) {
+
+                if($note == null) continue;
+
+
+                VehicleNote::updateOrCreate(
+                    ['vehicle_id' => $vehicle->id, 'user_id' => Auth::id()],
+                    [
+                        'note' => $note
+                    ]);
+
+            }
+
+
+            return response()->json(['message' => 'Vehicle updated successfully', 'status' => 'success']);
+        }
+        catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage() , 'status' => 'error']);
         }
 
-        return response()->json(['message' => 'Vehicle updated successfully']);
     }
 
     public function destroy(Vehicle $vehicle)
@@ -585,5 +626,10 @@ class VehicleController extends Controller
 
         return $vehicle;
         //        $vehicle->metas()->updateOrCreate(['meta_key' => 'pickup_date'], ['meta_value' => $request->pickup_date]);
+    }
+
+
+    public function delete_unsaved_vehicles(){
+        Vehicle::where('vin', '')->delete();
     }
 }

@@ -80,6 +80,27 @@ class Vehicle extends Model
             ->where('meta_key', 'days_in_yard');
     }
 
+
+    public static function countVehicles($status)
+    {
+        $sold_vehicles = Vehicle::whereHas('metas', function ($query) use ($status) {
+            $query->where('meta_key', 'status')
+                  ->where('meta_value',  $status);
+        })->count();
+
+        return $sold_vehicles;
+    }
+
+    public static function countAllVehicles()
+    {
+        $sold_vehicles = Vehicle::whereDoesntHave('metas', function ($query) {
+            $query->where('meta_key', 'status')
+                  ->where('meta_value',  'SOLD');
+        })->count();
+
+        return $sold_vehicles;
+    }
+
     public function number_of_runs()
     {
         return $this->hasOne(VehicleMetas::class)
@@ -88,13 +109,22 @@ class Vehicle extends Model
 
     public function scopeFilters($query, $request)
     {
-        if (isset($request['make']) && $request['make'] != -100 && $request['make'] != 'undefined') {
-            $query->where('make', $request['make']);
-        }
+        $query = $this->mainFilters($query, $request);
 
-        if (isset($request['model']) && $request['model'] != -100 && $request['model'] != 'undefined') {
-            $query->where('model', $request['model']);
-        }
+        $query = $this->allVehicles($query);
+
+    }
+
+    public function scopeSold($query, $request)
+    {
+        $query = $this->mainFilters($query, $request);
+
+        $query = $this->soldVehicles($query);
+
+    }
+
+    public function mainFilters($query, $request)
+    {
 
         if (isset($request['status']) && $request['status'] != -100) {
 
@@ -110,11 +140,39 @@ class Vehicle extends Model
             $query->whereBetween('created_at', [Carbon::parse($dateRange[0])->format('Y-m-d'), Carbon::parse($dateRange[1])->format('Y-m-d')]);
         }
 
+        $query->orderBy('id', 'desc');
+
+        return $query;
+    }
+    public function allVehicles($query){
+
         $query->whereDoesntHave('metas', function ($q1) {
             $q1->where('meta_key', 'status')
-                ->where('meta_value', 'Sold');
+                ->where('meta_value', 'SOLD');
         });
 
-        $query->orderBy('id', 'desc');
+        return $query;
+    }
+
+    public function soldVehicles($query){
+
+        $query->whereHas('metas', function ($q1) {
+            $q1->where('meta_key', 'status')
+                ->where('meta_value', 'SOLD');
+        });
+
+        return $query;
+    }
+
+    public function scopeSort($query, $request)
+    {
+        if (!isset($request['sort'])) {
+            return $query->orderBy('id', 'desc');
+        }
+
+        $sort = $request['sort'];
+        $order = $request['order'];
+
+        return $query->orderBy($sort, $order);
     }
 }
