@@ -4,7 +4,10 @@
 
 @section('content')
     <div class="text-center mt-4">
-        <h1 class="h2">Login</h1>
+        <h1 class="h2" >
+            <img src="{{ asset('assets/img/kaj-tracker.png') }}" alt="kajtracker" width="350"  />
+        </h1>
+        <br
         <p class="lead">
             Login to your account to continue
         </p>

@@ -4,7 +4,9 @@
 <nav id="sidebar" class="sidebar">
     <div class="sidebar-content js-simplebar">
         <a class="sidebar-brand" href="{{ route('dashboard.index') }}">
-            <span class="align-middle me-3">{{ env("APP_NAME") }}</span>
+            <span class="align-middle me-3">
+                <img src="{{ asset('assets/img/kaj-tracker.png') }}" alt="kajtracker" width="200" />
+            </span>
         </a>
 
         <ul class="sidebar-nav">
