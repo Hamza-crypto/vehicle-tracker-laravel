@@ -14,7 +14,7 @@ class ClearVehicle extends Command
     public function handle()
     {
 
-        $vehicles = Vehicle::whereNull('invoice_amount')->delete();
+        $vehicles = Vehicle::where('vin', '')->delete();
 
         echo "Deleted {$vehicles} vehicles";
 

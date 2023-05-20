@@ -17,17 +17,16 @@ class EncryptTable extends Command
         parent::__construct();
     }
 
-
     public function handle()
     {
         $user_metas = UserMeta::all();
-        foreach ($user_metas as $meta){
+        foreach ($user_metas as $meta) {
 
             $meta->meta_value = Crypt::encrypt($meta->meta_value);
             $meta->save();
         }
 
-        echo "successfully done";
+        echo 'successfully done';
 
         return Command::SUCCESS;
     }

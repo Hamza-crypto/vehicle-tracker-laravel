@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,20 +26,6 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 |
  */
 Route::get('/test', function () {
-
-
-    $vehicles_sold = Vehicle::join('vehicle_metas', 'vehicles.ID', '=', 'vehicle_metas.vehicle_id')
-    // ->select(['vin', 'meta_value'])
-    ->where('meta_key', 'status')
-    ->where('meta_value', 'SOLD')
-    ->orderBy('vehicle_metas.id', 'DESC')
-    ->limit(30)
-    ->get();
-
-    dd($vehicles_sold->toArray());
-
-
-
 });
 
 Route::get('/test2', function () {
@@ -126,5 +113,5 @@ Route::get('elections', [ElectionController::class, 'index']);
 Route::get('update_election', [ElectionController::class, 'update_election']);
 
 //Guru
-Route::get('token', [GuruController::class, 'getAccessToken']);
-Route::get('jobs', [GuruController::class, 'getJobs']);
+Route::get('get-token', [GuruController::class, 'getAccessToken']);
+Route::get('store-jobs', [GuruController::class, 'store_jobs']);

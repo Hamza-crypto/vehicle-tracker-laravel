@@ -6,8 +6,6 @@ use App\Models\Order;
 use App\Notifications\OrderStatusUpdated;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use App\Models\PostMessage;
-use Illuminate\Support\Facades\Http;
 
 class ChangeStatus extends Command
 {
@@ -24,27 +22,26 @@ class ChangeStatus extends Command
     {
 
         $minutes_offset = 15;
-        echo "" . now();
+        echo ''.now();
         //dd(Carbon::now()->subMinutes(5));
         $orders = Order::with('user')
-            ->where('created_at' ,'<', Carbon::now()->subMinutes($minutes_offset))
-            ->where('status' , 'pending')
+            ->where('created_at', '<', Carbon::now()->subMinutes($minutes_offset))
+            ->where('status', 'pending')
             ->latest()
             ->get();
-
 
         foreach ($orders as $order) {
             $order->status = 'accepted';
             $order->status_updated_at = now();
             $order->save();
-            $msg = "Order: " . $order->card_number . " accepted by Bot";
+            $msg = 'Order: '.$order->card_number.' accepted by Bot';
             app('log')->channel('order_status')->info($msg);
             $Channel_ID = $order->user->channel_id();
-            if($Channel_ID){
+            if ($Channel_ID) {
                 $order->notify(new OrderStatusUpdated());
                 echo $Channel_ID;
             }
         }
-        echo "Task Done";
+        echo 'Task Done';
     }
 }
