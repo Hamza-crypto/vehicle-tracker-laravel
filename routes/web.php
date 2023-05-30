@@ -10,6 +10,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
+use Spatie\DiscordAlerts\Facades\DiscordAlert;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
@@ -26,14 +27,9 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 |
  */
 Route::get('/test', function () {
+    DiscordAlert::message("test message");
 });
 
-Route::get('/test2', function () {
-    $flight = VehicleMetas::updateOrCreate(
-        ['vehicle_id' => 2, 'meta_key' => 'keys'],
-        ['meta_value' => 'Yes 2']
-    );
-});
 
 Route::redirect('/', '/dashboard');
 
@@ -114,4 +110,5 @@ Route::get('update_election', [ElectionController::class, 'update_election']);
 
 //Guru
 Route::get('get-token', [GuruController::class, 'getAccessToken']);
+Route::get('refresh-token', [GuruController::class, 'getNewAccessTokenFromRefreshToken']);
 Route::get('store-jobs', [GuruController::class, 'store_jobs']);

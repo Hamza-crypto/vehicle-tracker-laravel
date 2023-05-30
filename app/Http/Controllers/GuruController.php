@@ -15,16 +15,20 @@ class GuruController extends Controller
         $request_body = [
             'grant_type' => 'client_credentials',
             'client_id' => env('GURU_CLIENT_ID'),
-            'client_secret' => env('GURU_CLIENT_SECRET'),
+            'client_secret' => env('GURU_CLIENT_SECRET')
         ];
+
+
         $response = Http::withHeaders([
             'Content-Type' => 'application/x-www-form-urlencoded',
         ])->asForm()->post($url, $request_body);
         $response = json_decode($response);
 
+        dump($response);
         $this->changeEnvironmentVariable('GURU_ACCESS_TOKEN', $response->access_token);
         $this->changeEnvironmentVariable('GURU_REFRESH_TOKEN', $response->refresh_token);
 
+        DiscordAlert::message("New Token: " . $response->access_token);
         return $response;
 
     }
@@ -43,9 +47,11 @@ class GuruController extends Controller
         ])->asForm()->post($url, $request_body);
         $response = json_decode($response);
 
+        dump($response);
         $this->changeEnvironmentVariable('GURU_ACCESS_TOKEN', $response->access_token);
         $this->changeEnvironmentVariable('GURU_REFRESH_TOKEN', $response->refresh_token);
 
+        DiscordAlert::message("Token Refreshed: " . $response->access_token);
         return $response;
 
     }
@@ -66,15 +72,13 @@ class GuruController extends Controller
     {
         $url = sprintf('%s/search/job?category=programming-development&pagesize=300', env('GURU_BASE_URL'));
 
-        // $response = Http::withToken(env('GURU_ACCESS_TOKEN'))->get($url);
+         $response = Http::withToken(env('GURU_ACCESS_TOKEN'))->get($url);
 
-        $response = file_get_contents(public_path('jobs.json'));
+        //$response = file_get_contents(public_path('jobs.json'));
 
         $response = json_decode($response);
-
+        dump($response);
         $response = $this->filterNonRelevantJobs($response);
-
-        // return $response;
 
     }
 
@@ -123,7 +127,7 @@ class GuruController extends Controller
                 $this->sendDiscordMessage($data);
 
                 $limit++;
-                if($limit == 2) break;
+                // if($limit == 4) break;
   }
         }
 

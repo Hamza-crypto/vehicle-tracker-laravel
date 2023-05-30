@@ -14,6 +14,7 @@ class GuruRefreshToken extends Command
     {
         $guru = new \App\Http\Controllers\GuruController();
         $guru->getNewAccessTokenFromRefreshToken();
+
         return Command::SUCCESS;
     }
 }
