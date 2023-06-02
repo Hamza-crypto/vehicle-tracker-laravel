@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('guru:token-refresh')
-            ->everyThirtyMinutes();
+            ->hourly();
 
         $schedule->command('guru:fetch-new-jobs')
             ->everyFiveMinutes();
