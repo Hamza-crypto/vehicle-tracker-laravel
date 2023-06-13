@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CSVHeader;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -14,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        //        Create Admin
+              // Create Admin
         $admin = User::create([
             'name' => 'Hamza Siddique',
             'email' => 'admin@gmail.com',
@@ -23,7 +24,10 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        \App\Models\User::factory(5)->create();
+        // \App\Models\User::factory(5)->create();
+
+        $this->call(HeaderSeeder::class);
+
 
     }
 }

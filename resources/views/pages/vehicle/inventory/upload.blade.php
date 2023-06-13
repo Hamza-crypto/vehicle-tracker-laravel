@@ -59,7 +59,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">Checking CSV File</h5>
-                    <h6 class="card-subtitle text-muted">Please wait while we check your file and save in system</h6>
+                    <h6 class="card-subtitle text-muted">Please wait while we check your file and save it in the system.</h6>
                 </div>
                 <div class="card-body">
 
@@ -93,8 +93,8 @@
                         <tbody>
 
                         @foreach($csv_header as $key => $value)
-                            <tr>
-                                <td>{{ $key+1 }}</td>
+                            <tr @if($value == $column) style="background: #f5abab;"  @endif>
+                                <td>{{ $loop->index +1 }}</td>
                                 <td>{{ $value }}</td>
                             </tr>
                         @endforeach

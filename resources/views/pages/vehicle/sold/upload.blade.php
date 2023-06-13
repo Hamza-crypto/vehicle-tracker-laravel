@@ -70,8 +70,8 @@
                         <tbody>
 
                         @foreach($csv_header as $key => $value)
-                            <tr>
-                                <td>{{ $key+1 }}</td>
+                            <tr @if($value == $column) style="background: #f5abab;"  @endif>
+                                <td>{{ $loop->index +1 }}</td>
                                 <td>{{ $value }}</td>
                             </tr>
                         @endforeach

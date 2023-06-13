@@ -45,11 +45,9 @@ class DatatableController extends Controller
         $orderDirection = $request->input('order.0.dir');
 
         if (empty($request->input('search.value'))) {
+
             $vehicles = Vehicle::with('metas')->filters($request->all());
-
-
             $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
-
             $vehicles = $vehicles->offset($start)->limit($limit)->get();
 
         } else {

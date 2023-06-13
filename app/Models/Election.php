@@ -26,12 +26,11 @@ class Election extends Model
         'election',
     ];
 
-
     public function scopeFilter($query, $filters)
     {
 
         if ($filters['candidate']) {
-            $query->where('candidate', 'LIKE', '%' . $filters['candidate'] . '%');
+            $query->where('candidate', 'LIKE', '%'.$filters['candidate'].'%');
         }
 
         if ($filters['votes_first_round']) {
@@ -41,7 +40,6 @@ class Election extends Model
         if ($filters['percentage_first_round']) {
             $query->where('percentage_first_round', $filters['percentage_first_round']);
         }
-
 
         if ($filters['votes_second_round']) {
             $query->where('votes_second_round', $filters['votes_second_round']);
@@ -55,13 +53,13 @@ class Election extends Model
             $query->where('year', $filters['year']);
         }
         if ($filters['department']) {
-            $query->where('department', 'LIKE', '%' . $filters['department'] . '%');
+            $query->where('department', 'LIKE', '%'.$filters['department'].'%');
         }
         if ($filters['election']) {
-            $query->where('election', 'LIKE', '%' . $filters['election'] . '%');
+            $query->where('election', 'LIKE', '%'.$filters['election'].'%');
         }
         if ($filters['party']) {
-            $query->where('party', 'LIKE', '%' . $filters['party'] . '%');
+            $query->where('party', 'LIKE', '%'.$filters['party'].'%');
         }
 
         //order by

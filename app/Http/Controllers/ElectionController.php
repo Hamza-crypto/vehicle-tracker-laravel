@@ -4,18 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Election;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class ElectionController extends Controller
 {
-
-    function index(Request $request)
+    public function index(Request $request)
     {
         return Election::filter($request)->paginate($request->per_page);
     }
 
-    function update_election()
+    public function update_election()
     {
         DB::table('elections')->truncate();
 
@@ -34,19 +32,22 @@ class ElectionController extends Controller
         ];
 
         $count = 0;
-        $handle = fopen(public_path('election.csv'), "r");
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        $handle = fopen(public_path('election.csv'), 'r');
+        while (($data = fgetcsv($handle, 1000, ',')) !== false) {
             if ($count == 0) {
                 $count++;
+
                 continue;
             }
-            if ($data[4] == '') continue; //Candidate Name
+            if ($data[4] == '') {
+                continue;
+            } //Candidate Name
 
             $election = new Election();
             $election->candidate = $data[4];
             $election->votes_first_round = str_replace(',', '', $data[6]);
             $election->percentage_first_round = $data[7];
-            $election->votes_second_round = str_replace(',', '', $data[8]);;
+            $election->votes_second_round = str_replace(',', '', $data[8]);
             $election->percentage_second_round = $data[9];
             $election->party = $data[5];
             $election->department = $data[2];
