@@ -24,7 +24,6 @@ class CreateVehiclesTable extends Migration
             $table->date('left_location')->nullable();
             $table->date('date_paid')->nullable();
             $table->integer('invoice_amount')->nullable();
-            $table->string('status')->nullable();
 
             $table->timestamps();
         });

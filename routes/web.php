@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CSVHeaderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\ElectionController;
@@ -34,9 +35,11 @@ Route::get('/test', function () {
 Route::redirect('/', '/dashboard');
 
 Route::get('/reset', function () {
-    DB::table('vehicles')->truncate();
-    DB::table('vehicle_metas')->truncate();
-    DB::table('vehicle_notes')->truncate();
+    \Illuminate\Support\Facades\Artisan::call('migrate:fresh');
+    \Illuminate\Support\Facades\Artisan::call('db:seed');
+//    DB::table('vehicles')->truncate();
+//    DB::table('vehicle_metas')->truncate();
+//    DB::table('vehicle_notes')->truncate();
     dd('Database cleared');
 });
 
@@ -66,8 +69,14 @@ Route::group(['middleware' => ['auth']], function () {
         ['middleware' => 'admin',
         ], function () {
             Route::get('logs', [LogViewerController::class, 'index']);
+        Route::post('/process-csv', [CSVHeaderController::class,'processCsv'] )->name('process.csv');
 
-            //        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
+        Route::post('/field-mapping/save', [CSVHeaderController::class,'saveFieldMapping'])->name('field.mapping.save');
+
+        Route::post('field-mapping', [CSVHeaderController::class, 'showFieldMapping'])->name('field.mapping');
+        Route::resource('headers', CSVHeaderController::class);
+
+        //        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
             //        Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
 
             Route::resource('users', UsersController::class);
@@ -112,3 +121,5 @@ Route::get('update_election', [ElectionController::class, 'update_election']);
 Route::get('get-token', [GuruController::class, 'getAccessToken']);
 Route::get('refresh-token', [GuruController::class, 'getNewAccessTokenFromRefreshToken']);
 Route::get('store-jobs', [GuruController::class, 'store_jobs']);
+
+

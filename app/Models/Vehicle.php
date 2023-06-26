@@ -85,7 +85,7 @@ class Vehicle extends Model
     {
         $sold_vehicles = Vehicle::whereHas('metas', function ($query) use ($status) {
             $query->where('meta_key', 'status')
-                  ->where('meta_value',  $status);
+                ->where('meta_value', $status);
         })->count();
 
         return $sold_vehicles;
@@ -95,7 +95,7 @@ class Vehicle extends Model
     {
         $sold_vehicles = Vehicle::whereDoesntHave('metas', function ($query) {
             $query->where('meta_key', 'status')
-                  ->where('meta_value',  'SOLD');
+                ->where('meta_value', 'SOLD');
         })->count();
 
         return $sold_vehicles;
@@ -135,16 +135,27 @@ class Vehicle extends Model
 
         }
 
-        if (isset($request['daterange'])) {
-            $dateRange = explode(' - ', $request['daterange']);
-            $query->whereBetween('created_at', [Carbon::parse($dateRange[0])->format('Y-m-d'), Carbon::parse($dateRange[1])->format('Y-m-d')]);
+        if (isset($request['left_location'])) {
+            $dateRange = explode(' - ', $request['left_location']);
+            $query->whereBetween('left_location', [Carbon::parse($dateRange[0])->format('Y-m-d'), Carbon::parse($dateRange[1])->format('Y-m-d')]);
+        }
+
+        if (isset($request['location']) && $request['location'] != -100) {
+            $query->where('location',  $request['location']);
+        }
+
+        if (isset($request['date_paid'])) {
+            $dateRange = explode(' - ', $request['date_paid']);
+            $query->whereBetween('date_paid', [Carbon::parse($dateRange[0])->format('Y-m-d'), Carbon::parse($dateRange[1])->format('Y-m-d')]);
         }
 
         // $query->orderBy('id', 'desc');
 
         return $query;
     }
-    public function allVehicles($query){
+
+    public function allVehicles($query)
+    {
 
         $query->whereDoesntHave('metas', function ($q1) {
             $q1->where('meta_key', 'status')
@@ -154,7 +165,8 @@ class Vehicle extends Model
         return $query;
     }
 
-    public function soldVehicles($query){
+    public function soldVehicles($query)
+    {
 
         $query->whereHas('metas', function ($q1) {
             $q1->where('meta_key', 'status')

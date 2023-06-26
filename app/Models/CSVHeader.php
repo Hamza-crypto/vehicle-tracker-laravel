@@ -9,5 +9,14 @@ class CSVHeader extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'filename',
+        'database_field',
+        'csv_header'
+    ];
+
     protected $table = 'csv_headers';
+
+    public $timestamps = false;
+
 }

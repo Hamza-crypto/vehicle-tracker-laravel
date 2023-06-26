@@ -82,10 +82,10 @@
         </div>
     @endif
 
-    @if(isset($vehicles_not_found))
+    @if(isset($vehicles_not_found) && count($vehicles_not_found) > 0)
         <div class="row">
             <div class="col-12 col-xl-6">
-                <div class="card">
+                <div class="card" @if(count($vehicles_not_found) > 20) style="max-height: 400px; overflow-y: auto" @endif >
                     <div class="card-header">
                         <h5 class="card-title">Vehicles not found in the system</h5>
                     </div>

@@ -10,111 +10,113 @@ class HeaderSeeder extends Seeder
 {
     public function run()
     {
+        //copart Buy
         $requiredColumns = [
-            'VIN',
-            'Lot/Inv #',
-            'Location',
-            'Description',
-            'Left Location',
-            'Date Paid',
-            'Invoice Amount',
+            'vin' => 'VIN',
+            'purchase_lot' => 'Lot/Inv #',
+            'location' => 'Location',
+            'description' => 'Description',
+            'left_location' => 'Left Location',
+            'date_paid' => 'Date Paid',
+            'invoice_amount' => 'Invoice Amount',
         ];
 
-        foreach ($requiredColumns as $value) {
+        foreach ($requiredColumns as $key => $value) {
             $bulk_insert_data[] =
                 [
                     'filename' => 'copart_buy',
-                    'header' => $value
+                    'database_field' => $key,
+                    'csv_header' => $value
                 ];
         }
 
+        //IaaI Buy v1
         $requiredColumns = [
-            'VIN',
-            'Stock',
-            'Stock#',
-            'Branch',
-            'Description',
-            'Year',
-            'Make',
-            'Model',
-            'Date Picked Up',
-            'Date Paid',
-            'Total Paid',
-            'Total Amount',
-            'Item#',
+            'vin' => 'VIN',
+            'purchase_lot' => 'Stock#',
+            'location' => 'Branch',
+            'year' => 'Year',
+            'make' => 'Make',
+            'model' => 'Model',
+            'left_location' => 'Date Picked Up',
+            'date_paid' => 'Date Paid',
+            'invoice_amount' => 'Total Amount'
         ];
 
-        foreach ($requiredColumns as $value) {
+//        $requiredColumns2 = [
+//            'vin' => 'VIN',
+//            'vin' => 'Stock',
+//            'vin' => 'Stock#',
+//            'vin' => 'Branch',
+//            'vin' => 'Description',
+//            'vin' => 'Year',
+//            'vin' => 'Make',
+//            'vin' => 'Model',
+//            'vin' => 'Date Picked Up',
+//            'vin' => 'Date Paid',
+//            'vin' => 'Total Paid',
+//            'vin' => 'Total Amount',
+//            'vin' => 'Item#',
+//        ];
+
+        foreach ($requiredColumns as $key => $value) {
             $bulk_insert_data[] =
                 [
                     'filename' => 'iaai_buy',
-                    'header' => $value
+                    'database_field' => $key,
+                    'csv_header' => $value
                 ];
         }
 
-
+        //Copart Inventory: Step 2
         $requiredColumns = [
-            'Lot #',
-            'Claim #',
-            'Status',
-            'Description',
-            'VIN',
-            'Primary Damage',
-            'Secondary Damage',
-            'Keys',
-            'Drivability Rating',
-            'Odometer',
-            'Odometer Brand',
-            'Sale Title State',
-            'Sale Title Type',
-            'Location',
-            'Days in Yard',
+            'vin' => 'VIN',
+            'location' => 'Location',
+            'auction_lot' => 'Lot #',
+            'claim_number' => 'Claim #',
+            'description' => 'Description',
+
+            'status' => 'Status',
+            'primary_damage' => 'Primary Damage',
+            'secondary_damage' => 'Secondary Damage',
+            'keys' => 'Keys',
+            'drivability_rating' => 'Drivability Rating',
+            'odometer' => 'Odometer',
+            'odometer_brand' => 'Odometer Brand',
+            'sale_title_type' => 'Sale Title State',
+            'sale_title_state' => 'Sale Title Type',
+            'days_in_yard' => 'Days in Yard',
         ];
-        foreach ($requiredColumns as $value) {
+
+        foreach ($requiredColumns as $key => $value) {
             $bulk_insert_data[] =
                 [
                     'filename' => 'copart_inventory',
-                    'header' => $value
+                    'database_field' => $key,
+                    'csv_header' => $value
                 ];
         }
 
 
         $requiredColumns = [
-            'Lot #',
-            'Claim #',
-            'Status',
-            'Location',
-            'Sale Date',
-            'Description',
-            'Title State',
-            'Title Type',
-            'Odometer',
-            'Odometer Brand',
-            'Primary Damage',
-            'Loss Type',
-            'Keys',
-            'Drivability Rating',
-            'ACV',
-            'Repair Cost',
-            'Sale Price',
-            'Return %',
+            'lot' => 'Lot #',
+            'sale_date' =>'Sale Date',
+            'sale_price' =>'Sale Price',
+            'status' =>'Status'
         ];
 
-        foreach ($requiredColumns as $value) {
+
+        foreach ($requiredColumns as $key => $value) {
             $bulk_insert_data[] =
                 [
                     'filename' => 'copart_sale',
-                    'header' => $value
+                    'database_field' => $key,
+                    'csv_header' => $value
                 ];
         }
 
         foreach (array_chunk($bulk_insert_data, 1000) as $chunk) {
             DB::table('csv_headers')->insert($chunk);
         }
-
-
-
-
-
     }
 }

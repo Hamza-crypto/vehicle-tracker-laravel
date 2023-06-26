@@ -4,6 +4,7 @@
 *.key
 *.log
 /vendor
+/csv_files
 .env
 .env.backup
 .phpunit.result.cache

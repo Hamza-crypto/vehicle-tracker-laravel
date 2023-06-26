@@ -14,7 +14,6 @@ class DatatableController extends Controller
 {
     public function vehicles(Request $request)
     {
-
         $totalData = Vehicle::filters($request->all())->count();
 
         // Widget for Orders index page
@@ -87,8 +86,15 @@ class DatatableController extends Controller
 
             $vehicle->description = sprintf("<a data-toggle='modal' data-target='#modal-vehicle-detail' data-id='%s'>%s</a>", $vehicle->id, $vehicle->description);
 
-            $vehicle->purchase_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->purchase_lot, $vehicle->purchase_lot);
-            $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
+            if($vehicle->source == 'iaai'){
+                $vehicle->purchase_lot = sprintf("<a href='https://www.iaai.com/PurchaseHistory' target='_blank' style='color: red'>%s</a>", $vehicle->purchase_lot);
+                $vehicle->auction_lot = sprintf("<a href='https://www.iaai.com/PurchaseHistory' target='_blank'>%s</a>", $vehicle->auction_lot);
+            }
+            else{
+                $vehicle->purchase_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->purchase_lot, $vehicle->purchase_lot);
+                $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
+            }
+
 
             $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$'.$vehicle->invoice_amount : '';
             $vehicle->date_paid = sprintf('<span> %s</span>', $vehicle->date_paid);
@@ -129,7 +135,6 @@ class DatatableController extends Controller
 
     public function vehicles_sold(Request $request)
     {
-
         $totalData = Vehicle::sold($request->all())->count();
 
         // Widget for Orders index page
@@ -537,16 +542,25 @@ class DatatableController extends Controller
             $html .= '<input type="text" class="form-control';
             if (in_array($string, $date_ranges)) {
                 $html .= ' daterange';
-                $values = now()->format('Y-m-d'); //if date is empty, then datapicker gives NAN for all values in datepicker widget
+                //if date is empty, then datapicker gives NAN for all values in datepicker widget
+                if(is_null($values)) $values = now()->format('Y-m-d');
+
             }
             $html .= '"';
 
             if ($string == 'created_at') {
                 $html .= ' disabled';
             }
+
             $html .= ' name="'.$string.'"';
             $html .= ' value="'.$values.'"';
-            $html .= ' placeholder="'.$values.'"';
+            if ($string == 'source') {
+                $html .= ' placeholder="copart | iaai"';
+            }
+            else{
+                $html .= ' placeholder="'.$values.'"';
+            }
+
             $html .= ' style="width:auto"';
             $html .= '>';
         }

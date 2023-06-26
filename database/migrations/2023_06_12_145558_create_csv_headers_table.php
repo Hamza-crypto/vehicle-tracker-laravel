@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('csv_headers', function (Blueprint $table) {
             $table->id();
             $table->string('filename');
-            $table->string('header');
+            $table->string('database_field');
+            $table->string('csv_header');
         });
     }
 

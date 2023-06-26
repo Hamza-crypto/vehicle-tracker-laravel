@@ -10,6 +10,7 @@
                             <div class="modal-header">
                                 <h5 class="modal-title">Vehicle Details</h5>
                             </div>
+{{--                            This is the div where response of vehicle details is returned--}}
                             <div id="vehicle-detail-div"></div>
 
                             <div class="modal-footer">

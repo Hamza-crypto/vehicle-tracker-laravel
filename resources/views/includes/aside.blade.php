@@ -56,13 +56,13 @@
             </li>
             @if( $role != 'viewer')
 
-                <li class="sidebar-item {{ request()->is('vehicles/upload*') ? 'active' : '' }} ">
+                <li class="sidebar-item {{ request()->is('vehicles/upload*') || request()->is('headers') ? 'active' : '' }} ">
                     <a data-target="#upload" data-toggle="collapse" class="sidebar-link {{ request()->is('vehicles/upload/*') ? 'collapsed' : '' }}">
                         <i class="align-middle" data-feather="plus-square"></i>
                         <span class="align-middle">Upload Files</span>
                     </a>
                     <ul id="upload"
-                        class="sidebar-dropdown list-unstyled collapse {{ request()->is('vehicles/upload*') ? 'show' : '' }}"
+                        class="sidebar-dropdown list-unstyled collapse {{ request()->is('vehicles/upload*') || request()->is('headers') ? 'show' : '' }}"
                         data-parent="#sidebar">
 
                         <li class="sidebar-item {{ request()->is('vehicles/upload/buy') ? 'active' : '' }}">
@@ -86,6 +86,14 @@
                             </a>
                         </li>
 
+                        @if(in_array($role, ['admin']) )
+                        <li class="sidebar-item {{ request()->is('headers') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('headers.index') }}">
+                                <i class="align-middle" data-feather="plus-square"></i>
+                                <span class="align-middle">CSV Headers</span>
+                            </a>
+                        </li>
+                        @endif
 
 
                     </ul>

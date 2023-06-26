@@ -8,7 +8,6 @@ class GuruFetchNewJobs extends Command
 {
     protected $signature = 'guru:fetch-new-jobs';
 
-
     protected $description = 'Fetch new jobs from Guru.com';
 
     public function handle()

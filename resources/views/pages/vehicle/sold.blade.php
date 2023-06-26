@@ -410,15 +410,7 @@
             //Adding action attr to form
             $('#vehicle-detail-form').attr('action', vehicleId );
         });
-
-
-
-
-
-
-
-
-    </script>
+ </script>
 @endsection
 
 @section('content')

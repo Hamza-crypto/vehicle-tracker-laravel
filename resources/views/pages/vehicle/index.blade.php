@@ -11,265 +11,258 @@
         .modal-body {
             padding: 0rem !important;
         }
-        </style>
+    </style>
 @endsection
 @section('scripts')
     <script>
 
         $(document).ready(function () {
 
-            // $("input[id=\"daterange\"]").daterangepicker({
-            //
-            //     autoUpdateInput: false,
-            // }).on('apply.daterangepicker', function (ev, picker) {
-            //     $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-            // }).on('cancel.daterangepicker', function (ev, picker) {
-            //     $(this).val('');
-            // });
+            $(".daterange-filter").daterangepicker({
+
+                autoUpdateInput: false,
+            }).on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+            }).on('cancel.daterangepicker', function (ev, picker) {
+                $(this).val('');
+            });
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('create') && urlParams.get('create') === 'new') {
 
-                $.get( '/next_vehicle_id', function(response) {
+                $.get('/next_vehicle_id', function (response) {
 
                     var vehicle_id = response;
                     url = '/vehicles/' + vehicle_id;
                     console.log(url);
-                    $.get( url + '/html', function(response) {
-                    //replace ID with "Vehicle ID",keys with "Has Keys"
+                    $.get(url + '/html', function (response) {
+                        //replace ID with "Vehicle ID",keys with "Has Keys"
 
-                    //create array which contains keys and values, all the keys will be replaced by their respective values in the response html
-                    var replaceKeys = {
-                        'ID': 'Vehicle ID',
-                        'CREATED_AT': 'Date Entered',
-                        'DESCRIPTION': 'Year-Make-Model',
-                        'VIN': 'VIN Number',
-                        'PURCHASE_LOT': 'Purchase Lot Number',
-                        'DATE_PAID': 'Purchase Date',
-                        'INVOICE_AMOUNT': 'Purchase Amount($)',
-                        'LEFT_LOCATION': 'Left Location',
-                        'AUCTION_LOT': 'Auction Lot Number',
-                        'LOCATION': 'Current Location',
-                        'CLAIM_NUMBER': 'Claim Number',
-                        'STATUS': 'Current Status',
-                        'ODOMETER': 'Mileage',
-                        'ODOMETER_BRAND': 'Odometer',
-                        'PRIMARY_DAMAGE': 'PRIMARY DAMAGE',
-                        'SECONDARY_DAMAGE': 'SECONDARY DAMAGE',
-                        'KEYS': 'Has Keys',
-                        'DRIVABILITY_RATING': 'Engine',
-                        'DAYS_IN_YARD': 'Days In Yard',
-                        'SALE_TITLE_STATE': 'Sale Title State',
-                        'SALE_TITLE_TYPE': 'Sale Title Type',
-                    };
-                    var new_response = response.html;
+                        //create array which contains keys and values, all the keys will be replaced by their respective values in the response html
+                        var replaceKeys = {
+                            'ID': 'Vehicle ID',
+                            'CREATED_AT': 'Date Entered',
+                            'DESCRIPTION': 'Year-Make-Model',
+                            'VIN': 'VIN Number',
+                            'PURCHASE_LOT': 'Purchase Lot Number',
+                            'DATE_PAID': 'Purchase Date',
+                            'INVOICE_AMOUNT': 'Purchase Amount($)',
+                            'LEFT_LOCATION': 'Left Location',
+                            'AUCTION_LOT': 'Auction Lot Number',
+                            'LOCATION': 'Current Location',
+                            'CLAIM_NUMBER': 'Claim Number',
+                            'STATUS': 'Current Status',
+                            'ODOMETER': 'Mileage',
+                            'ODOMETER_BRAND': 'Odometer',
+                            'PRIMARY_DAMAGE': 'PRIMARY DAMAGE',
+                            'SECONDARY_DAMAGE': 'SECONDARY DAMAGE',
+                            'KEYS': 'Has Keys',
+                            'DRIVABILITY_RATING': 'Engine',
+                            'DAYS_IN_YARD': 'Days In Yard',
+                            'SALE_TITLE_STATE': 'Sale Title State',
+                            'SALE_TITLE_TYPE': 'Sale Title Type',
+                        };
+                        var new_response = response.html;
 
-                    //iterate over the replaceKeys array and replace the keys with their respective values in the response html
-                    $.each(replaceKeys, function(key, value) {
-                        new_response = new_response.replace(key, value);
-                    });
+                        //iterate over the replaceKeys array and replace the keys with their respective values in the response html
+                        $.each(replaceKeys, function (key, value) {
+                            new_response = new_response.replace(key, value);
+                        });
 
-                    var requiredFields = ['vin', 'description', 'location'];
-                    $.each(requiredFields, function(key, value) {
-                        new_response = new_response.replace('name="' + value + '"', 'name="' + value + '" required');
-                    });
+                        var requiredFields = ['vin', 'description', 'location'];
+                        $.each(requiredFields, function (key, value) {
+                            new_response = new_response.replace('name="' + value + '"', 'name="' + value + '" required');
+                        });
 
-                    //Apply pattern to vin field
-                    new_response = new_response.replace('name="vin"', 'name="vin" pattern="[A-Za-z0-9]+" title="Only alphanumeric characters are allowed"');
+                        //Apply pattern to vin field
+                        new_response = new_response.replace('name="vin"', 'name="vin" pattern="[A-Za-z0-9]+" title="Only alphanumeric characters are allowed"');
 
-                    $('#vehicle-detail-div2').html(new_response);
+                        $('#vehicle-detail-div2').html(new_response);
 
-                    //We are overriding select2 library
-                    $('.select2').select2({
-                                    placeholder: "Select Location",
-                                    tags: true,
-                                    insertTag: function (data, tag) {
-                                        data.push(tag);
-                                    }
+                        //We are overriding select2 library
+                        $('.select2').select2({
+                            placeholder: "Select Location",
+                            tags: true,
+                            insertTag: function (data, tag) {
+                                data.push(tag);
+                            }
+                        });
+
+                        var startDate;
+                        $('.daterange').each(function(index) {
+                            startDate = $(this).val();
+
+                            $(this).daterangepicker({
+                                singleDatePicker: true,
+                                showDropdowns: true,
+                                startDate: startDate,
+                                locale: {
+                                    format: "YYYY-MM-DD"
+                                }
                             });
-
-
-
-                    var startDate;
-                    $('.daterange').each(function(index) {
-                    startDate = $(this).val();
-
-                    $(this).daterangepicker({
-                        singleDatePicker: true,
-                        showDropdowns: true,
-                        startDate: startDate,
-                        locale: {
-                            format: "YYYY-MM-DD"
-                        }
+                        });
                     });
-            });
 
-
-
-
-                });
-
-                //Adding action attr to form
-                $('#vehicle-detail-form2').attr('action', url );
+                    //Adding action attr to form
+                    $('#vehicle-detail-form2').attr('action', url);
                 });
 
                 $('#modal-vehicle-create').modal('show');
 
+            } else {
+
+                var table = $('#vehicles-table').DataTable({
+                    "dom": 'lrftBip',
+                    "responsive": true,
+                    "ordering": true,
+                    'processing': true,
+                    'serverSide': true,
+                    'ajax': {
+                        'url': "{{  route('vehicles.ajax')  }}",
+                        "dataType": "json",
+                        "type": "GET",
+                        "data": function (data) {
+
+                            data.make = $('#make').val();
+                            data.model = $('#model').val();
+                            data.status = $('#status').val();
+
+                            data.left_location = $('#left_location').val();
+                            data.location = $('#location').val();
+                            data.date_paid = $('#date_paid').val();
+                            data.user = $('#user').val();
+
+                            data.used_status = $('#used_status').val();
+                            data.gateway = $('#gateway').val();
+                            data.tag = $('#tag').val();
+
+                            // if(data.user=='undefined') {
+                            //     alert('ddd');
+                            // }
+
+                            var queryString = 'search=' + data.search.value + '&status=' + data.status + '&left_location=' + data.left_location + '&location=' + data.location + '&date_paid=' + data.date_paid;
+                            var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + queryString;
+                            window.history.pushState({path: newurl}, '', newurl);
+
+
+                        },
+                        dataSrc: function (data) {
+                            return data.data;
+                        }
+                    },
+                    'columns': [
+                        {"data": "null"},
+                        {"data": "description"},
+                        {"data": "vin"},
+                        {"data": "left_location"},
+                        {"data": "location"},
+                        {"data": "date_paid"},
+                        {"data": "purchase_lot"}, //purchase lot
+                        {"data": "auction_lot"}, //auction lot
+                        {"data": "days_in_yard"},
+                        {"data": "claim_number"},
+                        {"data": "actions", "className": 'table-action'},
+                        // {"data": "status"},
+                        // {"data": "id"},
+                    ],
+                    "initComplete": function () {
+                        var api = this.api();
+                        var role = "<?php echo Auth()->user()->role ?>";
+
+                        if (role == 'viewer') {
+                            api.columns([9]).visible(false);
+                        }
+                    },
+                    "buttons": [
+                        {
+                            text: 'Select all',
+                            action: function () {
+                                table.rows().select();
+                            },
+                            attr: {
+                                id: 'select_all_btn',
+                                class: 'btn btn-primary'
+                            }
+                        },
+                        {
+                            text: 'Select none',
+                            action: function () {
+                                table.rows().deselect();
+                            }
+                        },
+                        {
+                            text: 'Delete selected',
+                            action: function () {
+                                var ids = table.rows('.selected').ids().toArray();
+                                if (ids.length > 0) {
+
+                                    Swal.fire({
+                                        title: 'Are you sure?',
+                                        text: "You want to delete selected vehicles?",
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#d33',
+                                        confirmButtonText: 'Yes, delete it!'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            $.ajax({
+                                                url: "{{ route('vehicles.delete-multiple') }}",
+                                                type: 'DELETE',
+                                                data: {
+                                                    ids: ids,
+                                                    _token: "{{ csrf_token() }}"
+                                                },
+                                                success: function (data) {
+                                                    Swal.fire(
+                                                        'Successfully deleted!',
+                                                        data.message,
+                                                        'success'
+                                                    );
+                                                    table.ajax.reload();
+
+                                                },
+                                                error: function (data) {
+                                                    Swal.fire(
+                                                        'Unauthorized !',
+                                                        'You are not allowed to delete vehicles!',
+                                                        'error'
+                                                    );
+                                                }
+                                            });
+                                        }
+                                    })
+                                } else {
+                                    Swal.fire(
+                                        'No vehicles selected!',
+                                        'Please select at least one vehicle to delete.',
+                                        'warning'
+                                    );
+                                }
+
+
+                            },
+                            attr: {
+                                id: 'delete_btn',
+                                class: 'btn btn-danger'
+                            }
+                        }
+                    ],
+                    "columnDefs": [
+                        {targets: [0, 1, 2, 4, 8, 9, 10], orderable: false},
+                        {targets: [0], className: 'select-checkbox sorting_disabled'},
+
+
+                    ],
+                    "select": {
+                        style: 'multi',
+                        selector: 'td:first-child'
+                    },
+                    "pagingType": "simple_numbers"
+                });
+
+                $.fn.DataTable.ext.pager.numbers_length = 4;
             }
-            else
-            {
-
-    var table = $('#vehicles-table').DataTable({
-                "dom": 'lrftBip',
-                "responsive": true,
-                "ordering": true,
-                'processing': true,
-                'serverSide': true,
-                'ajax': {
-                    'url': "{{  route('vehicles.ajax')  }}",
-                    "dataType": "json",
-                    "type": "GET",
-                    "data": function (data) {
-
-                        data.make = $('#make').val();
-                        data.model = $('#model').val();
-                        data.status = $('#status').val();
-
-                        data.daterange = $('#daterange').val();
-                        data.user = $('#user').val();
-
-                        data.used_status = $('#used_status').val();
-                        data.gateway = $('#gateway').val();
-                        data.tag = $('#tag').val();
-
-                        // if(data.user=='undefined') {
-                        //     alert('ddd');
-                        // }
-
-                        var queryString = 'search=' + data.search.value + '&status=' + data.status;
-                        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + queryString;
-                        window.history.pushState({path: newurl}, '', newurl);
-
-
-                    },
-                    dataSrc: function (data) {
-                        return data.data;
-                    }
-                },
-                'columns': [
-                    {"data": "null"},
-                    {"data": "description"},
-                    {"data": "vin"},
-                    {"data": "left_location"},
-                    {"data": "location"},
-                    {"data": "date_paid"},
-                    {"data": "purchase_lot"}, //purchase lot
-                    {"data": "auction_lot"}, //auction lot
-                    {"data": "days_in_yard"},
-                    {"data": "claim_number"},
-                    {"data": "actions", "className": 'table-action'},
-                    // {"data": "status"},
-                    // {"data": "id"},
-                ],
-                "initComplete": function () {
-                    var api = this.api();
-                    var role = "<?php echo Auth()->user()->role ?>";
-
-                    if (role == 'viewer') {
-                        api.columns([9]).visible(false);
-                    }
-                },
-                "buttons": [
-                    {
-                        text: 'Select all',
-                        action: function () {
-                            table.rows().select();
-                        },
-                        attr: {
-                            id: 'select_all_btn',
-                            class: 'btn btn-primary'
-                        }
-                    },
-                    {
-                        text: 'Select none',
-                        action: function () {
-                            table.rows().deselect();
-                        }
-                    },
-                    {
-                        text: 'Delete selected',
-                        action: function () {
-                            var ids = table.rows('.selected').ids().toArray();
-                            if (ids.length > 0) {
-
-                                Swal.fire({
-                                    title: 'Are you sure?',
-                                    text: "You want to delete selected vehicles?",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'Yes, delete it!'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        $.ajax({
-                                            url: "{{ route('vehicles.delete-multiple') }}",
-                                            type: 'DELETE',
-                                            data: {
-                                                ids: ids,
-                                                _token: "{{ csrf_token() }}"
-                                            },
-                                            success: function (data) {
-                                                Swal.fire(
-                                                    'Successfully deleted!',
-                                                    data.message,
-                                                    'success'
-                                                );
-                                                table.ajax.reload();
-
-                                            },
-                                            error: function (data) {
-                                                Swal.fire(
-                                                    'Unauthorized !',
-                                                    'You are not allowed to delete vehicles!',
-                                                    'error'
-                                                );
-                                            }
-                                        });
-                                    }
-                                })
-                            }
-                            else {
-                                Swal.fire(
-                                    'No vehicles selected!',
-                                    'Please select at least one vehicle to delete.',
-                                    'warning'
-                                );
-                            }
-
-
-                        },
-                        attr: {
-                            id: 'delete_btn',
-                            class: 'btn btn-danger'
-                        }
-                    }
-                ],
-                "columnDefs": [
-                    {targets: [0, 1, 2, 4, 8, 9, 10], orderable: false},
-                    {targets: [0], className: 'select-checkbox sorting_disabled'},
-
-
-                ],
-                "select": {
-                    style: 'multi',
-                    selector: 'td:first-child'
-                },
-                "pagingType": "simple_numbers"
-            });
-
-            $.fn.DataTable.ext.pager.numbers_length = 4;
-}
 
             $('.apply-dt-filters').on('click', function () {
                 table.ajax.reload();
@@ -277,17 +270,18 @@
 
             $('.clear-dt-filters').on('click', function () {
                 $('#status').val('-100').trigger('change');
-                $('#daterange').val('');
+                $('#location').val('-100').trigger('change');
+                $('#left_location').val('').trigger('change');
+                $('#date_paid').val('').trigger('change');
 
-                $('#make').val('-100').trigger('change');
-                $('#model').val('-100').trigger('change');
+
                 table.search("");
                 table.ajax.reload();
             });
 
-        @if($role != 'admin')
+            @if($role != 'admin')
             $('#select_all_btn').parent().hide();
-        @endif
+            @endif
 
 
 
@@ -295,7 +289,7 @@
 
 
             //Submit form
-            $('.vehicle-detail-form').on('submit', function(e) {
+            $('.vehicle-detail-form').on('submit', function (e) {
 
                 e.preventDefault();
                 var form = $(this);
@@ -306,38 +300,35 @@
                     url: url,
                     type: method,
                     data: data,
-                    success: function(response) {
+                    success: function (response) {
 
-                        if(response.status == 'success'){
+                        if (response.status == 'success') {
                             Swal.fire(
-                            'Success!',
-                            response.message,
-                            'success'
-                        );
+                                'Success!',
+                                response.message,
+                                'success'
+                            );
 
-                        $('#modal-vehicle-create').modal('hide');
-                        window.location.href = '/vehicles';
-                        }
-
-                        else
-                        {
+                            $('#modal-vehicle-create').modal('hide');
+                            window.location.href = '/vehicles';
+                        } else {
                             Swal.fire(
-                            'Error!',
-                            'Something went wrong',
-                            'error'
-                        );
-                        console.log( response.message );
+                                'Error!',
+                                'Something went wrong',
+                                'error'
+                            );
+                            console.log(response.message);
 
 
                         }
 
 
                     },
-                    error: function(error) {
+                    error: function (error) {
 
                         const errors = error.responseJSON.errors;
                         var errorString = '';
-                        $.each(errors, function(key, value) {
+                        $.each(errors, function (key, value) {
                             errorString += '<li>' + value + '</li>';
                         });
 
@@ -351,7 +342,6 @@
                     }
                 });
             });
-
 
 
         });
@@ -372,7 +362,7 @@
             $('#vehicle-detail-div').html('<div class="text-center">Please wait... Data is loading<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
 
             var vehicleId = '/vehicles/' + $(this).attr('id');
-            $.get( vehicleId + '/html', function(response) {
+            $.get(vehicleId + '/html', function (response) {
                 //replace ID with "Vehicle ID",keys with "Has Keys"
 
                 //create array which contains keys and values, all the keys will be replaced by their respective values in the response html
@@ -402,12 +392,12 @@
                 var new_response = response.html;
 
                 //iterate over the replaceKeys array and replace the keys with their respective values in the response html
-                $.each(replaceKeys, function(key, value) {
+                $.each(replaceKeys, function (key, value) {
                     new_response = new_response.replace(key, value);
                 });
 
                 var requiredFields = ['vin', 'description', 'location'];
-                $.each(requiredFields, function(key, value) {
+                $.each(requiredFields, function (key, value) {
                     new_response = new_response.replace('name="' + value + '"', 'name="' + value + '" required');
                 });
 
@@ -417,54 +407,48 @@
                 $('#vehicle-detail-div').html(new_response);
 
                 //We are overriding select2 library
-                    $('.select2').select2({
-                        placeholder: "Select Location",
-                        tags: true,
-                        insertTag: function (data, tag) {
-                            data.push(tag);
-                        }
+                $('.select2').select2({
+                    placeholder: "Select Location",
+                    tags: true,
+                    insertTag: function (data, tag) {
+                        data.push(tag);
+                    }
                 });
 
                 var startDate;
-                $('.daterange').each(function(index) {
-                startDate = $(this).val();
+                $('.daterange').each(function (index) {
+                    startDate = $(this).val();
 
-                console.log(startDate);
-                $(this).daterangepicker({
-                    singleDatePicker: true,
-                    showDropdowns: true,
-                    startDate: startDate,
-                    locale: {
-                        format: "YYYY-MM-DD"
-                    }
+                    console.log(startDate);
+                    $(this).daterangepicker({
+                        singleDatePicker: true,
+                        showDropdowns: true,
+                        startDate: startDate,
+                        locale: {
+                            format: "YYYY-MM-DD"
+                        }
+                    });
                 });
-            });
 
             });
 
             //Adding action attr to form
-            $('#vehicle-detail-form').attr('action', vehicleId );
+            $('#vehicle-detail-form').attr('action', vehicleId);
         });
 
 
         $('#close-modal-btn-vehicle-create').on('click', function () {
 
             $.ajax({
-                    url: '/delete_unsaved_vehicles',
-                    type: 'GET',
-                    success: function(response) {
-                    },
+                url: '/delete_unsaved_vehicles',
+                type: 'GET',
+                success: function (response) {
+                },
 
-                });
-                window.location.href = '/vehicles';
+            });
+            window.location.href = '/vehicles';
 
         });
-
-
-
-
-
-
 
 
     </script>
@@ -482,101 +466,17 @@
 
     <h1 class="h3 mb-3">All Vehicles</h1>
 
-{{--    @include('pages.order._inc.stats')--}}
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <form>
-                        <input type="hidden" class="d-none" name="filter" value="true" hidden>
-                        <div class="row">
+    {{--    @include('pages.order._inc.stats')--}}
 
 
-
-{{--                                <div class="col-sm">--}}
-{{--                                    <div class="form-group">--}}
-{{--                                        <label class="form-label" for="status"> Make </label>--}}
-{{--                                        <select name="makes" id="make"--}}
-{{--                                                class="form-control form-select custom-select select2"--}}
-{{--                                                data-toggle="select2">--}}
-{{--                                            <option value="-100"> Select Make </option>--}}
-{{--                                            @foreach($makes as $make)--}}
-{{--                                                <option--}}
-{{--                                                    value="{{ $make['make'] }}" {{ request()->user == $make['make'] ? 'selected' : '' }}>{{ $make['make'] }}</option>--}}
-{{--                                            @endforeach--}}
-{{--                                        </select>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-
-{{--                            <div class="col-sm">--}}
-{{--                                    <div class="form-group">--}}
-{{--                                        <label class="form-label" for="status"> Model </label>--}}
-{{--                                        <select name="models" id="model"--}}
-{{--                                                class="form-control form-select custom-select select2"--}}
-{{--                                                data-toggle="select2">--}}
-{{--                                            <option value="-100"> Select Model </option>--}}
-{{--                                            @foreach($models as $model)--}}
-{{--                                                <option--}}
-{{--                                                    value="{{ $model['model'] }}" {{ request()->user == $model['model'] ? 'selected' : '' }}>{{ $model['model'] }}</option>--}}
-{{--                                            @endforeach--}}
-{{--                                        </select>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-
-                            <div class="col-sm">
-                                <div class="form-group">
-                                    <label class="form-label" for="status"> Status </label>
-                                    <select name="status" id="status"
-                                            class="form-control form-select custom-select select2"
-                                            data-toggle="select2">
-                                        <option value="-100"> Select Status </option>
-                                        @foreach($statuses as $status)
-                                            <option
-                                                value="{{ $status  }}" {{ request()->status == $status ? 'selected' : '' }}>{{ $status }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-{{--                            <div class="col-sm">--}}
-{{--                                <div class="form-group">--}}
-{{--                                    <label class="form-label" for="daterange">{{ __('Date Range') }}</label>--}}
-{{--                                    <input id="daterange" class="form-control" type="text" name="daterange"--}}
-{{--                                           value="{{ request()->daterange }}"--}}
-{{--                                           placeholder="{{ __('Select Date range') }}"/>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm mt-4">
-                                <button type="button"
-                                        class="btn btn-sm btn-primary apply-dt-filters mt-2">{{ __('Apply') }}</button>
-                                <button type="button"
-                                        class="btn btn-sm btn-secondary clear-dt-filters mt-2">{{ __('Clear') }}</button>
-
-{{--                                <button type="button" class="btn btn-sm btn-secondary mt-2"--}}
-{{--                                        onclick="get_query_params2()"--}}
-{{--                                >{{ 'Export ' }}</button>--}}
-
-                            </div>
-                        </div>
-
-
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
+    @include('pages.vehicle.filters.filters')
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
 
-                    <table id="vehicles-table" class="table table-striped dataTable no-footer dtr-inline" style="width:100%">
+                    <table id="vehicles-table" class="table table-striped dataTable no-footer dtr-inline"
+                           style="width:100%">
                         <thead>
                         <tr>
                             <th></th>
@@ -590,8 +490,8 @@
                             <th>Days in Yard</th>
                             <th>Claim Number</th>
                             <th>Actions</th>
-{{--                            <th>Status</th>--}}
-{{--                            <th>ID</th>--}}
+                            {{--                            <th>Status</th>--}}
+                            {{--                            <th>ID</th>--}}
                         </tr>
                         </thead>
                         <tbody>
@@ -601,8 +501,6 @@
             </div>
         </div>
     </div>
-
-
 
 @endsection
 
