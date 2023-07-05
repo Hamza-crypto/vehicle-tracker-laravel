@@ -7,10 +7,10 @@ Laravel Based project: Vehicle Tracker
 **Admin Dashboard**
 ![Screenshot](dashboard.png)
 
-All Vehicles Page
+**All Vehicles Page**
 ![Screenshot](all vehicles.png)
 
-Map CSV Header Fields
+**Map CSV Header Fields**
 ![Screenshot](map_fields.png)
 
 
