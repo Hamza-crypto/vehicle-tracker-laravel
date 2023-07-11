@@ -126,21 +126,13 @@
                             data.make = $('#make').val();
                             data.model = $('#model').val();
                             data.status = $('#status').val();
-
+                            data.claim_number = $('#claim_number').val();
                             data.left_location = $('#left_location').val();
                             data.location = $('#location').val();
                             data.date_paid = $('#date_paid').val();
                             data.user = $('#user').val();
 
-                            data.used_status = $('#used_status').val();
-                            data.gateway = $('#gateway').val();
-                            data.tag = $('#tag').val();
-
-                            // if(data.user=='undefined') {
-                            //     alert('ddd');
-                            // }
-
-                            var queryString = 'search=' + data.search.value + '&status=' + data.status + '&left_location=' + data.left_location + '&location=' + data.location + '&date_paid=' + data.date_paid;
+                            var queryString = 'search=' + data.search.value + '&status=' + data.status + '&left_location=' + data.left_location + '&location=' + data.location + '&claim_number=' + data.claim_number + '&date_paid=' + data.date_paid;
                             var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + queryString;
                             window.history.pushState({path: newurl}, '', newurl);
 
@@ -249,7 +241,7 @@
                         }
                     ],
                     "columnDefs": [
-                        {targets: [0, 1, 2, 4, 8, 9, 10], orderable: false},
+                        {targets: [0, 1, 2, 4, 9, 10], orderable: false},
                         {targets: [0], className: 'select-checkbox sorting_disabled'},
 
 

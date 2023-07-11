@@ -38,6 +38,16 @@
 
                         <div class="col-sm">
                             <div class="form-group">
+                                <label class="form-label" for="claim_number">Claim Number</label>
+                                <input id="claim_number" class="form-control" type="text"
+                                       name="claim_number"
+                                       value="{{ request()->claim_number }}"
+                                       placeholder="Enter Claim #"/>
+                            </div>
+                        </div>
+
+                        <div class="col-sm">
+                            <div class="form-group">
                                 <label class="form-label" for="left_location">Left Location</label>
                                 <input id="left_location" class="form-control daterange-filter" type="text"
                                        name="left_location"

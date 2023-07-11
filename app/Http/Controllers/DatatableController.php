@@ -34,7 +34,7 @@ class DatatableController extends Controller
             7 => 'auction_lot',
 
             // sorting by meta value
-            8 => 'days_in_yard',
+            8 => 'days_in_yard', // this key is also added in main vehicle table
             9 => 'claim_number',
         ];
 
@@ -106,7 +106,7 @@ class DatatableController extends Controller
             //Get meta data
             $vehicle_metas = collect($vehicle->metas);
             $vehicle->claim_number = $vehicle_metas->where('meta_key', 'claim_number')->pluck('meta_value')->first();
-            $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
+//            $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
             $vehicle->status = $vehicle_metas->where('meta_key', 'status')->pluck('meta_value')->first();
 
             $data[] = $vehicle;
@@ -292,6 +292,7 @@ class DatatableController extends Controller
                                             </thead>
                                             <tbody>';
         $vehicleArray = $vehicle->toArray();
+        unset($vehicleArray['days_in_yard']); // because we are already getting days_in_yard from meta table
 
         $array_keys = array_keys($vehicleArray);
         $values = array_values($vehicleArray);

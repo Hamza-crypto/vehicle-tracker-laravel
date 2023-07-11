@@ -181,7 +181,7 @@
                 <div class="card-body py-4">
                     <div class="media">
                         <div class="media-body">
-                            <h3 class="mb-2"> {{ \App\Models\Vehicle::countVehicles('in transit') }} In Transit</h3>
+                            <h3 class="mb-2"> {{ \App\Models\Vehicle::countInTransitVehicles() }} In Transit</h3>
                             <p class="mb-2">In Transit</p>
 
                         </div>

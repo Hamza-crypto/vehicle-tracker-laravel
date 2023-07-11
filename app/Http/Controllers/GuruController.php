@@ -51,7 +51,7 @@ class GuruController extends Controller
         $this->changeEnvironmentVariable('GURU_ACCESS_TOKEN', $response->access_token);
         $this->changeEnvironmentVariable('GURU_REFRESH_TOKEN', $response->refresh_token);
 
-        DiscordAlert::message("Token Refreshed: " . $response->access_token);
+        DiscordAlert::message("Token Refreshed");
         return $response;
 
     }

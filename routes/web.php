@@ -11,6 +11,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
+use Illuminate\Support\Facades\Session;
 use Spatie\DiscordAlerts\Facades\DiscordAlert;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -35,12 +36,28 @@ Route::get('/test', function () {
 Route::redirect('/', '/dashboard');
 
 Route::get('/reset', function () {
+    #get query params
+    $confirm = $_GET['confirm'];
+    if($confirm == 'true'){
+        DB::table('vehicles')->truncate();
+        DB::table('vehicle_metas')->truncate();
+        DB::table('vehicle_notes')->truncate();
+
+        Session::flash('success', 'Vehicle data reset successfully');
+        return view('pages.reset.index' );
+    }
+    else{
+        dump('You need to confirm by adding \'confirm=true\' in the url');
+    }
+
+});
+
+
+Route::get('/reset-all', function () {
+
     \Illuminate\Support\Facades\Artisan::call('migrate:fresh');
     \Illuminate\Support\Facades\Artisan::call('db:seed');
-//    DB::table('vehicles')->truncate();
-//    DB::table('vehicle_metas')->truncate();
-//    DB::table('vehicle_notes')->truncate();
-    dd('Database cleared');
+
 });
 
 Route::group(['middleware' => ['auth']], function () {

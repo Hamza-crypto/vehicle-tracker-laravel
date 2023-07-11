@@ -126,7 +126,7 @@ class VehicleController extends Controller
         }
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
-
+        $total_vehicles = 0;
         foreach ($csvFile as $row) {
             $vin = $row[$positions[$requiredColumns['vin']]];
 
@@ -145,10 +145,12 @@ class VehicleController extends Controller
                 $vehicle->date_paid = Carbon::parse($row[$positions[$requiredColumns['date_paid']]])->format('Y-m-d');
                 $vehicle->invoice_amount = $this->format_amount($row[$positions[$requiredColumns['invoice_amount']]]);
                 $vehicle->save();
+                $total_vehicles++;
             }
         }
 
-        Session::flash('success', 'Successfully inserted');
+        $msg = sprintf("%d vehicles inserted successfully", $total_vehicles);
+        Session::flash('success', $msg );
 
         return redirect()->route('upload.create.buy');
 
@@ -177,7 +179,7 @@ class VehicleController extends Controller
         }
 
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
-
+        $total_vehicles = 0;
         foreach ($csvFile as $row) {
             $vin = $row[$positions[$requiredColumns['vin']]];
             if (empty($vin)) {
@@ -195,10 +197,12 @@ class VehicleController extends Controller
                 $vehicle->date_paid = Carbon::parse($row[$positions[$requiredColumns['date_paid']]])->format('Y-m-d');
                 $vehicle->invoice_amount = $this->format_amount($row[$positions[$requiredColumns['invoice_amount']]]) ;
                 $vehicle->save();
+                $total_vehicles++;
             }
         }
 
-        Session::flash('success', 'Successfully inserted');
+        $msg = sprintf("%d vehicles inserted successfully", $total_vehicles);
+        Session::flash('success', $msg );
 
         return redirect()->route('upload.create.buy');
     }
@@ -334,6 +338,13 @@ class VehicleController extends Controller
 
         }
         DB::table('vehicle_metas')->insert($metas);
+
+        // Create days_in_yard inside main vehicle table (for solving sorting issue)
+        if(isset($necessary_meta_fields['days_in_yard']) && !empty($necessary_meta_fields['days_in_yard'])){
+            $vehicle = Vehicle::find($vehicle_id);
+            $vehicle->days_in_yard = $necessary_meta_fields['days_in_yard'];
+            $vehicle->save();
+        }
     }
 
     /*
@@ -394,6 +405,7 @@ class VehicleController extends Controller
         $purchase_lot = Vehicle::whereNotNull('purchase_lot')->pluck('purchase_lot')->toArray();
 
         $vehicles_not_found = [];
+
         foreach ($data as $row) {
             $lot = $row[$positions[$requiredColumns['lot']]];
 
@@ -483,6 +495,7 @@ class VehicleController extends Controller
             $vehicle->description = $request->description;
             $vehicle->left_location = $request->left_location;
             $vehicle->date_paid = $request->date_paid;
+            $vehicle->days_in_yard = $request->days_in_yard;
 
             $amount = str_replace('$', '', $amount);
             $vehicle->invoice_amount = (int)str_replace(' ', '', $amount);
@@ -564,17 +577,6 @@ class VehicleController extends Controller
             ->where('meta_key', 'location')
             ->where('meta_value', '!=', '')
             ->groupBy('meta_value')->get();
-    }
-
-    public function get_years()
-    {
-        $year = [];
-        for ($i = 1950; $i < 2024; $i++) {
-            $year[] = $i;
-        }
-
-        return $year;
-
     }
 
     public function format_amount($amount)

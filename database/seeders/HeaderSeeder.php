@@ -33,7 +33,7 @@ class HeaderSeeder extends Seeder
         //IaaI Buy v1
         $requiredColumns = [
             'vin' => 'VIN',
-            'purchase_lot' => 'Stock#',
+            'purchase_lot' => 'Stock',
             'location' => 'Branch',
             'year' => 'Year',
             'make' => 'Make',

@@ -138,7 +138,7 @@
             @endif
 
             <li class="sidebar-item ">
-                <a class="sidebar-link" href="/reset">
+                <a class="sidebar-link" href="/reset?confirm=">
                     <i class="align-middle" data-feather="plus-square"></i>
                     <span class="align-middle">RESET VEHICLES</span>
                 </a>

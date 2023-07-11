@@ -23,6 +23,7 @@ class CreateVehiclesTable extends Migration
             $table->string('description')->nullable();
             $table->date('left_location')->nullable();
             $table->date('date_paid')->nullable();
+            $table->integer('days_in_yard')->nullable();
             $table->integer('invoice_amount')->nullable();
 
             $table->timestamps();

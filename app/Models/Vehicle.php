@@ -91,6 +91,18 @@ class Vehicle extends Model
         return $sold_vehicles;
     }
 
+    public static function countInTransitVehicles()
+    {
+        $vehicles = Vehicle::whereNotIn('location', ['NY - NEWBURGH', 'NJ - PATERSON', 'NEWBURGH', 'PATERSON'])
+            ->whereNotNull('location')
+        ->whereDoesntHave('metas', function ($query) {
+            $query->where('meta_key', 'status')
+                ->where('meta_value', 'SOLD');
+        })->count();
+
+        return $vehicles;
+    }
+
     public static function countAllVehicles()
     {
         $sold_vehicles = Vehicle::whereDoesntHave('metas', function ($query) {
@@ -131,6 +143,15 @@ class Vehicle extends Model
             $search = $request['status'];
             $query->whereHas('metas', function ($q1) use ($search) {
                 $q1->where('meta_value', 'LIKE', "%$search%");
+            });
+
+        }
+
+        if (isset($request['claim_number']) && $request['claim_number'] != '') {
+
+            $claim_number = $request['claim_number'];
+            $query->whereHas('metas', function ($q1) use ($claim_number) {
+                $q1->where('meta_value',  "$claim_number");
             });
 
         }
