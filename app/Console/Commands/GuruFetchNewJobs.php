@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Spatie\DiscordAlerts\Facades\DiscordAlert;
 
 class GuruFetchNewJobs extends Command
 {
@@ -16,6 +17,7 @@ class GuruFetchNewJobs extends Command
         $guru = new \App\Http\Controllers\GuruController();
         $guru->store_jobs();
 
+        $guru->delete_old_jobs();
         return Command::SUCCESS;
     }
 }

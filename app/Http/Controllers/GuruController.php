@@ -134,6 +134,12 @@ class GuruController extends Controller
         return $filtered_jobs;
     }
 
+    public function delete_old_jobs(){
+        $deleted_jobs = \App\Models\Guru::where('created_at', '<', now()->subDays(30))->delete();
+        $msg = "Deleted $deleted_jobs old jobs";
+        DiscordAlert::message($msg);
+    }
+
     function sendDiscordMessage($job){
         $markdown = '';
         $markdown = '# ' . $job['title'] . "  \n";
