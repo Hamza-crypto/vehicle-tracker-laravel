@@ -12,7 +12,7 @@ use App\Http\Controllers\VehicleController;
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use Illuminate\Support\Facades\Session;
-use Spatie\DiscordAlerts\Facades\DiscordAlert;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
@@ -29,7 +29,7 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 |
  */
 Route::get('/test', function () {
-    DiscordAlert::message("test message");
+
 });
 
 
@@ -125,7 +125,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('vehicles', VehicleController::class)->only('index');
 
-});
+    });
 
 Route::get('next_vehicle_id', [DatatableController::class, 'next_vehicle_id']);
 Route::get('delete_unsaved_vehicles', [VehicleController::class, 'delete_unsaved_vehicles']);
@@ -138,5 +138,3 @@ Route::get('update_election', [ElectionController::class, 'update_election']);
 Route::get('get-token', [GuruController::class, 'getAccessToken']);
 Route::get('refresh-token', [GuruController::class, 'getNewAccessTokenFromRefreshToken']);
 Route::get('store-jobs', [GuruController::class, 'store_jobs']);
-
-
