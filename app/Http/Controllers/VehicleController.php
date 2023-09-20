@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
-use function PHPUnit\Framework\isNull;
-
 class VehicleController extends Controller
 {
     public function __construct()
@@ -425,6 +423,7 @@ class VehicleController extends Controller
 
         $vehicles_not_found = [];
         
+        $updated_vehicles = 0;
         $start_row = $request->start;
         $end_row = $request->end;
         foreach ($data as $index => $row) {
@@ -440,6 +439,7 @@ class VehicleController extends Controller
             $lot = $row[$positions[$requiredColumns['lot']]];
 
             if (in_array($lot, $auction_lot) || in_array($lot, $purchase_lot)) {
+                $updated_vehicles++;
                 $vehicle = Vehicle::where('auction_lot', $lot)->orWhere('purchase_lot', $lot)->first();
                 VehicleMetas::updateOrCreate(
                     ['vehicle_id' => $vehicle->id, 'meta_key' => 'sale_date'],
@@ -465,7 +465,8 @@ class VehicleController extends Controller
 
         }
 
-        Session::flash('success', 'Successfully updated');
+        $msg = sprintf("0 new vehicles inserted, %d updated", $updated_vehicles);
+        Session::flash('success', $msg);
 
         return view('pages.vehicle.sold.upload')->with('vehicles_not_found', $vehicles_not_found);
 

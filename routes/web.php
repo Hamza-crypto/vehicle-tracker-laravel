@@ -32,6 +32,10 @@ Route::get('/test', function () {
 
 });
 
+Route::get('/phpinfo', function () {
+    echo phpinfo();
+});
+
 
 Route::redirect('/', '/dashboard');
 
