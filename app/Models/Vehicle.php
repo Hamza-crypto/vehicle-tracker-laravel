@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Doctrine\Common\Cache\Cache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -216,5 +217,23 @@ class Vehicle extends Model
         $order = $request['order'];
 
         return $query->orderBy($sort, $order);
+    }
+
+    protected static function booted()
+    {
+        static::created(function () {
+            Cache::forget('vehicles_with_days_in_yard');
+            Cache::forget('vehicles_sold');
+        });
+
+        static::updated(function () {
+            Cache::forget('vehicles_with_days_in_yard');
+            Cache::forget('vehicles_sold');
+        });
+
+        static::deleted(function () {
+            Cache::forget('vehicles_with_days_in_yard');
+            Cache::forget('vehicles_sold');
+        });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Doctrine\Common\Cache\Cache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,5 +17,23 @@ class VehicleMetas extends Model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    protected static function booted()
+    {
+        static::created(function () {
+            Cache::forget('vehicles_with_days_in_yard');
+            Cache::forget('vehicles_sold');
+        });
+
+        static::updated(function () {
+            Cache::forget('vehicles_with_days_in_yard');
+            Cache::forget('vehicles_sold');
+        });
+
+        static::deleted(function () {
+            Cache::forget('vehicles_with_days_in_yard');
+            Cache::forget('vehicles_sold');
+        });
     }
 }
