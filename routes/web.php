@@ -29,8 +29,7 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 |
  */
 Route::get('/clear_cache', function () {
-\Illuminate\Support\Facades\Artisan::call('optimize:clear');
-
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
 });
 
 Route::get('/phpinfo', function () {

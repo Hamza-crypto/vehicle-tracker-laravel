@@ -15,9 +15,9 @@ class CreateVehicleMetasTable extends Migration
     {
         Schema::create('vehicle_metas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('vehicle_id');
-            $table->string('meta_key');
-            $table->string('meta_value')->nullable();
+            $table->unsignedBigInteger('vehicle_id')->index();
+            $table->string('meta_key')->index();
+            $table->string('meta_value')->nullable()->index();
             $table->timestamps();
         });
     }
