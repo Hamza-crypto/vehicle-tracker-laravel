@@ -28,7 +28,8 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 | contains the "web" middleware group. Now create something great!
 |
  */
-Route::get('/test', function () {
+Route::get('/clear_cache', function () {
+\Illuminate\Support\Facades\Artisan::call('optimize:clear');
 
 });
 

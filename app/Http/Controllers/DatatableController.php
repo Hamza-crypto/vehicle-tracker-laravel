@@ -14,123 +14,94 @@ class DatatableController extends Controller
 {
     public function vehicles(Request $request)
     {
-        $totalData = Vehicle::filters($request->all())->count();
+        $vehiclesQuery = Vehicle::with('metas')->filters($request->all());
 
-        // Widget for Orders index page
-        $totalOrderCount = ['accepted' => 0, 'pending' => 0, 'declined' => 0];
+        if (!empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $vehiclesQuery->where(function ($q) use ($search) {
+                $q->where('vin', 'LIKE', "%$search%")
+                    ->orWhere('purchase_lot', 'LIKE', "%$search%")
+                    ->orWhere('auction_lot', 'LIKE', "%$search%")
+                    ->orWhere('description', 'LIKE', "%$search%");
+            });
+        }
 
+        $totalData = $vehiclesQuery->count();
         $totalFiltered = $totalData;
 
         $start = $request->length == -1 ? 0 : $request->start;
         $limit = $request->length == -1 ? $totalData : $request->length;
 
-        //Put the columns in an array for which you want to apply the sorting,
-        // index should be in accordance with the column index in the table
         $dbColumns = [
             0 => 'id',
             3 => 'left_location',
             5 => 'date_paid',
             6 => 'purchase_lot',
             7 => 'auction_lot',
-
-            // sorting by meta value
-            8 => 'days_in_yard', // this key is also added in main vehicle table
+            8 => 'days_in_yard',
             9 => 'claim_number',
         ];
 
         $orderColumnIndex = $request->input('order.0.column');
-
         $orderDbColumn = $dbColumns[$orderColumnIndex];
         $orderDirection = $request->input('order.0.dir');
 
-        if (empty($request->input('search.value'))) {
+        $vehicles = $vehiclesQuery->orderBy($orderDbColumn, $orderDirection)
+            ->offset($start)
+            ->limit($limit)
+            ->get();
 
-            $vehicles = Vehicle::with('metas')->filters($request->all());
-            $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
-            $vehicles = $vehicles->offset($start)->limit($limit)->get();
-
-        } else {
-            $search = $request->input('search.value');
-            $vehicles = Vehicle::with('metas')->filters($request->all());
-            $vehicles = $vehicles->where(function ($q1) use ($search) {
-                $q1->where('vin', 'LIKE', "%$search%")
-                    ->orWhere('purchase_lot', 'LIKE', "%$search%")
-                    ->orWhere('auction_lot', 'LIKE', "%$search%")
-                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
-
-            })
-                ->get();
-
-            $totalFiltered = count($vehicles);
-            $vehicles = $vehicles->skip($start)->take($limit);
-        }
-
-        //
         $data = [];
         $user_role = Auth::user()->role;
-        foreach ($vehicles as &$vehicle) {
+
+        foreach ($vehicles as $vehicle) {
             $vehicle->null = '';
             $vehicle->DT_RowId = $vehicle->id;
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
-            $edit = '<a href="'.route('vehicles.edit', $vehicle->id).'" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
+            $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
             $edit = '';
-            $alertTitle = __('Are you sure you want to delete vehicle with VIN ').' '.$vehicle->vin;
+            $alertTitle = __('Are you sure you want to delete vehicle with VIN ') . ' ' . $vehicle->vin;
             $delete = '
-                    <form method="post" action="'.route('vehicles.destroy', $vehicle->id).'" style="display: inline"
-                        onsubmit="return confirmSubmission(this, \''.$alertTitle.'\')">
-                        <input type="hidden" name="_token" value="'.csrf_token().'">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit" class="btn text-danger"><i class="fa fa-trash"></i></button>
-                    </form>
-                    ';
+                <form method="post" action="' . route('vehicles.destroy', $vehicle->id) . '" style="display: inline"
+                    onsubmit="return confirmSubmission(this, \'' . $alertTitle . '\')">
+                    <input type="hidden" name="_token" value="' . csrf_token() . '">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn text-danger"><i class="fa fa-trash"></i></button>
+                </form>
+                ';
 
             $vehicle->description = sprintf("<a data-toggle='modal' data-target='#modal-vehicle-detail' data-id='%s'>%s</a>", $vehicle->id, $vehicle->description);
 
-            if($vehicle->source == 'iaai'){
+            if ($vehicle->source == 'iaai') {
                 $vehicle->purchase_lot = sprintf("<a href='https://www.iaai.com/PurchaseHistory' target='_blank' style='color: red'>%s</a>", $vehicle->purchase_lot);
                 $vehicle->auction_lot = sprintf("<a href='https://www.iaai.com/PurchaseHistory' target='_blank'>%s</a>", $vehicle->auction_lot);
-            }
-            else{
+            } else {
                 $vehicle->purchase_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->purchase_lot, $vehicle->purchase_lot);
                 $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
             }
 
-
-            $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$'.$vehicle->invoice_amount : '';
+            $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$' . $vehicle->invoice_amount : '';
             $vehicle->date_paid = sprintf('<span> %s</span>', $vehicle->date_paid);
-            $vehicle->actions .= $edit.$delete;
+            $vehicle->actions .= $edit . $delete;
             if ($user_role == 'yard_manager') {
                 $vehicle->actions = $edit;
             }
 
-            //Get meta data
             $vehicle_metas = collect($vehicle->metas);
             $vehicle->claim_number = $vehicle_metas->where('meta_key', 'claim_number')->pluck('meta_value')->first();
-//            $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
             $vehicle->status = $vehicle_metas->where('meta_key', 'status')->pluck('meta_value')->first();
 
             $data[] = $vehicle;
-
         }
-
-        $extraInfo = [
-            'total_orders_count' => $totalFiltered,
-            'orders_status_accepted' => $totalOrderCount['accepted'],
-            'orders_status_pending' => $totalOrderCount['pending'],
-            'orders_status_declined' => $totalOrderCount['declined'],
-            'user_rate' => '',
-        ];
 
         $data = [
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $totalData,
             'recordsFiltered' => $totalFiltered,
             'data' => $data,
-            'extra_info' => $extraInfo,
         ];
 
         return response()->json($data);
-
     }
 
     public function vehicles_sold(Request $request)
@@ -190,14 +161,14 @@ class DatatableController extends Controller
             $vehicle->null = '';
             $vehicle->DT_RowId = $vehicle->id;
             $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
-            $edit = '<a href="'.route('vehicles.edit', $vehicle->id).'" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
+            $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
             $edit = '';
-            $alertTitle = __('Are you sure you want to delete vehicle with VIN ').' '.$vehicle->vin;
+            $alertTitle = __('Are you sure you want to delete vehicle with VIN ') . ' ' . $vehicle->vin;
 
             $delete = '
-                    <form method="post" action="'.route('vehicles.destroy', $vehicle->id).'" style="display: inline"
-                        onsubmit="return confirmSubmission(this, \''.$alertTitle.'\')">
-                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                    <form method="post" action="' . route('vehicles.destroy', $vehicle->id) . '" style="display: inline"
+                        onsubmit="return confirmSubmission(this, \'' . $alertTitle . '\')">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
                         <input type="hidden" name="_method" value="DELETE">
                         <button type="submit" class="btn text-danger"><i class="fa fa-trash"></i></button>
                     </form>
@@ -207,9 +178,9 @@ class DatatableController extends Controller
 
             $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
 
-            $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$'.$vehicle->invoice_amount : '';
+            $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$' . $vehicle->invoice_amount : '';
 
-            $vehicle->actions .= $edit.$delete;
+            $vehicle->actions .= $edit . $delete;
             if ($user_role == 'yard_manager') {
                 $vehicle->actions = $edit;
             }
@@ -472,7 +443,7 @@ class DatatableController extends Controller
                 continue;
             }
             $html .= '<tr>';
-            $html .= '<td style="padding: 0rem !important;">'.strtoupper($key).'</td>';
+            $html .= '<td style="padding: 0rem !important;">' . strtoupper($key) . '</td>';
             $html .= '<td style="padding: 0rem !important;">';
             $html .= '<input type="text" class="form-control';
             if (in_array($key, ['left_location', 'date_paid'])) {
@@ -481,9 +452,9 @@ class DatatableController extends Controller
 
             }
             $html .= '"';
-            $html .= ' name="'.$key.'"';
-            $html .= ' value="'.$value.'"';
-            $html .= ' placeholder="'.$value.'"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . $value . '"';
+            $html .= ' placeholder="' . $value . '"';
             if (in_array($key, ['id', 'created_at'])) {
                 $html .= ' readonly';
             }
@@ -494,12 +465,12 @@ class DatatableController extends Controller
 
         foreach ($meta_keys as $key) {
             $html .= '<tr>';
-            $html .= '<td style="padding: 0rem !important;">'.strtoupper($key).'</td>';
+            $html .= '<td style="padding: 0rem !important;">' . strtoupper($key) . '</td>';
             $html .= '<td style="padding: 0rem !important;">';
             $html .= '<input type="text" class="form-control"';
-            $html .= ' name="'.$key.'"';
-            $html .= ' value="'.($vehicle_metas[$key] ?? '').'"';
-            $html .= ' placeholder="'.($vehicle_metas[$key] ?? '').'"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . ($vehicle_metas[$key] ?? '') . '"';
+            $html .= ' placeholder="' . ($vehicle_metas[$key] ?? '') . '"';
             $html .= '>';
             $html .= '</td>';
             $html .= '</tr>';
@@ -516,7 +487,7 @@ class DatatableController extends Controller
 
     public function getHtmlTwo_TD($string, string $html, $values, $extra_data = []): string
     {
-        $html .= '<td>'.strtoupper($string).'</td>';
+        $html .= '<td>' . strtoupper($string) . '</td>';
         $html .= '<td>';
 
         $dropdowns = ['location'];
@@ -524,17 +495,17 @@ class DatatableController extends Controller
 
         if (in_array($string, $dropdowns)) {
             $html .= '<select class="form-control select2"';
-            $html .= ' name="'.$string.'"';
-            $html .= ' value="'.$values.'"';
+            $html .= ' name="' . $string . '"';
+            $html .= ' value="' . $values . '"';
             $html .= '>';
 
             foreach ($extra_data[$string] as $location) {
-                $html .= '<option value="'.$location.'"';
+                $html .= '<option value="' . $location . '"';
                 if ($location == $values) {
                     $html .= ' selected';
                 }
                 $html .= '>';
-                $html .= $location.'</option>';
+                $html .= $location . '</option>';
             }
 
             $html .= '</select>';
@@ -544,7 +515,9 @@ class DatatableController extends Controller
             if (in_array($string, $date_ranges)) {
                 $html .= ' daterange';
                 //if date is empty, then datapicker gives NAN for all values in datepicker widget
-                if(is_null($values)) $values = now()->format('Y-m-d');
+                if(is_null($values)) {
+                    $values = now()->format('Y-m-d');
+                }
 
             }
             $html .= '"';
@@ -553,13 +526,12 @@ class DatatableController extends Controller
                 $html .= ' disabled';
             }
 
-            $html .= ' name="'.$string.'"';
-            $html .= ' value="'.$values.'"';
+            $html .= ' name="' . $string . '"';
+            $html .= ' value="' . $values . '"';
             if ($string == 'source') {
                 $html .= ' placeholder="copart | iaai"';
-            }
-            else{
-                $html .= ' placeholder="'.$values.'"';
+            } else {
+                $html .= ' placeholder="' . $values . '"';
             }
 
             $html .= ' style="width:auto"';
@@ -573,7 +545,7 @@ class DatatableController extends Controller
 
     public function getMetaHtmlTwo_TD($key, string $html, $vehicle_metas, $extra_data = []): string
     {
-        $html .= '<td>'.strtoupper($key).'</td>';
+        $html .= '<td>' . strtoupper($key) . '</td>';
         $html .= '<td>';
 
         $dropdowns = ['status', 'odometer', 'primary_damage', 'keys',  'drivability_rating'];
@@ -581,8 +553,8 @@ class DatatableController extends Controller
         if (in_array($key, $dropdowns)) {
 
             $html .= '<select class="form-control select2"';
-            $html .= ' name="'.$key.'"';
-            $html .= ' value="'.$vehicle_metas.'"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . $vehicle_metas . '"';
             $html .= '>';
 
             if ($key == 'status') {
@@ -599,21 +571,21 @@ class DatatableController extends Controller
                 $html .= '<option value="-100">Select Key</option>';
             }
             foreach ($extra_data[$key] as $location) {
-                $html .= '<option value="'.$location.'"';
+                $html .= '<option value="' . $location . '"';
                 if ($location == $vehicle_metas) {
                     $html .= ' selected';
                 }
                 $html .= '>';
-                $html .= $location.'</option>';
+                $html .= $location . '</option>';
             }
 
             $html .= '</select>';
 
         } else {
             $html .= '<input type="text" class="form-control"';
-            $html .= ' name="'.$key.'"';
-            $html .= ' value="'.($vehicle_metas ?? '').'"';
-            $html .= ' placeholder="'.($vehicle_metas ?? '').'"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . ($vehicle_metas ?? '') . '"';
+            $html .= ' placeholder="' . ($vehicle_metas ?? '') . '"';
             $html .= '>';
         }
 
@@ -664,14 +636,16 @@ class DatatableController extends Controller
         $show_blank_note = true;
         foreach ($notes as $note) {
             $html = $this->singleNoteRow($html, $note);
-            if(Auth::id() == $note->user_id)
-            $show_blank_note = false;
+            if(Auth::id() == $note->user_id) {
+                $show_blank_note = false;
+            }
         }
 
         //if user role is not 'viewer', then show blank note row
-        if($show_blank_note){
-            if(Auth::user()->role != 'viewer')
-            $html = $this->blankSingleNoteRow($html);
+        if($show_blank_note) {
+            if(Auth::user()->role != 'viewer') {
+                $html = $this->blankSingleNoteRow($html);
+            }
         }
 
 
@@ -681,21 +655,23 @@ class DatatableController extends Controller
 
     }
 
-    public function singleNoteRow($html, $note){
+    public function singleNoteRow($html, $note)
+    {
         $html .= '<tr>';
         $html .= '<div class="row">'; //row started
         $html .= '<div class="col-6">';
 
         $html .= '<td>';
-        $html .= sprintf("Added by: <strong>%s</strong> <br> %s", get_username($note->user_id ?? ''),  $note->created_at ? $note->created_at->format("d/m/Y H:i:s") : '');
+        $html .= sprintf("Added by: <strong>%s</strong> <br> %s", get_username($note->user_id ?? ''), $note->created_at ? $note->created_at->format("d/m/Y H:i:s") : '');
         $html .= '</td>';
 
         $html .= '<td colspan=3>';
         $html .= '<textarea class="form-control form-control-lg" name="notes[]"';
 
         //readonly
-        if(Auth::id() != $note->user_id)
-        $html .= ' disabled';
+        if(Auth::id() != $note->user_id) {
+            $html .= ' disabled';
+        }
 
         $html .= '>';
         $html .= $note->note  ?? null;
@@ -709,7 +685,8 @@ class DatatableController extends Controller
         return $html;
     }
 
-    public function blankSingleNoteRow($html){
+    public function blankSingleNoteRow($html)
+    {
         $html .= '<tr>';
         $html .= '<div class="row">'; //row started
         $html .= '<div class="col-6">';

@@ -22,28 +22,31 @@ class VehicleController extends Controller
 
     public function index()
     {
-        $makes = [];
-        $models = [];
+        // Get distinct statuses excluding 'Sold'
+        $statuses = $this->getDistinctStatuses();
 
-        $statuses = VehicleMetas::select('meta_value')
+        // Get distinct locations
+        $locations = $this->getDistinctLocations();
+
+        return view('pages.vehicle.index', compact('statuses', 'locations'));
+    }
+
+    private function getDistinctStatuses()
+    {
+        return VehicleMetas::select('meta_value')
             ->where('meta_key', 'status')
-            ->where('meta_value', '!=', 'Sold') //excluding sold status
+            ->where('meta_value', '!=', 'Sold')
             ->groupBy('meta_value')
             ->orderBy('meta_value')
-            ->get()
             ->pluck('meta_value');
+    }
 
-        $drivability_rating = VehicleMetas::select('meta_value')
-            ->where('meta_key', 'drivability_rating')
-            ->whereNotNull('meta_value')
-            ->groupBy('meta_value')
-            ->orderBy('meta_value')
-            ->get()
-            ->pluck('meta_value');
-
-        $locations = Vehicle::select('location')->distinct()->orderBy('location', 'asc')->get()->pluck('location');
-
-        return view('pages.vehicle.index', compact('models', 'makes', 'statuses', 'locations'));
+    private function getDistinctLocations()
+    {
+        return Vehicle::select('location')
+            ->distinct()
+            ->orderBy('location', 'asc')
+            ->pluck('location');
     }
 
     public function sold_vehicles()
@@ -422,7 +425,7 @@ class VehicleController extends Controller
         $purchase_lot = Vehicle::whereNotNull('purchase_lot')->pluck('purchase_lot')->toArray();
 
         $vehicles_not_found = [];
-        
+
         $updated_vehicles = 0;
         $start_row = $request->start;
         $end_row = $request->end;
