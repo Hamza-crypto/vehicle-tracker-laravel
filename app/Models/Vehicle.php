@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Vehicle extends Model
 {
@@ -105,12 +106,20 @@ class Vehicle extends Model
 
     public static function countAllVehicles()
     {
-        $sold_vehicles = Vehicle::whereDoesntHave('metas', function ($query) {
-            $query->where('meta_key', 'status')
-                ->where('meta_value', 'SOLD');
-        })->count();
+        $query = "
+            SELECT COUNT(*) AS aggregate
+            FROM vehicles
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM vehicle_metas
+                WHERE vehicles.id = vehicle_metas.vehicle_id
+                    AND vehicle_metas.meta_key = 'status'
+                    AND vehicle_metas.meta_value = 'SOLD'
+            )
+        ";
 
-        return $sold_vehicles;
+        $result = DB::select(DB::raw($query));
+        return $result[0]->aggregate;
     }
 
     public function number_of_runs()
@@ -151,7 +160,7 @@ class Vehicle extends Model
 
             $claim_number = $request['claim_number'];
             $query->whereHas('metas', function ($q1) use ($claim_number) {
-                $q1->where('meta_value',  "$claim_number");
+                $q1->where('meta_value', "$claim_number");
             });
 
         }
@@ -162,7 +171,7 @@ class Vehicle extends Model
         }
 
         if (isset($request['location']) && $request['location'] != -100) {
-            $query->where('location',  $request['location']);
+            $query->where('location', $request['location']);
         }
 
         if (isset($request['date_paid'])) {

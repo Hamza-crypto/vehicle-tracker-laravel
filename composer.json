@@ -15,6 +15,7 @@
         "laravel/framework": "^9.19",
         "laravel/helpers": "^1.4",
         "laravel/sanctum": "^2.11",
+        "laravel/telescope": "^4.16",
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
         "rap2hpoutre/fast-excel": "^3.0",
