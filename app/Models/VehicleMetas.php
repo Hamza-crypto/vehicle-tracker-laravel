@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Doctrine\Common\Cache\Cache;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
