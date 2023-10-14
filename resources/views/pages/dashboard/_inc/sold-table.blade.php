@@ -11,22 +11,22 @@
             </div>
             <table class="table table-sm table-striped my-0">
                 <thead>
-                <tr>
-                    <th>#</th>
-                    <th>VIN</th>
-                    <th>Days in Yard</th>
-                </tr>
+                    <tr>
+                        <th>Year Make Model</th>
+                        <th>VIN</th>
+                        <th>Days in Yard</th>
+                    </tr>
                 </thead>
                 <tbody class="text-end">
-                    @if(count($vehicles_with_days_in_yard))
+                    @if (count($vehicles_with_days_in_yard))
                         @foreach ($vehicles_with_days_in_yard as $vehicle)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <tr>
+                                <td>{{ $vehicle->description }}</td>
 
-                            <td>{{ $vehicle->vin }}</td>
+                                <td>{{ $vehicle->vin }}</td>
 
-                            <td>{{ $vehicle->meta_value }}</td>
-                        </tr>
+                                <td>{{ $vehicle->meta_value }}</td>
+                            </tr>
                         @endforeach
                     @else
                         <tr>
@@ -47,22 +47,18 @@
             </div>
             <table class="table table-sm table-striped my-0">
                 <thead>
-                <tr>
-                    <th>#</th>
-                    <th>VIN</th>
-                    <th>Status</th>
-                </tr>
+                    <tr>
+                        <th>Year Make Model</th>
+                        <th>VIN</th>
+                    </tr>
                 </thead>
                 <tbody class="text-end">
-                    @if(count($vehicles_sold))
+                    @if (count($vehicles_sold))
                         @foreach ($vehicles_sold as $vehicle)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-
-                            <td>{{ $vehicle->vin }}</td>
-
-                            <td>{{ $vehicle->meta_value }}</td>
-                        </tr>
+                            <tr>
+                                <td>{{ $vehicle->description }}</td>
+                                <td>{{ $vehicle->vin }}</td>
+                            </tr>
                         @endforeach
                     @else
                         <tr>
@@ -74,6 +70,3 @@
         </div>
     </div>
 </div>
-
-
-

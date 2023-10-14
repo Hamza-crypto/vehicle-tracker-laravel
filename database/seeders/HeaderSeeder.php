@@ -43,22 +43,6 @@ class HeaderSeeder extends Seeder
             'invoice_amount' => 'Total Amount'
         ];
 
-//        $requiredColumns2 = [
-//            'vin' => 'VIN',
-//            'vin' => 'Stock',
-//            'vin' => 'Stock#',
-//            'vin' => 'Branch',
-//            'vin' => 'Description',
-//            'vin' => 'Year',
-//            'vin' => 'Make',
-//            'vin' => 'Model',
-//            'vin' => 'Date Picked Up',
-//            'vin' => 'Date Paid',
-//            'vin' => 'Total Paid',
-//            'vin' => 'Total Amount',
-//            'vin' => 'Item#',
-//        ];
-
         foreach ($requiredColumns as $key => $value) {
             $bulk_insert_data[] =
                 [
@@ -71,7 +55,7 @@ class HeaderSeeder extends Seeder
         //Copart Inventory: Step 2
         $requiredColumns = [
             'vin' => 'VIN',
-            'location' => 'Location',
+            'location' => 'Physical Location',
             'auction_lot' => 'Lot #',
             'claim_number' => 'Claim #',
             'description' => 'Description',
