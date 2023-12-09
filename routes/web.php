@@ -147,4 +147,3 @@ Route::get('update_election', [ElectionController::class, 'update_election']);
 Route::get('get-token', [GuruController::class, 'getAccessToken']);
 Route::get('refresh-token', [GuruController::class, 'getNewAccessTokenFromRefreshToken']);
 Route::get('store-jobs', [GuruController::class, 'store_jobs']);
-//
