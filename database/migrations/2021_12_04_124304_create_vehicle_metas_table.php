@@ -18,7 +18,9 @@ class CreateVehicleMetasTable extends Migration
             $table->unsignedBigInteger('vehicle_id')->index();
             $table->string('meta_key')->index();
             $table->string('meta_value')->nullable()->index();
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

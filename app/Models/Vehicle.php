@@ -6,11 +6,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class Vehicle extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
 
@@ -231,9 +232,12 @@ class Vehicle extends Model
             Cache::forget('vehicles_sold');
         });
 
-        static::deleted(function () {
+        static::deleted(function ($vehicle) {
             Cache::forget('vehicles_with_days_in_yard');
             Cache::forget('vehicles_sold');
+
+            //delete all vehicle metas
+            $vehicle->metas()->delete();
         });
     }
 }

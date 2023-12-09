@@ -27,6 +27,7 @@ class CreateVehiclesTable extends Migration
             $table->integer('invoice_amount')->nullable()->index();
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
