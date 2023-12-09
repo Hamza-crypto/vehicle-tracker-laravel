@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class VehicleController extends Controller
 {
@@ -125,12 +126,14 @@ class VehicleController extends Controller
             $positions[$columnName] = $position;
         }
 
+        $unprocessed_rows = [];
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
         $total_vehicles = 0;
         foreach ($csvFile as $row) {
             $vin = $row[$positions[$requiredColumns['vin']]];
 
             if (empty($vin)) {
+                $unprocessed_rows[] = $row;
                 continue;
             }
 
@@ -151,6 +154,7 @@ class VehicleController extends Controller
 
         $msg = sprintf("%d vehicles inserted successfully", $total_vehicles);
         Session::flash('success', $msg);
+        $file_name = sprintf("unprocessed_vehicles-%s.xlsx", time());
 
         return redirect()->route('upload.create.buy');
 
@@ -315,7 +319,6 @@ class VehicleController extends Controller
                 $updated_vehicles++;
                 $this->insert_vehicle_metas($row, $vehicle->id, $positions, $requiredColumns);
             }
-
         }
         $msg = sprintf("%d new vehicles inserted, %d updated", $new_vehicles, $updated_vehicles);
         Session::flash('success', $msg);
