@@ -25,8 +25,9 @@
             </li>
 
 
-            <li class="sidebar-item {{ request()->is('vehicles/sold') || request()->is('vehicles')  ? 'active' : '' }} ">
-                <a data-target="#vehicles" data-toggle="collapse" class="sidebar-link {{ request()->is('vehicles/sold') || request()->is('vehicles') ? 'collapsed' : '' }}">
+            <li class="sidebar-item {{ request()->is('vehicles/sold') || request()->is('vehicles') ? 'active' : '' }} ">
+                <a data-target="#vehicles" data-toggle="collapse"
+                    class="sidebar-link {{ request()->is('vehicles/sold') || request()->is('vehicles') ? 'collapsed' : '' }}">
                     <i class="align-middle" data-feather="plus-square"></i>
                     <span class="align-middle">Vehicles</span>
                 </a>
@@ -54,10 +55,12 @@
 
                 </ul>
             </li>
-            @if( $role != 'viewer')
+            @if (in_array($role, ['admin', 'vehicle_manager']))
 
-                <li class="sidebar-item {{ request()->is('vehicles/upload*') || request()->is('headers') ? 'active' : '' }} ">
-                    <a data-target="#upload" data-toggle="collapse" class="sidebar-link {{ request()->is('vehicles/upload/*') ? 'collapsed' : '' }}">
+                <li
+                    class="sidebar-item {{ request()->is('vehicles/upload*') || request()->is('headers') ? 'active' : '' }} ">
+                    <a data-target="#upload" data-toggle="collapse"
+                        class="sidebar-link {{ request()->is('vehicles/upload/*') ? 'collapsed' : '' }}">
                         <i class="align-middle" data-feather="plus-square"></i>
                         <span class="align-middle">Upload Files</span>
                     </a>
@@ -86,19 +89,23 @@
                             </a>
                         </li>
 
-                        @if(in_array($role, ['admin']) )
-                        <li class="sidebar-item {{ request()->is('headers') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('headers.index') }}">
-                                <i class="align-middle" data-feather="plus-square"></i>
-                                <span class="align-middle">CSV Headers</span>
-                            </a>
-                        </li>
+                        @if (in_array($role, ['admin']))
+                            <li class="sidebar-item {{ request()->is('headers') ? 'active' : '' }}">
+                                <a class="sidebar-link" href="{{ route('headers.index') }}">
+                                    <i class="align-middle" data-feather="plus-square"></i>
+                                    <span class="align-middle">CSV Headers</span>
+                                </a>
+                            </li>
                         @endif
 
 
                     </ul>
                 </li>
 
+
+            @endif
+
+            @if ($role != 'viewer')
                 <li class="sidebar-item {{ request()->is('vehicles/create') ? 'active' : '' }}">
                     <a class="sidebar-link" href="{{ route('vehicles.index', ['create' => 'new']) }}">
                         <i class="align-middle" data-feather="plus-square"></i>
@@ -107,13 +114,13 @@
                 </li>
             @endif
 
-
-            @if( $role == 'admin')
+            @if ($role == 'admin')
                 <li class="sidebar-header">
                     Manage
                 </li>
                 <li class="sidebar-item {{ request()->is('users*') ? 'active' : '' }} ">
-                    <a data-target="#users" data-toggle="collapse" class="sidebar-link {{ request()->is('users/*') ? 'collapsed' : '' }}">
+                    <a data-target="#users" data-toggle="collapse"
+                        class="sidebar-link {{ request()->is('users/*') ? 'collapsed' : '' }}">
                         <i class="align-middle" data-feather="users"></i>
                         <span class="align-middle">Users</span>
                     </a>
@@ -135,14 +142,16 @@
                         </li>
                     </ul>
                 </li>
+
+                <li class="sidebar-item ">
+                    <a class="sidebar-link" href="/reset?confirm=">
+                        <i class="align-middle" data-feather="plus-square"></i>
+                        <span class="align-middle">RESET VEHICLES</span>
+                    </a>
+                </li>
             @endif
 
-            <li class="sidebar-item ">
-                <a class="sidebar-link" href="/reset?confirm=">
-                    <i class="align-middle" data-feather="plus-square"></i>
-                    <span class="align-middle">RESET VEHICLES</span>
-                </a>
-            </li>
+
         </ul>
     </div>
 </nav>

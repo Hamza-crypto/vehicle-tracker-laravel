@@ -150,9 +150,14 @@
                             return data.data;
                         }
                     },
-                    'columns': [{
-                            "data": "null"
-                        },
+                    //Columns are the keys of the response data object e.g. if I want to show description in column A, I will put description in column A position
+                    'columns': [
+                        @if ($role == 'admin')
+                            {
+                                "data": "null"
+                            },
+                        @endif
+
                         {
                             "data": "description"
                         },
@@ -180,10 +185,12 @@
                         {
                             "data": "claim_number"
                         },
-                        {
-                            "data": "actions",
-                            "className": 'table-action'
-                        },
+                        @if ($role == 'admin')
+                            {
+                                "data": "actions"
+                            },
+                        @endif
+
                         // {"data": "status"},
                         // {"data": "id"},
                     ],
@@ -191,9 +198,6 @@
                         var api = this.api();
                         var role = "<?php echo Auth()->user()->role; ?>";
 
-                        if (role == 'viewer') {
-                            api.columns([9]).visible(false);
-                        }
                     },
                     "buttons": [{
                             text: 'Select all',
@@ -269,21 +273,31 @@
                             }
                         }
                     ],
-                    "columnDefs": [{
-                            targets: [0, 1, 2, 4, 9, 10],
+
+                    @if ($role == 'admin')
+                        "columnDefs": [{
+                                targets: [0, 1, 2, 4, 9, 10],
+                                orderable: false
+                            },
+                            {
+                                targets: [0],
+                                className: 'select-checkbox sorting_disabled'
+                            },
+
+
+                        ],
+                        //When I click on this column, this row is selected in blue background
+                        "select": {
+                            style: 'multi',
+                            selector: 'td:first-child'
+                        },
+                    @else
+                        "columnDefs": [{
+                            targets: [0, 1, 3, 8],
                             orderable: false
-                        },
-                        {
-                            targets: [0],
-                            className: 'select-checkbox sorting_disabled'
-                        },
+                        }, ],
+                    @endif
 
-
-                    ],
-                    "select": {
-                        style: 'multi',
-                        selector: 'td:first-child'
-                    },
                     "pagingType": "simple_numbers"
                 });
 
@@ -435,7 +449,7 @@
                 //Apply pattern to vin field
                 new_response = new_response.replace('name="vin"',
                     'name="vin" pattern="[A-Za-z0-9]+" title="Only alphanumeric characters are allowed"'
-                    );
+                );
 
                 $('#vehicle-detail-div').html(new_response);
 
@@ -508,7 +522,10 @@
                     <table id="vehicles-table" class="table table-striped dataTable no-footer dtr-inline" style="width:100%">
                         <thead>
                             <tr>
-                                <th></th>
+
+                                @if ($role == 'admin')
+                                    <th></th>
+                                @endif
                                 <th>Year-Make-Model</th>
                                 <th>VIN</th>
                                 <th>Left Location</th>
@@ -518,7 +535,9 @@
                                 <th>Auction Lot #</th>
                                 <th>Days in Yard</th>
                                 <th>Claim Number</th>
-                                <th>Actions</th>
+                                @if ($role == 'admin')
+                                    <th>Actions</th>
+                                @endif
                                 {{--                            <th>Status</th> --}}
                                 {{--                            <th>ID</th> --}}
                             </tr>

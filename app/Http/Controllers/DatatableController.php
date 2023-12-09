@@ -14,6 +14,8 @@ class DatatableController extends Controller
 {
     public function vehicles(Request $request)
     {
+        $user_role = Auth::user()->role;
+
         $vehiclesQuery = Vehicle::with('metas')->filters($request->all());
 
         if (!empty($request->input('search.value'))) {
@@ -32,15 +34,27 @@ class DatatableController extends Controller
         $start = $request->length == -1 ? 0 : $request->start;
         $limit = $request->length == -1 ? $totalData : $request->length;
 
-        $dbColumns = [
+        if($user_role == 'admin'){
+            $dbColumns = [
             0 => 'id',
             3 => 'left_location',
             5 => 'date_paid',
             6 => 'purchase_lot',
             7 => 'auction_lot',
             8 => 'days_in_yard',
-            9 => 'claim_number',
         ];
+        }
+        else{
+            $dbColumns = [
+            0 => 'id',
+            2 => 'left_location',
+            4 => 'date_paid',
+            5 => 'purchase_lot',
+            6 => 'auction_lot',
+            7 => 'days_in_yard',
+        ];
+        }
+
 
         $orderColumnIndex = $request->input('order.0.column');
         $orderDbColumn = $dbColumns[$orderColumnIndex];
@@ -52,7 +66,7 @@ class DatatableController extends Controller
             ->get();
 
         $data = [];
-        $user_role = Auth::user()->role;
+
 
         foreach ($vehicles as $vehicle) {
             $vehicle->null = '';
@@ -70,7 +84,7 @@ class DatatableController extends Controller
                 </form>
                 ';
 
-            $vehicle->description = sprintf("<a data-toggle='modal' data-target='#modal-vehicle-detail' data-id='%s'>%s</a>", $vehicle->id, $vehicle->description);
+            $vehicle->description = sprintf("<a data-toggle='modal' data-target='#modal-vehicle-detail' data-id='%s' style='color: #3f80ea;'>%s</a>", $vehicle->id, $vehicle->description);
 
             if ($vehicle->source == 'iaai') {
                 $vehicle->purchase_lot = sprintf("<a href='https://www.iaai.com/PurchaseHistory' target='_blank' style='color: red'>%s</a>", $vehicle->purchase_lot);
@@ -83,9 +97,9 @@ class DatatableController extends Controller
             $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$' . $vehicle->invoice_amount : '';
             $vehicle->date_paid = sprintf('<span> %s</span>', $vehicle->date_paid);
             $vehicle->actions .= $edit . $delete;
-            if ($user_role == 'yard_manager') {
-                $vehicle->actions = $edit;
-            }
+            // if ($user_role != 'admin') {
+                // $vehicle->actions = "";
+            // }
 
             $vehicle_metas = collect($vehicle->metas);
             $vehicle->claim_number = $vehicle_metas->where('meta_key', 'claim_number')->pluck('meta_value')->first();
@@ -120,8 +134,9 @@ class DatatableController extends Controller
         // index should be in accordance with the column index in the table
         $dbColumns = [
             0 => 'id',
-            3 => 'auction_lot',
-            5 => 'invoice_amount'
+            2 => 'auction_lot',
+            5 => 'invoice_amount',
+            6 => 'days_in_yard'
         ];
 
         $orderColumnIndex = $request->input('order.0.column');

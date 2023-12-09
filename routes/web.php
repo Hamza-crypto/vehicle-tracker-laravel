@@ -68,6 +68,10 @@ Route::get('/reset-all', function () {
 
 Route::group(['middleware' => ['auth']], function () {
 
+
+    //Viewer role can also see sold vehicles section
+    Route::get('vehicles/sold', [VehicleController::class, 'sold_vehicles'])->name('vehicles.sold');
+
     Route::group([
         'prefix' => 'profile',
     ], function () {
@@ -92,14 +96,14 @@ Route::group(['middleware' => ['auth']], function () {
         ['middleware' => 'admin',
         ], function () {
             Route::get('logs', [LogViewerController::class, 'index']);
-        Route::post('/process-csv', [CSVHeaderController::class,'processCsv'] )->name('process.csv');
+            Route::post('/process-csv', [CSVHeaderController::class,'processCsv'] )->name('process.csv');
 
-        Route::post('/field-mapping/save', [CSVHeaderController::class,'saveFieldMapping'])->name('field.mapping.save');
+            Route::post('/field-mapping/save', [CSVHeaderController::class,'saveFieldMapping'])->name('field.mapping.save');
 
-        Route::post('field-mapping', [CSVHeaderController::class, 'showFieldMapping'])->name('field.mapping');
-        Route::resource('headers', CSVHeaderController::class);
+            Route::post('field-mapping', [CSVHeaderController::class, 'showFieldMapping'])->name('field.mapping');
+            Route::resource('headers', CSVHeaderController::class);
 
-        //        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
+            //        Route::post('csv/sell', [VehicleController::class, 'import_sale_csv'])->name('csv.sale');
             //        Route::post('csv/inventory', [VehicleController::class, 'import_inventory_csv'])->name('csv.inventory');
 
             Route::resource('users', UsersController::class);
@@ -124,7 +128,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('vehicle/location/{location}', [LocationsController::class, 'add_new_location'])->name('location.add');
 
         Route::delete('vehicles/delete-multiple', [VehicleController::class, 'delete_multiple_vehicles'])->name('vehicles.delete-multiple');
-        Route::get('vehicles/sold', [VehicleController::class, 'sold_vehicles'])->name('vehicles.sold');
         Route::resource('vehicles', VehicleController::class)->except('index');
         Route::resource('locations', LocationsController::class);
     });
