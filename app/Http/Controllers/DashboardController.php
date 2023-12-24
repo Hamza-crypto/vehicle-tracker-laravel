@@ -12,7 +12,7 @@ class DashboardController extends Controller
     {
         $vehicles_with_days_in_yard = Cache::remember('vehicles_with_days_in_yard', 1440, function () { //1440 = 1 hour
             return Vehicle::join('vehicle_metas', 'vehicles.ID', '=', 'vehicle_metas.vehicle_id')
-            ->select(['vin', 'description', 'meta_value'])
+            ->select(['vehicles.id' ,'vin', 'description', 'meta_value'])
             ->where('meta_key', 'days_in_yard')
             ->orderByRaw('CAST(meta_value AS UNSIGNED) DESC')
             ->limit(30)
@@ -22,7 +22,7 @@ class DashboardController extends Controller
 
         $vehicles_sold = Cache::remember('vehicles_sold', 1440, function () {
             return Vehicle::join('vehicle_metas', 'vehicles.ID', '=', 'vehicle_metas.vehicle_id')
-            ->select(['vin', 'description'])
+            ->select(['vehicles.id','vin', 'description'])
             ->where('meta_key', 'status')
             ->where('meta_value', 'SOLD')
             ->orderBy('vehicle_metas.id', 'DESC')

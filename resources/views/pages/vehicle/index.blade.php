@@ -28,6 +28,15 @@
             });
 
             const urlParams = new URLSearchParams(window.location.search);
+
+            //Change status dropdown based on url param (coming from dashboard stats widgets)
+            if (urlParams.has('status')) {
+                var status_from_url = urlParams.get('status');
+                $('#status').val(status_from_url);
+                console.log(status_from_url);
+
+            }
+
             if (urlParams.has('create') && urlParams.get('create') === 'new') {
 
                 $.get('/next_vehicle_id', function(response) {

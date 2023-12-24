@@ -29,6 +29,16 @@ class Vehicle extends Model
         'created_at',
     ];
 
+
+    public const STATUSES = [
+        'AWAITING BID APPROVAL',
+        'READY FOR AUCTION',
+        'WAITING FOR ORIGINAL TITLE',
+        'WAITING FOR TRANSFERABLE TITLE',
+        'In Transit',
+        'Title Rejected'
+    ];
+
     public function getInvoiceDateAttribute($date)
     {
         $date = Carbon::parse($date);

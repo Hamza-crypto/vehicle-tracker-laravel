@@ -9,7 +9,7 @@
 
 
             </div>
-            <table class="table table-sm table-striped my-0">
+            <table class="vehicles-table table table-sm table-striped my-0">
                 <thead>
                     <tr>
                         <th>Year Make Model</th>
@@ -20,12 +20,24 @@
                 <tbody class="text-end">
                     @if (count($vehicles_with_days_in_yard))
                         @foreach ($vehicles_with_days_in_yard as $vehicle)
-                            <tr>
-                                <td>{{ $vehicle->description }}</td>
+                            <tr id="{{ $vehicle->id }}">
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">
+                                        {{ $vehicle->description }}
+                                    </a>
+                                </td>
 
-                                <td>{{ $vehicle->vin }}</td>
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">
+                                        {{ $vehicle->vin }}
+                                    </a>
+                                </td>
 
-                                <td>{{ $vehicle->meta_value }}</td>
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">
+                                        {{ $vehicle->meta_value }}
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     @else
@@ -45,7 +57,7 @@
                     Recently Sold Vehicles
                 </h5>
             </div>
-            <table class="table table-sm table-striped my-0">
+            <table class="vehicles-table table table-sm table-striped my-0">
                 <thead>
                     <tr>
                         <th>Year Make Model</th>
@@ -55,9 +67,17 @@
                 <tbody class="text-end">
                     @if (count($vehicles_sold))
                         @foreach ($vehicles_sold as $vehicle)
-                            <tr>
-                                <td>{{ $vehicle->description }}</td>
-                                <td>{{ $vehicle->vin }}</td>
+                            <tr id="{{ $vehicle->id }}">
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">
+                                        {{ $vehicle->description }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">
+                                        {{ $vehicle->vin }}
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     @else

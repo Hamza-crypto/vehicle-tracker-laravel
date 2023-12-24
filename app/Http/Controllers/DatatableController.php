@@ -285,13 +285,15 @@ class DatatableController extends Controller
         $count = count($array_keys);
 
         $locations = Vehicle::select('location')->distinct()->orderBy('location', 'asc')->get()->pluck('location');
-        $statuses = VehicleMetas::select('meta_value')
-            ->where('meta_key', 'status')
-           // ->where('meta_value', '!=', 'Sold') //excluding sold status
-            ->groupBy('meta_value')
-            ->orderBy('meta_value')
-            ->get()
-            ->pluck('meta_value');
+        // $statuses = VehicleMetas::select('meta_value')
+        //     ->where('meta_key', 'status')
+        //    // ->where('meta_value', '!=', 'Sold') //excluding sold status
+        //     ->groupBy('meta_value')
+        //     ->orderBy('meta_value')
+        //     ->get()
+        //     ->pluck('meta_value');
+
+        $statuses = Vehicle::STATUSES;
 
         $odometer = VehicleMetas::select('meta_value')
             ->where('meta_key', 'odometer')
