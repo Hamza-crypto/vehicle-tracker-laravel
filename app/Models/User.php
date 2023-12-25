@@ -42,6 +42,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function metas()
+    {
+        return $this->hasMany(RunList::class);
+    }
+
     public function scopeFilters($query, $request)
     {
         if (isset($request['status']) && $request['status'] != -100) {

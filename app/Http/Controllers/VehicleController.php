@@ -65,18 +65,19 @@ class VehicleController extends Controller
 
     public function create_upload_buy()
     {
-        return view('pages.vehicle.buy.upload');
+        return view('pages.vehicle.buy.upload'); //1
     }
 
     public function create_upload_inventory()
     {
-        return view('pages.vehicle.inventory.upload');
+        return view('pages.vehicle.inventory.upload'); //2
     }
 
     public function create_upload_sold()
     {
-        return view('pages.vehicle.sold.upload');
+        return view('pages.vehicle.sold.upload'); //3
     }
+
 
     public function create()
     {
@@ -477,6 +478,7 @@ class VehicleController extends Controller
         return view('pages.vehicle.sold.upload')->with('vehicles_not_found', $vehicles_not_found);
 
     }
+
 
     public function edit(Vehicle $vehicle)
     {

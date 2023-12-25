@@ -102,6 +102,32 @@
                     </ul>
                 </li>
 
+                <li class="sidebar-item {{ request()->is('runlist*') ? 'active' : '' }} ">
+                    <a data-target="#run-list" data-toggle="collapse"
+                        class="sidebar-link {{ request()->is('runlist/upload*') ? 'collapsed' : '' }}">
+                        <i class="align-middle" data-feather="clipboard"></i>
+                        <span class="align-middle">Run List</span>
+                    </a>
+                    <ul id="run-list"
+                        class="sidebar-dropdown list-unstyled collapse {{ request()->is('runlists') || request()->is('runlist/upload') ? 'show' : '' }}"
+                        data-parent="#sidebar">
+
+                        <li class="sidebar-item {{ request()->is('runlists') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('vehicles.runlists.index') }}">
+                                <i class="align-middle" data-feather="clipboard"></i>
+                                <span class="align-middle">Run Lists</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item {{ request()->is('runlist/upload') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('upload.create.runlist') }}">
+                                <i class="align-middle" data-feather="plus-square"></i>
+                                <span class="align-middle">Add New List</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
 
             @endif
 

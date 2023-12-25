@@ -7,6 +7,7 @@ use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RunListController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
 use App\Models\Vehicle;
@@ -120,10 +121,18 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('vehicles/upload/inventory', [VehicleController::class, 'create_upload_inventory'])->name('upload.create.inventory');
         Route::get('vehicles/upload/sold', [VehicleController::class, 'create_upload_sold'])->name('upload.create.sold');
 
+        /**
+         * Run List
+         */
+        Route::get('runlist/upload', [RunListController::class, 'create_upload_run_list'])->name('upload.create.runlist');
+        Route::get('runlists', [RunListController::class, 'index'])->name('vehicles.runlists.index');
+
+
         Route::post('buy/copart', [VehicleController::class, 'import_buy_copart_csv'])->name('buy.copart');
         Route::post('buy/iaai', [VehicleController::class, 'import_buy_iaai_csv'])->name('buy.iaai');
         Route::post('inventory/copart', [VehicleController::class, 'import_inventory_copart_csv'])->name('inventory.copart');
         Route::post('sold/copart', [VehicleController::class, 'import_sold_copart_csv'])->name('sold.copart');
+        Route::post('vehicle/runlist', [RunListController::class, 'import_run_list_csv'])->name('vehicles.runlist');
 
         Route::get('vehicle/location/{location}', [LocationsController::class, 'add_new_location'])->name('location.add');
 
@@ -147,3 +156,7 @@ Route::get('update_election', [ElectionController::class, 'update_election']);
 Route::get('get-token', [GuruController::class, 'getAccessToken']);
 Route::get('refresh-token', [GuruController::class, 'getNewAccessTokenFromRefreshToken']);
 Route::get('store-jobs', [GuruController::class, 'store_jobs']);
+
+
+
+Route::get('get_run_lists', [RunListController::class, 'get_run_lists'])->name('runlists.filter');
