@@ -160,3 +160,4 @@ Route::get('store-jobs', [GuruController::class, 'store_jobs']);
 
 
 Route::get('get_run_lists', [RunListController::class, 'get_run_lists'])->name('runlists.filter');
+Route::get('export_run_list', [RunListController::class, 'export_run_list'])->name('runlist.export');

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Support\Facades\Session;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RunListController extends Controller
 {
@@ -19,32 +19,32 @@ class RunListController extends Controller
     }
 
     public function get_run_lists(Request $request)
-{
-    $query = QueryBuilder::for(RunList::class)
-        ->allowedFilters([
-            'item_number',
-            'lot_number',
-            'claim_number',
-            'description',
-            'number_of_runs',
-        ])
-        ->defaultSort('id')
-        ->allowedSorts('id','created_at', 'updated_at', 'item_number', 'lot_number', 'claim_number', 'description', 'number_of_runs');
+    {
+        $query = QueryBuilder::for(RunList::class)
+            ->allowedFilters([
+                'item_number',
+                'lot_number',
+                'claim_number',
+                'description',
+                'number_of_runs',
+            ])
+            ->defaultSort('id')
+            ->allowedSorts('id', 'created_at', 'updated_at', 'item_number', 'lot_number', 'claim_number', 'description', 'number_of_runs');
 
-    // Apply additional conditions
-    $query->where('user_id', 8);
+        // Apply additional conditions
+        $query->where('user_id', auth()->id());
 
-    // Check if per_page is set to -1 for fetching all data
-    $perPage = $request->per_page ?? 10;
+        // Check if per_page is set to -1 for fetching all data
+        $perPage = $request->per_page ?? 10;
 
-    if ($perPage == -1) {
-        $perPage = 100000;
+        if ($perPage == -1) {
+            $perPage = 100000;
+        }
+
+        $run_lists = $query->paginate($perPage);
+
+        return new RunListCollection($run_lists);
     }
-
-    $run_lists = $query->paginate($perPage);
-
-    return new RunListCollection($run_lists);
-}
 
 
     public function create_upload_run_list()
@@ -121,5 +121,38 @@ class RunListController extends Controller
     public function cleanHeaders($headers)
     {
         return array_map('trim', $headers);
+    }
+
+    public function export_run_list(Request $request)
+    {
+        $query = QueryBuilder::for(RunList::class)
+            ->allowedFilters([
+                'item_number',
+                'lot_number',
+                'claim_number',
+                'description',
+                'number_of_runs',
+            ])
+            ->defaultSort('id')
+            ->allowedSorts('id', 'created_at', 'updated_at', 'item_number', 'lot_number', 'claim_number', 'description', 'number_of_runs');
+
+        // Apply additional conditions
+        $query->where('user_id', auth()->id());
+
+        // Check if per_page is set to -1 for fetching all data
+        $perPage = $request->per_page ?? 10;
+
+        if ($perPage == -1) {
+            $perPage = 100000;
+        }
+
+        $columnsToFetch = ['description', 'item_number', 'lot_number', 'claim_number', 'number_of_runs'];
+
+        $run_lists = $query->select($columnsToFetch)->toBase()->get();
+
+        // return view('pages.pdf.run_list', compact('run_lists'));
+        $pdf = PDF::loadView('pages.pdf.run_list', ['run_lists' => $run_lists]);
+        //  return $pdf->stream();
+        return $pdf->download('run_lists.pdf');
     }
 }

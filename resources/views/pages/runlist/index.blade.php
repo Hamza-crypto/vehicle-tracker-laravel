@@ -8,12 +8,12 @@
         var currentPage = 1;
         var totalPages = 1;
         var perPage = 10;
-        var defaultSort = 'lot_number';
-        var defaultOrder = 'asc';
+        var sortColumn = 'id';
+        var sortOrder = 'asc';
         var filters = {};
 
-        function fetchData(page, filters, column, order) {
-            console.log('Sorting by', column, 'in', order, 'order');
+        function fetchData(page, filters, sortColumn, sortOrder) {
+            console.log('Sorting by', sortColumn, 'in', sortOrder, 'order');
             var requestData = {
                 page: page,
                 per_page: perPage
@@ -25,9 +25,9 @@
                 }
             });
 
-            if (column != undefined) {
+            if (sortColumn != undefined) {
                 //Update sorting order based on defaultSort and defaultOrder
-                requestData['sort'] = (order === 'desc' ? '-' : '') + column;
+                requestData['sort'] = (sortOrder === 'desc' ? '-' : '') + sortColumn;
             }
 
 
@@ -78,10 +78,8 @@
         }
 
         $(document).ready(function() {
-            var column = defaultSort;
-            var order = defaultOrder;
 
-            fetchData(currentPage, filters, column, order);
+            fetchData(currentPage, filters, sortColumn, sortOrder);
 
             $(document).on('click', '.delete-btn', function() {
                 var resourceId = $(this).data('id');
@@ -107,13 +105,13 @@
 
                 };
                 currentPage = 1;
-                fetchData(currentPage, filters);
+                fetchData(currentPage, filters, sortColumn, sortOrder);
             });
 
             // Handle header click to change sorting
             $('#runs-table th').on('click', function() {
-                var sortColumn = $(this).data('column');
-                var sortOrder = 'asc';
+                sortColumn = $(this).data('column');
+                sortOrder = 'asc';
 
                 // Toggle sorting order
                 if ($(this).hasClass('sorting_asc')) {
@@ -126,6 +124,39 @@
 
                 // Sort the table
                 fetchData(currentPage, filters, sortColumn, sortOrder);
+            });
+
+            $('#export-btn').on('click', function() {
+                var filters = {
+                    description: $('[name="description"]').val(),
+                    item_number: $('[name="item_number"]').val(),
+                    lot_number: $('[name="lot_number"]').val(),
+                    claim_number: $('[name="claim_number"]').val(),
+                    number_of_runs: $('[name="number_of_runs"]').val(),
+                    number_of_runs: $('[name="number_of_runs"]').val(),
+                };
+
+                var requestData = {};
+
+                Object.keys(filters).forEach((key) => {
+                    if (filters[key] !== '-100') {
+                        requestData[`filter[${key}]`] = filters[key];
+                    }
+                });
+
+                if (sortColumn != undefined) {
+                    //Update sorting order based on defaultSort and defaultOrder
+                    requestData['sort'] = (sortOrder === 'desc' ? '-' : '') + sortColumn;
+                }
+
+                console.log(requestData);
+                var url = '/export_run_list'; // Update the URL based on your routes
+
+                // Append filters to the URL
+                url += '?' + $.param(requestData);
+                console.log(url);
+                // Open the generated PDF in a new tab or window
+                window.open(url, '_blank');
             });
         });
     </script>
@@ -162,7 +193,7 @@
                                     style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th data-column="id">ID</th>
+                                            <th data-column="id" class="sorting_asc">ID</th>
                                             <th data-column="description">Description</th>
                                             <th data-column="item_number">Item Number</th>
                                             <th data-column="lot_number">Lot Number</th>

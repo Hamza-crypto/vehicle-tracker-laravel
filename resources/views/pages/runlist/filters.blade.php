@@ -51,6 +51,7 @@
                             <button type="submit" class="btn btn-sm btn-primary mt-2">Apply</button>
                             <button type="button" class="btn btn-sm btn-secondary mt-2"
                                 id="clear-button">Clear</button>
+                            <button type="button" class="btn btn-sm btn-warning mt-2" id="export-btn">Export</button>
                         </div>
                     </div>
 
