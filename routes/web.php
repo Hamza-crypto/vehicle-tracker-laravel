@@ -58,7 +58,7 @@ Route::get('/reset', function () {
 
 });
 
-
+//
 Route::get('/reset-all', function () {
 
     \Illuminate\Support\Facades\Artisan::call('migrate:fresh');
