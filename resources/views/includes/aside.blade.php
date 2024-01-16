@@ -138,6 +138,13 @@
                         <span class="align-middle">Add New Vehicle</span>
                     </a>
                 </li>
+
+                <li class="sidebar-item {{ request()->is('vehicles/create') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('vinocr.showform') }}">
+                        <i class="align-middle" data-feather="plus-square"></i>
+                        <span class="align-middle">Intake</span>
+                    </a>
+                </li>
             @endif
 
             @if ($role == 'admin')

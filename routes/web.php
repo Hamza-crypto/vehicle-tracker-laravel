@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RunListController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VinOcrController;
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use Illuminate\Support\Facades\Session;
@@ -138,6 +139,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('vehicles/delete-multiple', [VehicleController::class, 'delete_multiple_vehicles'])->name('vehicles.delete-multiple');
         Route::resource('vehicles', VehicleController::class)->except('index');
         Route::resource('locations', LocationsController::class);
+
+        Route::get('/vinocr/form', [VinOcrController::class, 'showForm'])->name('vinocr.showform');;
+        Route::post('/vinocr/process', [VinOcrController::class, 'processImage'])->name('vinocr.process');
     });
 
     Route::resource('vehicles', VehicleController::class)->only('index');

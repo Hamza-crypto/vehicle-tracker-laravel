@@ -36,7 +36,8 @@ class Vehicle extends Model
         'WAITING FOR ORIGINAL TITLE',
         'WAITING FOR TRANSFERABLE TITLE',
         'In Transit',
-        'Title Rejected'
+        'Title Rejected',
+        'Intake'
     ];
 
     public function getInvoiceDateAttribute($date)

@@ -101,35 +101,11 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
-        'order_status' => [
+        'vinocr' => [
             'driver' => 'single',
-            'path' => storage_path('logs/order_status.log'),
+            'path' => storage_path('logs/vinocr.log'),
         ],
 
-        'bot_test' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/bot_test.log'),
-        ],
-
-        'gateway_transactions' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/gateway_transactions.log'),
-        ],
-
-        'balance_checking' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/balance_checking.log'),
-        ],
-
-        'trades' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/trades.log'),
-        ],
-
-        'cards' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/cards.log'),
-        ],
     ],
 
 ];
