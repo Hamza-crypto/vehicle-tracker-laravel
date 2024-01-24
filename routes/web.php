@@ -67,6 +67,11 @@ Route::get('/reset-all', function () {
 
 });
 
+
+Route::get('/migrate', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate');
+});
+
 Route::group(['middleware' => ['auth']], function () {
 
 
