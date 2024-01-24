@@ -32,7 +32,7 @@ class VehicleController extends Controller
         return view('pages.vehicle.index', compact('statuses', 'locations'));
     }
 
-    private function getDistinctStatuses()
+    public function getDistinctStatuses()
     {
         return VehicleMetas::select('meta_value')
             ->where('meta_key', 'status')
@@ -42,7 +42,7 @@ class VehicleController extends Controller
             ->pluck('meta_value');
     }
 
-    private function getDistinctLocations()
+    public function getDistinctLocations()
     {
         return Vehicle::select('location')
             ->distinct()

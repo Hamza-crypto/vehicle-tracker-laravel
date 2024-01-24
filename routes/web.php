@@ -142,6 +142,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/vinocr/form', [VinOcrController::class, 'showForm'])->name('vinocr.showform');;
         Route::post('/vinocr/process', [VinOcrController::class, 'processImage'])->name('vinocr.process');
+        Route::patch('/vinocr/{vehicle}/detail1', [VinOcrController::class, 'update_detail_1'])->name('vinocr.update.detail1');
+        Route::patch('/vinocr/{vehicle}/detail2', [VinOcrController::class, 'update_detail_2'])->name('vinocr.update.detail2');
     });
 
     Route::resource('vehicles', VehicleController::class)->only('index');

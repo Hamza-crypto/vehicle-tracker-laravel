@@ -14,7 +14,9 @@ class Vehicle extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-
+        'vin',
+        'location',
+        'description',
     ];
 
     protected $hidden = [
@@ -39,6 +41,11 @@ class Vehicle extends Model
         'Title Rejected',
         'Intake'
     ];
+
+    public static function getStatuses()
+    {
+        return self::STATUSES;
+    }
 
     public function getInvoiceDateAttribute($date)
     {
