@@ -14,7 +14,7 @@
 @endsection
 @section('content')
 
-    <h1 class="h3 mb-3">Add New Vehicle </h1>
+    <h1 class="h3 mb-3">SCAN Vehicle </h1>
 
     <div class="row">
 
