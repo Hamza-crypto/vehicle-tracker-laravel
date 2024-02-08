@@ -30,7 +30,7 @@
             <div class="card">
 
                 <div class="card-body">
-                    <form method="post" action="{{ route('vinocr.update.detail2', $vehicle->id) }}">
+                    <form method="post" action="{{ route('vinocr.update.detail2') }}">
                         @csrf
                         @method('PATCH')
 
@@ -63,7 +63,7 @@
                         <div class="mb-3">
                             <label class="form-label">Created At</label>
                             <input type="text" disabled class="form-control"
-                                value="{{ $vehicle->created_at->format('Y-m-d h:i:s A') }}">
+                                value="{{ now()->format('Y-m-d h:i:s A') }}">
                         </div>
 
                         <div class="mb-3">
@@ -95,8 +95,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">Update
-                                Vehicle</button>
+                            <button type="submit" class="btn btn-primary">Add Vehicle</button>
                         </div>
 
 

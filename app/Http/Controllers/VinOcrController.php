@@ -98,7 +98,8 @@ class VinOcrController extends Controller
                 $des_string .= ' ' . $description['model'];
             }
             $vehicle->description = $des_string;
-            $vehicle->save();
+            // $vehicle->save();
+            $vehicle->id = Vehicle::max('id') + 1;
         }
 
         $statuses = Vehicle::getStatuses();
@@ -109,8 +110,10 @@ class VinOcrController extends Controller
 
     public function update_detail_1(Request $request, Vehicle $vehicle)
     {
-        $vehicle->location = $request->location;
-        $vehicle->save();
+        if ($request->location != -1) {
+            $vehicle->location = $request->location;
+            $vehicle->save();
+        }
 
         $vehicle->metas()->updateOrCreate(['meta_key' => 'keys'], ['meta_value' => $request->keys]);
         $vehicle->metas()->updateOrCreate(['meta_key' => 'status'], ['meta_value' => $request->status]);
@@ -130,12 +133,13 @@ class VinOcrController extends Controller
         return redirect()->route('vinocr.showform');
     }
 
-    public function update_detail_2(Request $request, Vehicle $vehicle)
+    public function update_detail_2(Request $request)
     {
-        $updateFields = [
-        'vin' => $request->vin,
-        'description' => $request->description,
-    ];
+        $vehicle = new Vehicle();
+        $vehicle->vin = $request->vin;
+        $vehicle->description = $request->description;
+
+        $vehicle->save();
 
     // Check if the location is not equal to -1 before updating
     if ($request->location != -1) {
