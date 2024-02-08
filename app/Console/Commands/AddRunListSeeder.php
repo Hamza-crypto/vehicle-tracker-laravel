@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class ClearVehicle extends Command
+class AddRunListSeeder extends Command
 {
     protected $signature = 'add-runlist-header';
     protected $description = 'It add csv headers for runlist';
