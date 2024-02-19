@@ -4,9 +4,22 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function() {
+        var vin = "{{ $vehicle->vin }}";
 
-        });
+        Swal.fire({
+            title: vin,
+            text: "Is the above VIN correct?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#10875b',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, its perfect',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                window.history.back();
+            }
+        })
     </script>
 
 @endsection
