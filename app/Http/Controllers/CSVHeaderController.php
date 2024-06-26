@@ -50,6 +50,7 @@ class CSVHeaderController extends Controller
         $csvFile = array_map('str_getcsv', file($path));
 
         $headers = $csvFile[0];
+        $headers[0] = preg_replace('/^\x{FEFF}/u', '', $headers[0]);
 
         return view('pages.headers.index', get_defined_vars());
     }

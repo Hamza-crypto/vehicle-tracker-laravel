@@ -101,6 +101,7 @@ class VehicleController extends Controller
         $csvFile = array_map('str_getcsv', file($path));
 
         $headers = $csvFile[0];
+        $headers[0] = preg_replace('/^\x{FEFF}/u', '', $headers[0]);
         unset($csvFile[0]);
 
         $requiredColumns = [
@@ -167,6 +168,8 @@ class VehicleController extends Controller
         $csvFile = array_map('str_getcsv', file($path));
 
         $headers = $csvFile[0];
+        $headers[0] = preg_replace('/^\x{FEFF}/u', '', $headers[0]);
+
         unset($csvFile[0]);
 
         $requiredColumns = $this->get_csv_headers('iaai_buy');
@@ -197,7 +200,15 @@ class VehicleController extends Controller
                 $vehicle->purchase_lot = $row[$positions[$requiredColumns['purchase_lot']]];
                 $vehicle->source = 'iaai';
                 $vehicle->location = $row[$positions[$requiredColumns['location']]];
-                $vehicle->description = sprintf("%s %s %s", $row[$positions[$requiredColumns['year']]], $row[$positions[$requiredColumns['make']]], $row[$positions[$requiredColumns['model']]]);
+
+                if($row[$positions[$requiredColumns['year']]] == $row[$positions[$requiredColumns['make']]] && $row[$positions[$requiredColumns['make']]] == $row[$positions[$requiredColumns['model']]]){
+                    $vehicle->description = sprintf("%s", $row[$positions[$requiredColumns['year']]]);
+                    //dd($row[$positions[$requiredColumns['year']]], $row[$positions[$requiredColumns['make']]], $row[$positions[$requiredColumns['model']]]);
+                }
+                else{
+                    $vehicle->description = sprintf("%s %s %s", $row[$positions[$requiredColumns['year']]], $row[$positions[$requiredColumns['make']]], $row[$positions[$requiredColumns['model']]]);
+                }
+
                 $vehicle->left_location = isset($row[$positions[$requiredColumns['left_location']]]) ? Carbon::parse($row[$positions[$requiredColumns['left_location']]])->format('Y-m-d') : null;
                 $vehicle->date_paid = Carbon::parse($row[$positions[$requiredColumns['date_paid']]])->format('Y-m-d');
                 $vehicle->invoice_amount = $this->format_amount($row[$positions[$requiredColumns['invoice_amount']]]);
@@ -224,6 +235,7 @@ class VehicleController extends Controller
         $csvFile = array_map('str_getcsv', file($path));
 
         $headers = $csvFile[0];
+        $headers[0] = preg_replace('/^\x{FEFF}/u', '', $headers[0]);
         unset($csvFile[0]);
 
         $requiredColumns = [
@@ -381,6 +393,7 @@ class VehicleController extends Controller
         $data = array_map('str_getcsv', file($path));
 
         $headers = $this->cleanHeaders($data[0]);
+        $headers[0] = preg_replace('/^\x{FEFF}/u', '', $headers[0]);
         unset($data[0]); // Remove header
 
         $requiredColumns = [
