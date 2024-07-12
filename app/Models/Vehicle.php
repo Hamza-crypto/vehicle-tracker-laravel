@@ -127,16 +127,17 @@ class Vehicle extends Model
     public static function countAllVehicles()
     {
         $query = "
-            SELECT COUNT(*) AS aggregate
-            FROM vehicles
-            WHERE NOT EXISTS (
+        SELECT COUNT(*) AS aggregate
+        FROM vehicles
+        WHERE deleted_at IS NULL
+            AND NOT EXISTS (
                 SELECT 1
                 FROM vehicle_metas
                 WHERE vehicles.id = vehicle_metas.vehicle_id
                     AND vehicle_metas.meta_key = 'status'
                     AND vehicle_metas.meta_value = 'SOLD'
             )
-        ";
+    ";
 
         $result = DB::select(DB::raw($query));
         return $result[0]->aggregate;
