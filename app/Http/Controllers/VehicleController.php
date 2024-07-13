@@ -189,6 +189,12 @@ class VehicleController extends Controller
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
         $total_vehicles = 0;
         foreach ($csvFile as $row) {
+
+            //Skip empty lines or lines with fewer columns than required
+            if (count($row) < count($requiredColumns)) {
+                continue;
+            }
+
             $vin = $row[$positions[$requiredColumns['vin']]];
             if (empty($vin)) {
                 continue;
@@ -325,7 +331,7 @@ class VehicleController extends Controller
                     continue;
                 }
                 //delete old vehicle metas
-                VehicleMetas::where('vehicle_id', $vehicle->id)->delete();
+                VehicleMetas::where('vehicle_id', $vehicle->id)->forceDelete();
                 $vehicle->auction_lot = $row[$positions[$requiredColumns['auction_lot']]];
                 $vehicle->location = $row[$positions[$requiredColumns['location']]];
                 $vehicle->save();
@@ -669,7 +675,7 @@ class VehicleController extends Controller
 
     public function delete_unsaved_vehicles()
     {
-        Vehicle::where('vin', '')->delete();
+        Vehicle::where('vin', '')->forceDelete();
     }
 
     public function get_csv_headers($filename)
