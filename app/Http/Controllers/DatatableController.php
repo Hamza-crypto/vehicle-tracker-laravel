@@ -6,7 +6,6 @@ use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use App\Models\VehicleNote;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Auth;
 

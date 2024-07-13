@@ -39,7 +39,8 @@ class Vehicle extends Model
         'WAITING FOR TRANSFERABLE TITLE',
         'In Transit',
         'Title Rejected',
-        'Intake'
+        'Intake',
+        'SOLD'
     ];
 
     public static function getStatuses()
@@ -115,8 +116,8 @@ class Vehicle extends Model
     public static function countInTransitVehicles()
     {
         $vehicles = Vehicle::whereNotIn('location', ['NY - NEWBURGH', 'NJ - PATERSON', 'NEWBURGH', 'PATERSON'])
-            ->whereNotNull('location')
-        ->whereDoesntHave('metas', function ($query) {
+            // ->whereNotNull('location')
+        ->whereHas('metas', function ($query) {
             $query->where('meta_key', 'status')
                 ->where('meta_value', 'SOLD');
         })->count();
