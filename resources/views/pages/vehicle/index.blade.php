@@ -394,12 +394,13 @@
         setTimeout(function() {
             $('.select-checkbox').removeClass('sorting_asc');
 
-            $.ajax({
-                url: '/delete_unsaved_vehicles',
-                type: 'GET',
-                success: function(response) {},
-
-            });
+            if (!urlParams.has('create')) {
+                $.ajax({
+                    url: '/delete_unsaved_vehicles',
+                    type: 'GET',
+                    success: function(response) {},
+                });
+            }
 
 
         }, 1000);
