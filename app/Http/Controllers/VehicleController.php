@@ -131,6 +131,13 @@ class VehicleController extends Controller
         $vehicles_vins = Vehicle::pluck('vin')->toArray();
         $total_vehicles = 0;
         foreach ($csvFile as $row) {
+
+            //Skip empty lines or lines with fewer columns than required
+            if (count($row) < count($requiredColumns)) {
+                continue;
+            }
+
+
             $vin = $row[$positions[$requiredColumns['vin']]];
 
             if (empty($vin)) {
@@ -189,10 +196,10 @@ class VehicleController extends Controller
         $total_vehicles = 0;
         foreach ($csvFile as $row) {
 
-            // //Skip empty lines or lines with fewer columns than required
-            // if (count($row) < count($requiredColumns)) {
-            //     continue;
-            // }
+            //Skip empty lines or lines with fewer columns than required
+            if (count($row) < count($requiredColumns)) {
+                continue;
+            }
 
             $vin = $row[$positions[$requiredColumns['vin']]];
             if (empty($vin)) {
@@ -227,8 +234,6 @@ class VehicleController extends Controller
 
         return redirect()->route('upload.create.buy');
     }
-
-    //Now create iaai v2 function
 
     /*
      * Step 2:
@@ -285,6 +290,13 @@ class VehicleController extends Controller
         $start_row = $request->start;
         $end_row = $request->end;
         foreach ($csvFile as $index => $row) {
+
+            //Skip empty lines or lines with fewer columns than required
+            if (count($row) < count($requiredColumns)) {
+                continue;
+            }
+
+
             if($start_row == 0 &&  $end_row == 0) {
 
             } else {
@@ -452,6 +464,12 @@ class VehicleController extends Controller
         $start_row = $request->start;
         $end_row = $request->end;
         foreach ($data as $index => $row) {
+
+            //Skip empty lines or lines with fewer columns than required
+            if (count($row) < count($requiredColumns)) {
+                continue;
+            }
+
             if($start_row == 0 &&  $end_row == 0) {
 
             } else {
