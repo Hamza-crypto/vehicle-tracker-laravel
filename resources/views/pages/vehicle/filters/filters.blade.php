@@ -28,9 +28,11 @@
                                     class="form-control form-select custom-select select2" data-toggle="select2">
                                     <option value="-100"> Select Status</option>
                                     @foreach (\App\Models\Vehicle::STATUSES as $status)
-                                        <option value="{{ $status }}"
-                                            {{ request()->status == $status ? 'selected' : '' }}>{{ $status }}
-                                        </option>
+                                        @if ($status != 'SOLD')
+                                            <option value="{{ $status }}"
+                                                {{ request()->status == $status ? 'selected' : '' }}>{{ $status }}
+                                            </option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
