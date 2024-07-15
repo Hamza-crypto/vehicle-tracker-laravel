@@ -248,7 +248,7 @@
                     ],
                     @if ($role == 'admin')
                         "columnDefs": [{
-                                targets: [1, 2, 4, 6, 7, 8],
+                                targets: [1, 2, 3, 4, 6],
                                 orderable: false
                             },
                             {

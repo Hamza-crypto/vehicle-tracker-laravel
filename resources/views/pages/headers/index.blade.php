@@ -6,6 +6,14 @@
     $query = str_replace(url()->current(), '', url()->full());
 @endphp
 
+@section('styles')
+    <style>
+        .highlight-red {
+            background-color: #f5abab;
+        }
+    </style>
+@endsection
+
 @section('scripts')
     <script>
         $(document).ready(function() {
@@ -22,6 +30,27 @@
                 }, '', newurl);
 
             });
+
+
+            $('select[data-row-id]').each(function() {
+                var $select = $(this);
+                var rowId = $select.data('row-id');
+                var $row = $('#' + rowId);
+
+                function checkSelectValue() {
+                    if ($select.val() === '-100') {
+                        $row.addClass('highlight-red');
+                    } else {
+                        $row.removeClass('highlight-red');
+                    }
+                }
+
+                $select.on('change', checkSelectValue);
+
+                // Initial check to apply the red background if needed
+                checkSelectValue();
+            });
+
 
         });
     </script>
@@ -110,23 +139,25 @@
                             <tbody>
 
                                 @foreach ($db_fields as $db_key => $header_field)
-                                    <tr>
+                                    <tr id="row-{{ $loop->index }}">
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ strtoupper($db_key) }}</td>
                                         <td>
                                             <select name="{{ $db_key }}"
-                                                class="form-control form-select custom-select select2"
-                                                data-toggle="select2">
-                                                <option value="-100"> Select Field</option>
+                                                class="form-control form-select custom-select select2" data-toggle="select2"
+                                                data-row-id="row-{{ $loop->index }}">
+                                                <option value="-100">Select Field</option>
                                                 @foreach ($headers as $header)
                                                     <option value="{{ $header }}"
                                                         @if ($header == $header_field) selected @endif>
-                                                        {{ $header }}</option>
+                                                        {{ $header }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </td>
                                     </tr>
                                 @endforeach
+
                             </tbody>
                         </table>
 

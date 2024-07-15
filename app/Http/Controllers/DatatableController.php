@@ -133,9 +133,10 @@ class DatatableController extends Controller
         // index should be in accordance with the column index in the table
         $dbColumns = [
             0 => 'id',
-            2 => 'auction_lot',
+            3 => 'auction_lot',
+            4 => 'date_paid',
             5 => 'invoice_amount',
-            6 => 'days_in_yard'
+            7 => 'days_in_yard'
         ];
 
         $orderColumnIndex = $request->input('order.0.column');

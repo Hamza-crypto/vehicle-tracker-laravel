@@ -113,15 +113,23 @@ class Vehicle extends Model
         return $sold_vehicles;
     }
 
+
+    protected static function applyInTransitConditions($query)
+    {
+        return $query->whereNotIn('location', ['NY - NEWBURGH', 'NJ - PATERSON', 'NEWBURGH', 'PATERSON'])
+            ->where(function ($query) {
+                $query->whereDoesntHave('metas', function ($subQuery) {
+                    $subQuery->where('meta_key', 'status');
+                })->orWhereHas('metas', function ($subQuery) {
+                    $subQuery->where('meta_key', 'status')
+                        ->where('meta_value', '!=', 'sold');
+                });
+            });
+    }
+
     public static function countInTransitVehicles()
     {
-        $vehicles = Vehicle::whereNotIn('location', ['NY - NEWBURGH', 'NJ - PATERSON', 'NEWBURGH', 'PATERSON'])
-            // ->whereNotNull('location')
-        ->whereHas('metas', function ($query) {
-            $query->where('meta_key', 'status')
-                ->where('meta_value', 'SOLD');
-        })->count();
-
+        $vehicles = self::applyInTransitConditions(Vehicle::query())->count();
         return $vehicles;
     }
 
@@ -172,9 +180,14 @@ class Vehicle extends Model
         if (isset($request['status']) && $request['status'] != -100) {
 
             $search = $request['status'];
-            $query->whereHas('metas', function ($q1) use ($search) {
-                $q1->where('meta_value', 'LIKE', "%$search%");
-            });
+            if($search == 'In Transit'){
+              self::applyInTransitConditions($query);
+            }
+            else{
+                $query->whereHas('metas', function ($q1) use ($search) {
+                    $q1->where('meta_value', 'LIKE', "%$search%");
+                });
+            }
 
         }
 
