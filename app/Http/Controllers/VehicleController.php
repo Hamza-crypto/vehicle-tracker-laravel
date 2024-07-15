@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class VehicleController extends Controller
 {
@@ -190,10 +189,10 @@ class VehicleController extends Controller
         $total_vehicles = 0;
         foreach ($csvFile as $row) {
 
-            //Skip empty lines or lines with fewer columns than required
-            if (count($row) < count($requiredColumns)) {
-                continue;
-            }
+            // //Skip empty lines or lines with fewer columns than required
+            // if (count($row) < count($requiredColumns)) {
+            //     continue;
+            // }
 
             $vin = $row[$positions[$requiredColumns['vin']]];
             if (empty($vin)) {
