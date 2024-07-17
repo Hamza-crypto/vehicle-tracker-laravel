@@ -117,6 +117,32 @@ class DatatableController extends Controller
         return response()->json($data);
     }
 
+
+    public function getVehicleIdsSortedByMeta($metaKey, $sortOrder = 'asc', $vehicles, $type = 'date')
+    {
+        if($type == 'date'){
+            $sort_type = "STR_TO_DATE(vehicle_metas.meta_value, '%Y-%m-%d') $sortOrder";
+        }
+        elseif($type == 'price'){
+            $sort_type = "CAST(vehicle_metas.meta_value AS UNSIGNED) $sortOrder";
+        }
+
+        // Fetch vehicle IDs sorted by the given meta key
+        $sorted_ids = \DB::table('vehicles')
+            ->join('vehicle_metas', function ($join) use ($metaKey) {
+                $join->on('vehicles.id', '=', 'vehicle_metas.vehicle_id')
+                    ->where('vehicle_metas.meta_key', '=', $metaKey);
+            })
+            ->orderByRaw($sort_type)
+            ->pluck('vehicles.id')
+            ->toArray();
+
+        $rawOrder = 'FIELD(id, ' . implode(',', $sorted_ids) . ')';
+        $vehicles->whereIn('id', $sorted_ids)->orderByRaw($rawOrder);
+
+        return $vehicles;
+    }
+
     public function vehicles_sold(Request $request)
     {
         $totalData = Vehicle::sold($request->all())->count();
@@ -136,6 +162,7 @@ class DatatableController extends Controller
             3 => 'auction_lot',
             4 => 'sale_date',
             5 => 'invoice_amount',
+            6 => 'sale_price',
             7 => 'days_in_yard'
         ];
 
@@ -144,53 +171,52 @@ class DatatableController extends Controller
         $orderDbColumn = $dbColumns[$orderColumnIndex];
         $orderDirection = $request->input('order.0.dir');
 
-                 $vehiclesQuery = Vehicle::with('metas')->sold($request->all());
 
- if (empty($request->input('search.value'))) {
+        if (empty($request->input('search.value'))) {
 
-        if ($orderDbColumn == 'sale_date') {
-            // Join with the vehicle_metas table to sort by sale_date
-            $vehiclesQuery = $vehiclesQuery->leftJoin('vehicle_metas', function ($join) {
-                $join->on('vehicles.id', '=', 'vehicle_metas.vehicle_id')
-                     ->where('vehicle_metas.meta_key', '=', 'sale_date');
-            })
-            ->orderByRaw("STR_TO_DATE(vehicle_metas.meta_value, '%Y-%m-%d') $orderDirection");
+            $vehicles = Vehicle::with('metas')->sold($request->all());
+
+            if($orderDbColumn == 'sale_date'){
+                $vehicles = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehicles, 'date');
+            }
+            elseif($orderDbColumn == 'sale_price'){
+                 $vehicles = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehicles, 'price');
+            }
+            else{
+                $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
+            }
+
+            $vehicles = $vehicles->offset($start)->limit($limit)->get();
+
+
         } else {
-            $vehiclesQuery = $vehiclesQuery->orderBy($orderDbColumn, $orderDirection);
+            $search = $request->input('search.value');
+            $vehicles = Vehicle::with('metas')->sold($request->all());
+
+            if($orderDbColumn == 'sale_date'){
+                $vehicles = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehicles, 'date');
+            }
+            elseif($orderDbColumn == 'sale_price'){
+                 $vehicles = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehicles, 'price');
+            }
+
+            $vehicles = $vehicles->where(function ($q1) use ($search) {
+                $q1->where('vin', 'LIKE', "%$search%")
+                    ->orWhere('purchase_lot', 'LIKE', "%$search%")
+                    ->orWhere('auction_lot', 'LIKE', "%$search%")
+                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
+
+            })->get();
+
+            $totalFiltered = count($vehicles);
+            $vehicles = $vehicles->skip($start)->take($limit);
         }
 
-        $vehicles = $vehiclesQuery->offset($start)->limit($limit)->get();
 
-    } else {
-        $search = $request->input('search.value');
-        $vehiclesQuery = $vehiclesQuery->where(function ($q1) use ($search) {
-            $q1->where('vin', 'LIKE', "%$search%")
-                ->orWhere('purchase_lot', 'LIKE', "%$search%")
-                ->orWhere('auction_lot', 'LIKE', "%$search%")
-                ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
-        });
-
-        if ($orderDbColumn == 'sale_date') {
-            // Join with the vehicle_metas table to sort by sale_date
-            $vehiclesQuery = $vehiclesQuery->leftJoin('vehicle_metas', function ($join) {
-                $join->on('vehicles.id', '=', 'vehicle_metas.vehicle_id')
-                     ->where('vehicle_metas.meta_key', '=', 'sale_date');
-            })
-            ->orderByRaw("STR_TO_DATE(vehicle_metas.meta_value, '%Y-%m-%d') $orderDirection");
-        } else {
-            $vehiclesQuery = $vehiclesQuery->orderBy($orderDbColumn, $orderDirection);
-        }
-
-        $vehicles = $vehiclesQuery->get();
-        $totalFiltered = $vehicles->count();
-        $vehicles = $vehicles->skip($start)->take($limit);
-
-    }
-
-        //
         $data = [];
         $user_role = Auth::user()->role;
         foreach ($vehicles as &$vehicle) {
+
             $vehicle->null = '';
             $vehicle->DT_RowId = $vehicle->id;
             $vehicle->created_at_new = "";
@@ -229,7 +255,6 @@ class DatatableController extends Controller
             //      $vehicle->sale_date = Carbon::parse( $vehicle->sale_date)->format('m/d/Y');
             // }
             $data[] = $vehicle;
-
         }
 
         $extraInfo = [
