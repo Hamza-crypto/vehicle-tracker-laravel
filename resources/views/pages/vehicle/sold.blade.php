@@ -125,6 +125,7 @@
 
                         },
                         dataSrc: function(data) {
+                            console.log(data['data']);
                             return data.data;
                         }
                     },
@@ -248,7 +249,7 @@
                     ],
                     @if ($role == 'admin')
                         "columnDefs": [{
-                                targets: [1, 2, 3, 4, 6],
+                                targets: [1, 2, 3, 6],
                                 orderable: false
                             },
                             {

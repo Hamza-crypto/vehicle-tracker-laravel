@@ -144,30 +144,48 @@ class DatatableController extends Controller
         $orderDbColumn = $dbColumns[$orderColumnIndex];
         $orderDirection = $request->input('order.0.dir');
 
-        if (empty($request->input('search.value'))) {
+                 $vehiclesQuery = Vehicle::with('metas')->sold($request->all());
 
-            $vehicles = Vehicle::with('metas')->sold($request->all());
+ if (empty($request->input('search.value'))) {
 
-            $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
-
-            $vehicles = $vehicles->offset($start)->limit($limit)->get();
-
-
-        } else {
-            $search = $request->input('search.value');
-            $vehicles = Vehicle::with('metas')->sold($request->all());
-            $vehicles = $vehicles->where(function ($q1) use ($search) {
-                $q1->where('vin', 'LIKE', "%$search%")
-                    ->orWhere('purchase_lot', 'LIKE', "%$search%")
-                    ->orWhere('auction_lot', 'LIKE', "%$search%")
-                    ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
-
+        if ($orderDbColumn == 'sale_date') {
+            // Join with the vehicle_metas table to sort by sale_date
+            $vehiclesQuery = $vehiclesQuery->leftJoin('vehicle_metas', function ($join) {
+                $join->on('vehicles.id', '=', 'vehicle_metas.vehicle_id')
+                     ->where('vehicle_metas.meta_key', '=', 'sale_date');
             })
-                ->get();
-
-            $totalFiltered = count($vehicles);
-            $vehicles = $vehicles->skip($start)->take($limit);
+            ->orderByRaw("STR_TO_DATE(vehicle_metas.meta_value, '%Y-%m-%d') $orderDirection");
+        } else {
+            $vehiclesQuery = $vehiclesQuery->orderBy($orderDbColumn, $orderDirection);
         }
+
+        $vehicles = $vehiclesQuery->offset($start)->limit($limit)->get();
+
+    } else {
+        $search = $request->input('search.value');
+        $vehiclesQuery = $vehiclesQuery->where(function ($q1) use ($search) {
+            $q1->where('vin', 'LIKE', "%$search%")
+                ->orWhere('purchase_lot', 'LIKE', "%$search%")
+                ->orWhere('auction_lot', 'LIKE', "%$search%")
+                ->orWhere('description', 'LIKE', "%$search%"); // ILIKE only used for Postgress
+        });
+
+        if ($orderDbColumn == 'sale_date') {
+            // Join with the vehicle_metas table to sort by sale_date
+            $vehiclesQuery = $vehiclesQuery->leftJoin('vehicle_metas', function ($join) {
+                $join->on('vehicles.id', '=', 'vehicle_metas.vehicle_id')
+                     ->where('vehicle_metas.meta_key', '=', 'sale_date');
+            })
+            ->orderByRaw("STR_TO_DATE(vehicle_metas.meta_value, '%Y-%m-%d') $orderDirection");
+        } else {
+            $vehiclesQuery = $vehiclesQuery->orderBy($orderDbColumn, $orderDirection);
+        }
+
+        $vehicles = $vehiclesQuery->get();
+        $totalFiltered = $vehicles->count();
+        $vehicles = $vehicles->skip($start)->take($limit);
+
+    }
 
         //
         $data = [];
@@ -207,9 +225,9 @@ class DatatableController extends Controller
             $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
 
             // Check if a sale date was found and format it
-            if ( $vehicle->sale_date) {
-                 $vehicle->sale_date = Carbon::parse( $vehicle->sale_date)->format('m/d/Y');
-            }
+            // if ( $vehicle->sale_date) {
+            //      $vehicle->sale_date = Carbon::parse( $vehicle->sale_date)->format('m/d/Y');
+            // }
             $data[] = $vehicle;
 
         }
