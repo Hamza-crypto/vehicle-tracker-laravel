@@ -306,6 +306,7 @@ class DatatableController extends Controller
             'secondary_damage',
             'sale_title_state',
             'sale_title_type',
+            'sale_price',
         ];
 
         //if any of the meta keys is missing, add it to the array with empty value
@@ -449,7 +450,7 @@ class DatatableController extends Controller
             $html = $this->getMetaHtmlTwo_TD($second_subset[$first_key], $html, $vehicle_metas[$second_subset[$first_key]] ?? '');
             $html .= '</div>'; //col-6 close
 
-            if($i == 4) break; //it will remove 2nd column of last row e.g. duplicated column
+            // if($i == 4) break; //it will remove 2nd column of last row e.g. duplicated column
 
             $html .= '<div class="col-6">';
             $html = $this->getMetaHtmlTwo_TD($second_subset[$second_key], $html, $vehicle_metas[$second_subset[$second_key]] ?? '');

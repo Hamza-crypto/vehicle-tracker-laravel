@@ -385,6 +385,7 @@
                     'DAYS_IN_YARD': 'Days In Yard',
                     'SALE_TITLE_STATE': 'Sale Title State',
                     'SALE_TITLE_TYPE': 'Sale Title Type',
+                    'SALE_PRICE': 'Sale Price',
                 };
                 var new_response = response.html;
 

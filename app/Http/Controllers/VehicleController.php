@@ -561,6 +561,7 @@ class VehicleController extends Controller
             'secondary_damage',
             'sale_title_state',
             'sale_title_type',
+            'sale_price',
         ];
 
         $amount = $request->invoice_amount;
