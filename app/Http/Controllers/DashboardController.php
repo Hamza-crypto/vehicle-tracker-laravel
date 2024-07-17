@@ -9,14 +9,25 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $vehicles_with_days_in_yard = Cache::remember('vehicles_with_days_in_yard', 1440, function () { //1440 = 1 hour
-            return Vehicle::join('vehicle_metas', 'vehicles.ID', '=', 'vehicle_metas.vehicle_id')
-            ->select(['vehicles.id' ,'vin', 'description', 'meta_value'])
-            ->where('meta_key', 'days_in_yard')
-            ->orderByRaw('CAST(meta_value AS UNSIGNED) DESC')
-            ->limit(30)
-            ->get();
-        });
+
+        $vehicles_with_days_in_yard = Cache::remember('vehicles_with_days_in_yard', 0, function () { //1440 = 1 hour
+            return Vehicle::join('vehicle_metas as days_in_yard_meta', function($join) {
+                        $join->on('vehicles.ID', '=', 'days_in_yard_meta.vehicle_id')
+                            ->where('days_in_yard_meta.meta_key', '=', 'days_in_yard');
+                    })
+                    ->leftJoin('vehicle_metas as status_meta', function($join) {
+                        $join->on('vehicles.ID', '=', 'status_meta.vehicle_id')
+                            ->where('status_meta.meta_key', '=', 'status');
+                    })
+                    ->select(['vehicles.id', 'vin', 'description', 'days_in_yard_meta.meta_value'])
+                    ->where(function ($query) {
+                        $query->whereNull('status_meta.meta_value')
+                            ->orWhere('status_meta.meta_value', '!=', 'SOLD');
+                    })
+                    ->orderByRaw('CAST(days_in_yard_meta.meta_value AS UNSIGNED) DESC')
+                    ->limit(30)
+                    ->get();
+});
 
 
         $vehicles_sold = Cache::remember('vehicles_sold', 1440, function () {
