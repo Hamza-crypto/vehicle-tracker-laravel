@@ -118,7 +118,7 @@ class DatatableController extends Controller
     }
 
 
-    public function getVehicleIdsSortedByMeta($metaKey, $sortOrder = 'asc', $vehicles, $type = 'date')
+    public function getVehicleIdsSortedByMeta($metaKey, $sortOrder = 'asc', $vehicles, $type = 'date', $start = 0, $limit = 10)
     {
         if($type == 'date'){
             $sort_type = "STR_TO_DATE(vehicle_metas.meta_value, '%Y-%m-%d') $sortOrder";
@@ -134,6 +134,8 @@ class DatatableController extends Controller
                     ->where('vehicle_metas.meta_key', '=', $metaKey);
             })
             ->orderByRaw($sort_type)
+            ->offset($start)
+            ->limit($limit)
             ->pluck('vehicles.id')
             ->toArray();
 
@@ -177,10 +179,10 @@ class DatatableController extends Controller
             $vehicles = Vehicle::with('metas')->sold($request->all());
 
             if($orderDbColumn == 'sale_date'){
-                $vehicles = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehicles, 'date');
+                $vehicles = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehicles, 'date', $start, $limit);
             }
             elseif($orderDbColumn == 'sale_price'){
-                 $vehicles = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehicles, 'price');
+                 $vehicles = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehicles, 'price', $start, $limit);
             }
             else{
                 $vehicles = $vehicles->orderBy($orderDbColumn, $orderDirection);
