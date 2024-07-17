@@ -394,6 +394,7 @@
         setTimeout(function() {
             $('.select-checkbox').removeClass('sorting_asc');
 
+            const urlParams = new URLSearchParams(window.location.search);
             if (!urlParams.has('create')) {
                 $.ajax({
                     url: '/delete_unsaved_vehicles',
