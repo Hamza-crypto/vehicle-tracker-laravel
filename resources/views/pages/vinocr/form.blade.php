@@ -36,8 +36,8 @@
                         @csrf
                         <div class="form-group">
                             <div class="mb-3">
-                                <label class="form-label w-100">Choose an image to process:</label>
-                                <input type="file" name="file" required>
+                                <label class="form-label w-100">Take image:</label>
+                                <input type="file" name="file" accept="image/*" capture="environment" required>
                             </div>
                         </div>
 
