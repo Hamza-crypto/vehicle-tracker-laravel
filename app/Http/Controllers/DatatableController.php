@@ -134,7 +134,7 @@ class DatatableController extends Controller
         $dbColumns = [
             0 => 'id',
             3 => 'auction_lot',
-            4 => 'date_paid',
+            4 => 'sale_date',
             5 => 'invoice_amount',
             7 => 'days_in_yard'
         ];
