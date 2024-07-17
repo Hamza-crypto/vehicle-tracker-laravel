@@ -67,8 +67,8 @@ class HeaderSeeder extends Seeder
             'drivability_rating' => 'Drivability Rating',
             'odometer' => 'Odometer',
             'odometer_brand' => 'Odometer Brand',
-            'sale_title_type' => 'Sale Title State',
-            'sale_title_state' => 'Sale Title Type',
+            'sale_title_type' => 'Sale Title Type',
+            'sale_title_state' => 'Sale Title State',
             'days_in_yard' => 'Days in Yard',
         ];
 

@@ -565,7 +565,7 @@ class DatatableController extends Controller
         $html .= '<td>' . strtoupper($key) . '</td>';
         $html .= '<td>';
 
-        $dropdowns = ['status', 'odometer', 'primary_damage', 'keys',  'drivability_rating'];
+        $dropdowns = ['status', 'primary_damage', 'keys',  'drivability_rating'];
 
         if (in_array($key, $dropdowns)) {
 
@@ -576,8 +576,6 @@ class DatatableController extends Controller
 
             if ($key == 'status') {
                 $html .= '<option value="-100">Select Status</option>';
-            } elseif ($key == 'odometer') {
-                $html .= '<option value="-100">Select Mileage</option>';
             } elseif ($key == 'primary_damage') {
                 $html .= '<option value="-100">Select Damage</option>';
             } elseif ($key == 'secondary_damage') {
@@ -599,7 +597,16 @@ class DatatableController extends Controller
             $html .= '</select>';
 
         } else {
-            $html .= '<input type="text" class="form-control"';
+
+            /**
+             * Making Mileage field of type number instead of text
+             */
+            if ($key == "odometer") {
+                $html .= '<input type="number" class="form-control"';
+            } else {
+                $html .= '<input type="text" class="form-control"';
+            }
+
             $html .= ' name="' . $key . '"';
             $html .= ' value="' . ($vehicle_metas ?? '') . '"';
             $html .= ' placeholder="' . ($vehicle_metas ?? '') . '"';
