@@ -6,7 +6,7 @@ use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use App\Models\VehicleNote;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class DatatableController extends Controller
@@ -206,6 +206,10 @@ class DatatableController extends Controller
             $vehicle->sale_price = $vehicle_metas->where('meta_key', 'sale_price')->pluck('meta_value')->first();
             $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
 
+            // Check if a sale date was found and format it
+            if ( $vehicle->sale_date) {
+                 $vehicle->sale_date = Carbon::parse( $vehicle->sale_date)->format('m/d/Y');
+            }
             $data[] = $vehicle;
 
         }
