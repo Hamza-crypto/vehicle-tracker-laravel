@@ -193,7 +193,7 @@ class DatatableController extends Controller
         foreach ($vehicles as &$vehicle) {
             $vehicle->null = '';
             $vehicle->DT_RowId = $vehicle->id;
-            $vehicle->created_at_new = $vehicle->created_at->diffForHumans();
+            $vehicle->created_at_new = "";
             $edit = '<a href="' . route('vehicles.edit', $vehicle->id) . '" class="btn" style="display: inline" target="_blank"><i class="fa fa-edit text-info"></i></a>';
             $edit = '';
             $alertTitle = __('Are you sure you want to delete vehicle with VIN ') . ' ' . $vehicle->vin;
