@@ -296,6 +296,11 @@
 
                     // "pagingType": "simple_numbers",
 
+                    lengthMenu: [
+                        [10, 20, 30, 50, -1],
+                        [10, 20, 30, 50, "All"]
+                    ],
+
 
                 });
 
