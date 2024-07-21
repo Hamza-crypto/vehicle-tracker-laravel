@@ -196,12 +196,7 @@ class DatatableController extends Controller
             $vehiclesQuery = $vehiclesQuery->offset($start)->limit($limit);
         }
 
-
-
         $vehicles = $vehiclesQuery->get();
-        // $vehicles = $vehiclesQuery->toSql();
-        app('log')->channel('vinocr')->info(['vehicles' => count($vehicles), 'col' => $orderDbColumn]);
-        // dd($vehicles);
 
         $data = [];
         $user_role = Auth::user()->role;
@@ -241,9 +236,9 @@ class DatatableController extends Controller
             $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
 
             // Check if a sale date was found and format it
-            // if ( $vehicle->sale_date) {
-            //      $vehicle->sale_date = Carbon::parse( $vehicle->sale_date)->format('m/d/Y');
-            // }
+            if ( $vehicle->sale_date) {
+                 $vehicle->sale_date = Carbon::parse( $vehicle->sale_date)->format('m/d/Y');
+            }
             $data[] = $vehicle;
         }
 
