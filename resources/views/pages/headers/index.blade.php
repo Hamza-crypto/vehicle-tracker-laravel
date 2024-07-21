@@ -97,11 +97,13 @@
                                         </option>
                                     </select>
                                 </div>
-                                <div class="form-group mt-4 mb-0">
-                                    <button type="submit" class="btn btn-lg btn-primary add-btn">Submit
-                                    </button>
-                                </div>
+
                             </div>
+
+                        </div>
+
+                        <div class="row">
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="mb-3">
@@ -109,6 +111,16 @@
                                         <input type="file" name="csv_file" required>
                                     </div>
                                 </div>
+
+                                <div class="form-group mt-4 mb-0">
+                                    <button type="submit" class="btn btn-lg btn-primary add-btn">Submit
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
 
                             </div>
                         </div>
