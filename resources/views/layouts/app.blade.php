@@ -16,7 +16,9 @@
     @if (Request::is('vehicles/upload/*') ||
             Request::is('headers') ||
             Request::is('runlist/upload') ||
-            Request::is('vinocr/form'))
+            Request::is('vinocr/form') ||
+            Request::is('inventory/copart') ||
+            Request::is('buy/iaai'))
         <link class="js-stylesheet2" href="{{ asset('assets/css/dropify.min.css') }}" rel="stylesheet">
     @endif
     @yield('styles')
@@ -67,7 +69,9 @@
     @if (Request::is('vehicles/upload/*') ||
             Request::is('headers') ||
             Request::is('runlist/upload') ||
-            Request::is('vinocr/form'))
+            Request::is('vinocr/form') ||
+            Request::is('inventory/copart') ||
+            Request::is('buy/iaai'))
         <script src="{{ asset('assets/js/dropify.min.js') }}"></script>
     @endif
 

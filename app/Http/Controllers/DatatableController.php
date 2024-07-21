@@ -188,8 +188,11 @@ class DatatableController extends Controller
         if (in_array($orderDbColumn, ['sale_date'])) {
 
             $sortedIds = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehiclesQuery, 'date', $start, $limit);
-            $vehiclesQuery = $vehiclesQuery->whereIn('id', $sortedIds);
-            $vehiclesQuery->orderByRaw('FIELD(id, ' . implode(',', $sortedIds) . ')');
+            if(!empty($sortedIds)){
+                $vehiclesQuery = $vehiclesQuery->whereIn('id', $sortedIds);
+                $vehiclesQuery->orderByRaw('FIELD(id, ' . implode(',', $sortedIds) . ')');
+            }
+
 
         } else {
             $vehiclesQuery = $vehiclesQuery->orderBy($orderDbColumn, $orderDirection);
