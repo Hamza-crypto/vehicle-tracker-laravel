@@ -186,14 +186,10 @@
                             // This is for the Excel export button
                             extend: 'excelHtml5',
                             text: 'Export to Excel',
-                            customize: function(xlsx) {
-                                var sheet = xlsx.xl.worksheets['sheet1.xml'];
-
-                            },
                             className: 'btn btn-success',
-                            attr: {
-                                id: 'sold_export_btn',
-                            },
+                            exportOptions: {
+                                columns: [1, 2, 3, 5, 6]
+                            }
 
                         },
                         {
