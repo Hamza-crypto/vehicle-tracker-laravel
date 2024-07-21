@@ -14,6 +14,10 @@
     </style>
 @endsection
 @section('scripts')
+
+    <!-- JSZip (needed for Excel export) -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
     <script>
         $(document).ready(function() {
 
@@ -96,6 +100,9 @@
                     "dom": 'lrftBip',
                     "responsive": true,
                     "ordering": true,
+                    order: [
+                        [4, 'desc'] //Default Sort
+                    ],
                     'processing': true,
                     'serverSide': true,
                     'ajax': {
@@ -173,7 +180,23 @@
                             //api.columns([9]).visible(false);
                         }
                     },
-                    "buttons": [{
+                    "buttons": [
+
+                        {
+                            // This is for the Excel export button
+                            extend: 'excelHtml5',
+                            text: 'Export to Excel',
+                            customize: function(xlsx) {
+                                var sheet = xlsx.xl.worksheets['sheet1.xml'];
+
+                            },
+                            className: 'btn btn-success',
+                            attr: {
+                                id: 'sold_export_btn',
+                            },
+
+                        },
+                        {
                             text: 'Select all',
                             action: function() {
                                 table.rows().select();
@@ -245,7 +268,8 @@
                                 id: 'delete_btn',
                                 class: 'btn btn-danger'
                             }
-                        }
+                        },
+
                     ],
                     @if ($role == 'admin')
                         "columnDefs": [{
@@ -270,10 +294,12 @@
                     @endif
 
 
-                    "pagingType": "simple_numbers"
+                    // "pagingType": "simple_numbers",
+
+
                 });
 
-                $.fn.DataTable.ext.pager.numbers_length = 4;
+                // $.fn.DataTable.ext.pager.numbers_length = 4;
             }
 
             $('.apply-dt-filters').on('click', function() {
