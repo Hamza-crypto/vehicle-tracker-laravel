@@ -493,7 +493,7 @@ class VehicleController extends Controller
                 VehicleMetas::updateOrCreate(
                     ['vehicle_id' => $vehicle->id, 'meta_key' => 'sale_price'],
                     [
-                        'meta_value' => $row[$positions[$requiredColumns['sale_price']]], //sale_price
+                        'meta_value' => $row[$positions[$requiredColumns['sale_price']]] == "" ? 0 : $row[$positions[$requiredColumns['sale_price']]], //sale_price
                     ]
                 );
                 VehicleMetas::updateOrCreate(
