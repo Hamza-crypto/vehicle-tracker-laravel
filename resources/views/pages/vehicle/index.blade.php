@@ -228,7 +228,7 @@
                             }
 
                         },
-                        //hamza
+
                         {
                             extend: 'pdfHtml5',
                             text: 'Export to PDF',

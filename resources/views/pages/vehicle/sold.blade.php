@@ -18,6 +18,11 @@
     <!-- JSZip (needed for Excel export) -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
+    <!-- For PDF export-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+
     <script>
         $(document).ready(function() {
 
@@ -190,6 +195,15 @@
                             exportOptions: {
                                 columns: [1, 2, 3, 5, 6]
                             }
+
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'Export to PDF',
+                            className: 'btn btn-danger',
+                            exportOptions: {
+                                columns: [1, 2, 3, 5, 6]
+                            },
 
                         },
                         {
