@@ -73,14 +73,16 @@
             Request::is('inventory/copart') ||
             Request::is('buy/iaai'))
         <script src="{{ asset('assets/js/dropify.min.js') }}"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('input[type="file"]').addClass('dropify');
+                $('.dropify').dropify();
+            });
+        </script>
     @endif
 
-    <script>
-        $(document).ready(function() {
-            $('input[type="file"]').addClass('dropify');
-            $('.dropify').dropify();
-        });
-    </script>
+
 
 </body>
 

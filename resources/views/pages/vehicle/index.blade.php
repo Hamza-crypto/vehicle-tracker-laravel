@@ -18,6 +18,10 @@
     <!-- JSZip (needed for Excel export) -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
+    <!-- For PDF export-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
     <script>
         $(document).ready(function() {
 
@@ -212,7 +216,9 @@
                         var role = "<?php echo Auth()->user()->role; ?>";
 
                     },
-                    "buttons": [{
+                    "buttons": [
+
+                        {
                             // This is for the Excel export button
                             extend: 'excelHtml5',
                             text: 'Export to Excel',
@@ -220,6 +226,18 @@
                             exportOptions: {
                                 columns: [1, 2, 4, 7, 9, 8]
                             }
+
+                        },
+                        //hamza
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'Export to PDF',
+                            className: 'btn btn-danger',
+                            exportOptions: {
+                                columns: [1, 2, 4, 7, 9,
+                                    8
+                                ] // Specify the columns you want to include in the export
+                            },
 
                         },
                         {
