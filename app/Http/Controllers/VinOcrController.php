@@ -28,11 +28,13 @@ class VinOcrController extends Controller
         $url = url("$baseURL?accesscode=$accessCode&saveimage=$saveImage&vindecode=$vinDecode&format=$format");
         $imgInput = $request->file('file');
 
-        $response = Http::attach(
+        $response = Http::timeout(120)
+        ->attach(
             'Image File',
             file_get_contents($imgInput?->path()),
             $imgInput->getClientOriginalName()
-        )->post($url);
+        )
+        ->post($url);
 
         if($response['status'] == 'FAILED'){
             Session::flash('error', $response['message']);
