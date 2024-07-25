@@ -120,9 +120,6 @@ class Vehicle extends Model
             ->where(function ($query) {
                 $query->whereDoesntHave('metas', function ($subQuery) {
                     $subQuery->where('meta_key', 'status');
-                })->orWhereHas('metas', function ($subQuery) {
-                    $subQuery->where('meta_key', 'status')
-                        ->where('meta_value', '!=', 'sold');
                 });
             });
     }
