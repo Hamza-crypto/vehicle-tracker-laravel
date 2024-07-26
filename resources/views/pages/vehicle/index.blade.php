@@ -15,7 +15,7 @@
 
         /* Custom CSS to change the selected row background color */
         table.dataTable tbody tr.selected {
-            background-color: #4CAF50 !important;
+            background-color: #000000 !important;
         }
     </style>
 @endsection
