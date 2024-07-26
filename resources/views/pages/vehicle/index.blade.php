@@ -11,6 +11,12 @@
         .modal-body {
             padding: 0rem !important;
         }
+
+
+        /* Custom CSS to change the selected row background color */
+        table.dataTable tbody tr.selected {
+            background-color: #4CAF50 !important;
+        }
     </style>
 @endsection
 @section('scripts')
