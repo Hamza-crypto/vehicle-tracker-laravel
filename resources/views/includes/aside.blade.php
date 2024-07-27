@@ -145,6 +145,13 @@
                         <span class="align-middle">Intake</span>
                     </a>
                 </li>
+
+                <li class="sidebar-item ">
+                    <a class="sidebar-link" href="/duplicate/vehicles">
+                        <i class="align-middle" data-feather="copy"></i>
+                        <span class="align-middle">Duplicated Vehicles</span>
+                    </a>
+                </li>
             @endif
 
             @if ($role == 'admin')
