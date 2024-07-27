@@ -273,7 +273,7 @@ class Vehicle extends Model
             Cache::forget('vehicles_sold');
 
             //delete all vehicle metas
-            $vehicle->metas()->delete();
+            $vehicle->metas()->forceDelete();
         });
     }
 }
