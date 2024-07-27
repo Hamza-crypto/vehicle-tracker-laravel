@@ -252,6 +252,12 @@ class Vehicle extends Model
 
     protected static function booted()
     {
+        // Trim and strip spaces from VIN before saving
+        static::saving(function ($vehicle) {
+            $vehicle->vin = preg_replace('/\s+/', '', trim($vehicle->vin));
+        });
+
+
         static::created(function () {
             Cache::forget('vehicles_with_days_in_yard');
             Cache::forget('vehicles_sold');

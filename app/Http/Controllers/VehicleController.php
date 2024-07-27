@@ -856,4 +856,14 @@ class VehicleController extends Controller
 
         return redirect()->route('upload.create.buy');
     }
+
+    public function duplicate_vehicles()
+    {
+        $duplicateVins = \DB::select("SELECT vin, COUNT(*) AS count FROM vehicles GROUP BY vin HAVING COUNT > 1");
+
+        foreach($duplicateVins as $duplicateVin){
+            echo $duplicateVin->vin      . "</br>";
+        }
+
+    }
 }
