@@ -400,8 +400,7 @@
                         } else {
                             Swal.fire(
                                 'Error!',
-                                'Something went wrong',
-                                'error'
+                                response.message, 'error'
                             );
                             console.log(response.message);
 

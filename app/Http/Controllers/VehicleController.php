@@ -549,6 +549,15 @@ class VehicleController extends Controller
             'description' => 'required',
         ]);
 
+
+        // Check if the VIN already exists in the database
+        $existingVehicle = Vehicle::where('vin', $request->vin)->first();
+
+        // If the VIN exists and it doesn't belong to the current vehicle, show an error
+        if ($existingVehicle && $existingVehicle->id !== $vehicle->id) {
+            return response()->json(['message' => 'Vehicle with this VIN already exists', 'status' => 'error']);
+        }
+
         $meta_keys = [
             'claim_number',
             'status',
