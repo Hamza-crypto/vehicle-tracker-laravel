@@ -618,7 +618,7 @@ class VehicleController extends Controller
     public function destroy(Vehicle $vehicle)
     {
         $vehicle->metas()->delete();
-        $vehicle->delete();
+        $vehicle->forceDelete();
         Session::flash('success', __('Successfully Deleted'));
 
         return redirect()->back();
