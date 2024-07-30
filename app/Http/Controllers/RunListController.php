@@ -20,19 +20,7 @@ class RunListController extends Controller
 
     public function get_run_lists(Request $request)
     {
-        $query = QueryBuilder::for(RunList::class)
-            ->allowedFilters([
-                'item_number',
-                'lot_number',
-                'claim_number',
-                'description',
-                'number_of_runs',
-            ])
-            ->defaultSort('id')
-            ->allowedSorts('id', 'created_at', 'updated_at', 'item_number', 'lot_number', 'claim_number', 'description', 'number_of_runs');
-
-        // Apply additional conditions
-        $query->where('user_id', auth()->id());
+        $query = $this->buildRunListQuery($request);
 
         // Check if per_page is set to -1 for fetching all data
         $perPage = $request->per_page ?? 10;
@@ -125,19 +113,7 @@ class RunListController extends Controller
 
     public function export_run_list(Request $request)
     {
-        $query = QueryBuilder::for(RunList::class)
-            ->allowedFilters([
-                'item_number',
-                'lot_number',
-                'claim_number',
-                'description',
-                'number_of_runs',
-            ])
-            ->defaultSort('id')
-            ->allowedSorts('id', 'created_at', 'updated_at', 'item_number', 'lot_number', 'claim_number', 'description', 'number_of_runs');
-
-        // Apply additional conditions
-        $query->where('user_id', auth()->id());
+        $query = $this->buildRunListQuery($request);
 
         // Check if per_page is set to -1 for fetching all data
         $perPage = $request->per_page ?? 10;
@@ -145,6 +121,7 @@ class RunListController extends Controller
         if ($perPage == -1) {
             $perPage = 100000;
         }
+
 
         $columnsToFetch = ['description', 'item_number', 'lot_number', 'claim_number', 'number_of_runs'];
 
@@ -154,5 +131,32 @@ class RunListController extends Controller
         $pdf = PDF::loadView('pages.pdf.run_list', ['run_lists' => $run_lists]);
         //  return $pdf->stream();
         return $pdf->download('run_lists.pdf');
+    }
+
+    private function buildRunListQuery(Request $request)
+    {
+        $query = QueryBuilder::for(RunList::class)
+            ->allowedFilters([
+                'item_number',
+                'lot_number',
+                'claim_number',
+                'description',
+                'number_of_runs',
+            ])
+            ->where('user_id', auth()->id());
+
+        // Determine the sort direction and field
+        $sortField = $request->input('sort', 'item_number');
+        $sortDirection = 'asc';
+
+        if (\Str::startsWith($sortField, '-')) {
+            $sortDirection = 'desc';
+            $sortField = ltrim($sortField, '-');
+        }
+
+        // Check for sort parameter and apply raw sorting if necessary
+        $query->orderByRaw('CAST(' . $sortField . ' AS UNSIGNED) ' . $sortDirection);
+
+        return $query;
     }
 }

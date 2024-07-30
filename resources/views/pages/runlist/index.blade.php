@@ -3,12 +3,13 @@
 @section('title', __('Run Lists'))
 
 @section('scripts')
+
     <script src="{{ asset('/assets/js/custom.js') }}"></script>
     <script>
         var currentPage = 1;
         var totalPages = 1;
         var perPage = 10;
-        var sortColumn = 'id';
+        var sortColumn = 'item_number';
         var sortOrder = 'asc';
         var filters = {};
 
@@ -59,19 +60,12 @@
             }
 
             $.each(runLists, function(index, vehicle) {
-
-                var editUrl = "/runLists/" + vehicle.id + "/details";
-                var roleBasedActions = '';
-
                 var row = '<tr>' +
-                    '<td>' + vehicle.id + '</td>' +
-                    '<td>' + vehicle.description + '</td>' +
                     '<td>' + vehicle.item_number + '</td>' +
                     '<td>' + vehicle.lot_number + '</td>' +
                     '<td>' + vehicle.claim_number + '</td>' +
+                    '<td>' + vehicle.description + '</td>' +
                     '<td>' + vehicle.number_of_runs + '</td>' +
-
-                    '<td><span class="badge bg-primary me-2">' + vehicle.created_at +
                     '</tr>';
                 tbody.append(row);
             });
@@ -164,8 +158,10 @@
 
 @section('content')
 
-
+    <h1 class="h3 mb-3">KAJ Run List</h1>
     @include('pages.runlist.filters')
+
+
 
     <div class="row">
         <div class="col-12">
@@ -193,13 +189,11 @@
                                     style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th data-column="id" class="sorting_asc">ID</th>
+                                            <th data-column="item_number">Item # </th>
+                                            <th data-column="lot_number">Lot #</th>
+                                            <th data-column="claim_number">Claim #</th>
                                             <th data-column="description">Description</th>
-                                            <th data-column="item_number">Item Number</th>
-                                            <th data-column="lot_number">Lot Number</th>
-                                            <th data-column="claim_number">Claim Number</th>
-                                            <th data-column="number_of_runs">Number of Runs</th>
-                                            <th data-column="created_at">Created At</th>
+                                            <th data-column="number_of_runs"># of Runs</th>
                                         </tr>
                                     </thead>
 
