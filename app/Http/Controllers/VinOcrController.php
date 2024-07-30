@@ -28,7 +28,7 @@ class VinOcrController extends Controller
         $url = url("$baseURL?accesscode=$accessCode&saveimage=$saveImage&vindecode=$vinDecode&format=$format");
         $imgInput = $request->file('file');
 
-        $response = Http::timeout(120)
+        $response = Http::timeout(150)
         ->attach(
             'Image File',
             file_get_contents($imgInput?->path()),
@@ -67,6 +67,7 @@ class VinOcrController extends Controller
             return;
         }
         $vin = $response['vin_captured'];
+        $vin = preg_replace('/\s+/', '', trim($vin));
 
         $vehicle = Vehicle::where('vin', $vin)->first();
         if($vehicle) {

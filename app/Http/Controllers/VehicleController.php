@@ -139,6 +139,7 @@ class VehicleController extends Controller
 
 
             $vin = $row[$positions[$requiredColumns['vin']]];
+            $vin = preg_replace('/\s+/', '', trim($vin));
 
             if (empty($vin)) {
                 $unprocessed_rows[] = $row;
@@ -202,6 +203,7 @@ class VehicleController extends Controller
             }
 
             $vin = $row[$positions[$requiredColumns['vin']]];
+            $vin = preg_replace('/\s+/', '', trim($vin));
             if (empty($vin)) {
                 continue;
             }
@@ -308,6 +310,8 @@ class VehicleController extends Controller
             }
 
             $vin = $row[$positions[$requiredColumns['vin']]];
+            $vin = preg_replace('/\s+/', '', trim($vin));
+
             /*
              * Check if auction date is past date
              */
@@ -480,6 +484,7 @@ class VehicleController extends Controller
                 }
             }
             $lot = $row[$positions[$requiredColumns['lot']]];
+            $lot = preg_replace('/\s+/', '', trim($lot));
 
             if (in_array($lot, $auction_lot) || in_array($lot, $purchase_lot)) {
                 $updated_vehicles++;
@@ -683,11 +688,14 @@ class VehicleController extends Controller
             $vehicle = new Vehicle();
         }
 
+
+        $vin = preg_replace('/\s+/', '', trim($request->vin));
+
         $vehicle->date_paid = $request->invoice_date;
         $vehicle->invoice_amount = $request->invoice_amount;
         $vehicle->purchase_lot = $request->purchase_lot;
         $vehicle->auction_lot = $request->auction_lot;
-        $vehicle->vin = $request->vin;
+        $vehicle->vin = $vin;
         $vehicle->description = sprintf('%s %s %s', $request->year, $request->make, $request->model);
         $vehicle->location = $request->location;
         $vehicle->left_location = $request->left_location;
