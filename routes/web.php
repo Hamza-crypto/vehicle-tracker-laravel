@@ -57,15 +57,15 @@ Route::get('/reset', function () {
         dump('You need to confirm by adding \'confirm=true\' in the url');
     }
 
-});
+})->middleware('admin');
 
-Route::get('/reset-all', function () {
+// Route::get('/reset-all', function () {
 
-    \Illuminate\Support\Facades\Artisan::call('migrate:fresh');
-    \Illuminate\Support\Facades\Artisan::call('db:seed');
-    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+//     \Illuminate\Support\Facades\Artisan::call('migrate:fresh');
+//     \Illuminate\Support\Facades\Artisan::call('db:seed');
+//     \Illuminate\Support\Facades\Artisan::call('optimize:clear');
 
-});
+// });
 
 
 Route::get('/migrate', function () {
