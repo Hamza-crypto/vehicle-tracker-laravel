@@ -874,5 +874,9 @@ class VehicleController extends Controller
             echo $duplicateVin->vin      . "</br>";
         }
 
+        if(count($duplicateVins) == 0){
+            echo "No duplicate vehicles found";
+        }
+
     }
 }
