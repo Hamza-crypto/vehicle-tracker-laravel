@@ -16,9 +16,12 @@
                     @if (count($vehicles_with_days_in_yard))
                         @foreach ($vehicles_with_days_in_yard as $vehicle)
                             <tr id="{{ $vehicle->id }}">
-                                <td><a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
-                                <td><a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">{{ $vehicle->vin }}</a></td>
-                                <td><a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">{{ $vehicle->meta_value }}</a></td>
+                                <td><a href="#" data-toggle="modal"
+                                        data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
+                                <td><a href="#" data-toggle="modal"
+                                        data-target="#modal-vehicle-detail">{{ $vehicle->vin }}</a></td>
+                                <td><a href="#" data-toggle="modal"
+                                        data-target="#modal-vehicle-detail">{{ $vehicle->meta_value }}</a></td>
                             </tr>
                         @endforeach
                     @else
@@ -46,12 +49,16 @@
                     @if (count($vehicles_sold))
                         @foreach ($vehicles_sold as $vehicle)
                             <tr id="{{ $vehicle->id }}">
-                                <td><a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
-                                <td><a href="#" data-toggle="modal" data-target="#modal-vehicle-detail">{{ $vehicle->vin }}</a></td>
+                                <td><a href="#" data-toggle="modal"
+                                        data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
+                                <td><a href="#" data-toggle="modal"
+                                        data-target="#modal-vehicle-detail">{{ $vehicle->vin }}</a></td>
                             </tr>
                         @endforeach
                     @else
-                        <tr>\<td colspan="3">No vehicles found</td></tr>
+                        <tr>
+                            <td colspan="3">No vehicles found</td>
+                        </tr>
                     @endif
                 </tbody>
             </table>
