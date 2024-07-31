@@ -189,7 +189,7 @@
                                     style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th data-column="item_number">Item # </th>
+                                            <th data-column="item_number" class="sorting_asc">Item #</th>
                                             <th data-column="lot_number">Lot #</th>
                                             <th data-column="claim_number">Claim #</th>
                                             <th data-column="description">Description</th>

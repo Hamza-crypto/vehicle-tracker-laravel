@@ -52,7 +52,7 @@ function loadPage(page) {
         currentPage = page;
         console.log(currentPage);
         console.log(filters);
-        fetchData(currentPage, filters);
+        fetchData(currentPage, filters, sortColumn, sortOrder) ;
     }
 }
 
