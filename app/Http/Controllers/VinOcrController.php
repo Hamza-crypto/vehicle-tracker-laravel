@@ -36,7 +36,7 @@ class VinOcrController extends Controller
         )
         ->post($url);
 
-        if($response['status'] == 'FAILED'){
+        if($response['status'] == 'FAILED') {
             Session::flash('error', $response['message']);
             return redirect()->back();
         }
@@ -85,28 +85,28 @@ class VinOcrController extends Controller
             $vehicle->vin = $vin;
 
             if (isset($response['vindecode'])) {
-            $description = $response['vindecode'];
-            $des_string = '';
+                $description = $response['vindecode'];
+                $des_string = '';
 
-            if (isset($description['year'])) {
-                $des_string .= $description['year'];
+                if (isset($description['year'])) {
+                    $des_string .= $description['year'];
+                }
+
+                // Check for the presence of "make" and "model" keys before appending them to the description
+                if (isset($description['make'])) {
+                    $des_string .= ' ' . $description['make'];
+                }
+
+                if (isset($description['model'])) {
+                    $des_string .= ' ' . $description['model'];
+                }
+                $vehicle->description = $des_string;
+                // $vehicle->save();
+                $vehicle->id = Vehicle::max('id') + 1;
             }
 
-            // Check for the presence of "make" and "model" keys before appending them to the description
-            if (isset($description['make'])) {
-                $des_string .= ' ' . $description['make'];
-            }
-
-            if (isset($description['model'])) {
-                $des_string .= ' ' . $description['model'];
-            }
-            $vehicle->description = $des_string;
-            // $vehicle->save();
-            $vehicle->id = Vehicle::max('id') + 1;
-        }
-
-        $statuses = Vehicle::getStatuses();
-        return view('pages.vinocr.detail2', compact( 'vehicle', 'statuses'));
+            $statuses = Vehicle::getStatuses();
+            return view('pages.vinocr.detail2', compact('vehicle', 'statuses'));
         }
 
     }
@@ -144,12 +144,11 @@ class VinOcrController extends Controller
 
         $vehicle->save();
 
-    // Check if the location is not equal to -1 before updating
-    if ($request->location != -1) {
-        $updateFields['location'] = $request->location;
-    }
-
-    $vehicle->fill($updateFields)->save();
+        // Check if the location is not equal to -1 before updating
+        if ($request->location != -1) {
+            $updateFields['location'] = $request->location;
+            $vehicle->fill($updateFields)->save();
+        }
 
         $metaData = [
         'keys' => $request->keys,
