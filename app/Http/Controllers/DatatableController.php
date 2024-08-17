@@ -33,7 +33,7 @@ class DatatableController extends Controller
         $start = $request->length == -1 ? 0 : $request->start;
         $limit = $request->length == -1 ? $totalData : $request->length;
 
-        if($user_role == 'admin'){
+        if($user_role == 'admin') {
             $dbColumns = [
             0 => 'id',
             3 => 'left_location',
@@ -42,8 +42,7 @@ class DatatableController extends Controller
             7 => 'auction_lot',
             8 => 'days_in_yard',
         ];
-        }
-        else{
+        } else {
             $dbColumns = [
             0 => 'id',
             2 => 'left_location',
@@ -97,7 +96,7 @@ class DatatableController extends Controller
             $vehicle->date_paid = sprintf('<span> %s</span>', $vehicle->date_paid);
             $vehicle->actions .= $edit . $delete;
             // if ($user_role != 'admin') {
-                // $vehicle->actions = "";
+            // $vehicle->actions = "";
             // }
 
             $vehicle_metas = collect($vehicle->metas);
@@ -121,15 +120,15 @@ class DatatableController extends Controller
     public function getVehicleIdsSortedByMeta($metaKey, $sortOrder, $vehiclesQuery, $type, $start, $limit)
     {
         $sortType = match ($type) {
-        'date' => "STR_TO_DATE(meta_value, '%Y-%m-%d') $sortOrder"
+            'date' => "STR_TO_DATE(meta_value, '%Y-%m-%d') $sortOrder"
         };
 
         // Fetch all vehicle IDs
         $vehicleIds = $vehiclesQuery->pluck('id')->toArray();
 
-       // Join with vehicle_metas to optionally order by meta_value of the specific meta_key
+        // Join with vehicle_metas to optionally order by meta_value of the specific meta_key
         $sorted_ids = \DB::table('vehicles')
-            ->leftJoin('vehicle_metas as metas', function($join) use ($metaKey) {
+            ->leftJoin('vehicle_metas as metas', function ($join) use ($metaKey) {
                 $join->on('vehicles.id', '=', 'metas.vehicle_id')
                     ->where('metas.meta_key', '=', $metaKey);
             })
@@ -188,7 +187,7 @@ class DatatableController extends Controller
         if (in_array($orderDbColumn, ['sale_date'])) {
 
             $sortedIds = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehiclesQuery, 'date', $start, $limit);
-            if(!empty($sortedIds)){
+            if(!empty($sortedIds)) {
                 $vehiclesQuery = $vehiclesQuery->whereIn('id', $sortedIds);
                 $vehiclesQuery->orderByRaw('FIELD(id, ' . implode(',', $sortedIds) . ')');
             }
@@ -239,8 +238,8 @@ class DatatableController extends Controller
             $vehicle->days_in_yard = $vehicle_metas->where('meta_key', 'days_in_yard')->pluck('meta_value')->first();
 
             // Check if a sale date was found and format it
-            if ( $vehicle->sale_date) {
-                 $vehicle->sale_date = Carbon::parse( $vehicle->sale_date)->format('m/d/Y');
+            if ($vehicle->sale_date) {
+                $vehicle->sale_date = Carbon::parse($vehicle->sale_date)->format('m/d/Y');
             }
             $data[] = $vehicle;
         }
@@ -528,6 +527,9 @@ class DatatableController extends Controller
             $html .= '</td>';
             $html .= '</tr>';
         }
+
+
+        $html = $this->getVehicleNotes($html, $vehicle);
 
         $html .= ' </tbody>
                                         </table>
