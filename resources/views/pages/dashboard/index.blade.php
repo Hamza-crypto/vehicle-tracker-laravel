@@ -173,4 +173,7 @@
 
     @include('pages.dashboard._inc.stats')
     @include('pages.dashboard._inc.sold-table')
+    <hr>
+    @include('pages.dashboard._inc.last_30_new_vehicles')
+
 @endsection

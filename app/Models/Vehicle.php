@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class Vehicle extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'vin',
@@ -177,10 +178,9 @@ class Vehicle extends Model
         if (isset($request['status']) && $request['status'] != -100) {
 
             $search = $request['status'];
-            if($search == 'In Transit'){
-              self::applyInTransitConditions($query);
-            }
-            else{
+            if ($search == 'In Transit') {
+                self::applyInTransitConditions($query);
+            } else {
                 $query->whereHas('metas', function ($q1) use ($search) {
                     $q1->where('meta_value', 'LIKE', "%$search%");
                 });
@@ -261,16 +261,19 @@ class Vehicle extends Model
         static::created(function () {
             Cache::forget('vehicles_with_days_in_yard');
             Cache::forget('vehicles_sold');
+            Cache::forget('last_30_inserted');
         });
 
         static::updated(function () {
             Cache::forget('vehicles_with_days_in_yard');
             Cache::forget('vehicles_sold');
+            Cache::forget('last_30_updated');
         });
 
         static::deleted(function ($vehicle) {
             Cache::forget('vehicles_with_days_in_yard');
             Cache::forget('vehicles_sold');
+            Cache::forget('last_30_updated');
 
             //delete all vehicle metas
             $vehicle->metas()->forceDelete();

@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VehicleMetas extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = ['vehicle_id', 'meta_key', 'meta_value'];
 
@@ -22,14 +23,20 @@ class VehicleMetas extends Model
 
     protected static function booted()
     {
-        static::created(function () {
+        static::created(function ($meta) {
             Cache::forget('vehicles_with_days_in_yard');
             Cache::forget('vehicles_sold');
+
+            $meta->vehicle->touch();
+
         });
 
-        static::updated(function () {
+        static::updated(function ($meta) {
             Cache::forget('vehicles_with_days_in_yard');
             Cache::forget('vehicles_sold');
+
+            $meta->vehicle->touch();
+
         });
 
         static::deleted(function () {

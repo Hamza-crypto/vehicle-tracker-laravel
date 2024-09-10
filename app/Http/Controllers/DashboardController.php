@@ -11,11 +11,11 @@ class DashboardController extends Controller
     {
 
         $vehicles_with_days_in_yard = Cache::remember('vehicles_with_days_in_yard', 0, function () { //1440 = 1 hour
-            return Vehicle::join('vehicle_metas as days_in_yard_meta', function($join) {
-                        $join->on('vehicles.ID', '=', 'days_in_yard_meta.vehicle_id')
-                            ->where('days_in_yard_meta.meta_key', '=', 'days_in_yard');
-                    })
-                    ->leftJoin('vehicle_metas as status_meta', function($join) {
+            return Vehicle::join('vehicle_metas as days_in_yard_meta', function ($join) {
+                $join->on('vehicles.ID', '=', 'days_in_yard_meta.vehicle_id')
+                    ->where('days_in_yard_meta.meta_key', '=', 'days_in_yard');
+            })
+                    ->leftJoin('vehicle_metas as status_meta', function ($join) {
                         $join->on('vehicles.ID', '=', 'status_meta.vehicle_id')
                             ->where('status_meta.meta_key', '=', 'status');
                     })
@@ -27,7 +27,7 @@ class DashboardController extends Controller
                     ->orderByRaw('CAST(days_in_yard_meta.meta_value AS UNSIGNED) DESC')
                     ->limit(30)
                     ->get();
-});
+        });
 
 
         $vehicles_sold = Cache::remember('vehicles_sold', 1440, function () {
@@ -40,8 +40,17 @@ class DashboardController extends Controller
             ->get();
         });
 
-        return view('pages.dashboard.index', get_defined_vars());
 
+        $last_30_inserted = Cache::remember('last_30_inserted', 3600, function () {
+            return Vehicle::latest()->take(30)->get();
+        });
+
+
+        $last_30_updated = Cache::remember('last_30_updated', 3600, function () {
+            return Vehicle::latest('updated_at')->take(30)->get();
+        });
+
+        return view('pages.dashboard.index', get_defined_vars());
 
     }
 }
