@@ -215,11 +215,10 @@ class VehicleController extends Controller
                 $vehicle->source = 'iaai';
                 $vehicle->location = $row[$positions[$requiredColumns['location']]];
 
-                if($row[$positions[$requiredColumns['year']]] == $row[$positions[$requiredColumns['make']]] && $row[$positions[$requiredColumns['make']]] == $row[$positions[$requiredColumns['model']]]){
+                if($row[$positions[$requiredColumns['year']]] == $row[$positions[$requiredColumns['make']]] && $row[$positions[$requiredColumns['make']]] == $row[$positions[$requiredColumns['model']]]) {
                     $vehicle->description = sprintf("%s", $row[$positions[$requiredColumns['year']]]);
                     //dd($row[$positions[$requiredColumns['year']]], $row[$positions[$requiredColumns['make']]], $row[$positions[$requiredColumns['model']]]);
-                }
-                else{
+                } else {
                     $vehicle->description = sprintf("%s %s %s", $row[$positions[$requiredColumns['year']]], $row[$positions[$requiredColumns['make']]], $row[$positions[$requiredColumns['model']]]);
                 }
 
@@ -878,11 +877,11 @@ class VehicleController extends Controller
     {
         $duplicateVins = \DB::select("SELECT vin, COUNT(*) AS count FROM vehicles GROUP BY vin HAVING COUNT > 1");
 
-        foreach($duplicateVins as $duplicateVin){
+        foreach($duplicateVins as $duplicateVin) {
             echo $duplicateVin->vin      . "</br>";
         }
 
-        if(count($duplicateVins) == 0){
+        if(count($duplicateVins) == 0) {
             echo "No duplicate vehicles found";
         }
 

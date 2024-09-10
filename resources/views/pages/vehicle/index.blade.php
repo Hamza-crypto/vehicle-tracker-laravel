@@ -352,7 +352,7 @@
                     ],
                 });
 
-                $.fn.DataTable.ext.pager.numbers_length = 4;
+                // $.fn.DataTable.ext.pager.numbers_length = 4;
             }
 
             $('.apply-dt-filters').on('click', function() {
@@ -395,8 +395,12 @@
                                 'success'
                             );
 
-                            $('#modal-vehicle-create').modal('hide');
-                            window.location.href = '/vehicles';
+                            $('#modal-vehicle-detail').modal('hide');
+
+                            if (urlParams.has('create') && urlParams.get('create') === 'new') {
+                                $('#modal-vehicle-create').modal('hide');
+                                window.location.href = '/vehicles';
+                            }
                         } else {
                             Swal.fire(
                                 'Error!',

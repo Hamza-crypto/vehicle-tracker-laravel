@@ -361,6 +361,8 @@
                             'success'
                         );
 
+                        //Hide model after pressing the save btn
+                        // $('#modal-vehicle-detail').modal('hide');
                         // window.location.href = '/vehicles';
 
                     },
