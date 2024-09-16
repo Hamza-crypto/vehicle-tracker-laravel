@@ -18,8 +18,14 @@
                             <tr id="{{ $vehicle->id }}">
                                 <td><a href="#" data-toggle="modal"
                                         data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
-                                <td><a href="#" data-toggle="modal"
-                                        data-target="#modal-vehicle-detail">{{ $vehicle->vin }}</a></td>
+                                <td>
+                                    @if ($vehicle->auction_lot)
+                                        <a href="https://www.copart.com/lot/{{ $vehicle->auction_lot }}"
+                                            target="_blank">{{ $vehicle->vin }}</a>
+                                    @else
+                                        {{ $vehicle->vin }}
+                                    @endif
+                                </td>
                                 <td data-toggle="tooltip" data-placement="top"
                                     title="{{ $vehicle->created_at->format('Y-m-d H:i:s') }}">
                                     {{ $vehicle->created_at->diffForHumans() }}

@@ -19,7 +19,7 @@ class DashboardController extends Controller
                         $join->on('vehicles.ID', '=', 'status_meta.vehicle_id')
                             ->where('status_meta.meta_key', '=', 'status');
                     })
-                    ->select(['vehicles.id', 'vin', 'description', 'days_in_yard_meta.meta_value'])
+                    ->select(['vehicles.id', 'vin', 'auction_lot', 'description', 'days_in_yard_meta.meta_value'])
                     ->where(function ($query) {
                         $query->whereNull('status_meta.meta_value')
                             ->orWhere('status_meta.meta_value', '!=', 'SOLD');
@@ -29,10 +29,9 @@ class DashboardController extends Controller
                     ->get();
         });
 
-
         $vehicles_sold = Cache::remember('vehicles_sold', 1440, function () {
             return Vehicle::join('vehicle_metas', 'vehicles.ID', '=', 'vehicle_metas.vehicle_id')
-            ->select(['vehicles.id','vin', 'description'])
+            ->select(['vehicles.id','vin', 'description', 'auction_lot'])
             ->where('meta_key', 'status')
             ->where('meta_value', 'SOLD')
             ->orderBy('vehicle_metas.id', 'DESC')
@@ -50,6 +49,14 @@ class DashboardController extends Controller
             return Vehicle::latest('updated_at')->take(30)->get();
         });
 
+
+        // $vehiclesWithRecentNotes = Vehicle::join('vehicle_notes', 'vehicles.id', '=', 'vehicle_notes.vehicle_id')
+        //     ->orderBy('vehicle_notes.updated_at', 'desc') // Order by most recently updated notes
+        //     ->take(3) // Limit to the last 30 vehicles
+        //     ->select('vehicles.id', 'vehicles.vin', 'vehicles.description', 'vehicle_notes.updated_at as note_updated_at', 'vehicle_notes.note as note_content')
+        //     ->get();
+
+        // dd($vehiclesWithRecentNotes->toArray());
         return view('pages.dashboard.index', get_defined_vars());
 
     }
