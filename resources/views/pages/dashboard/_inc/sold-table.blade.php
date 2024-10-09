@@ -29,10 +29,18 @@
                             <td colspan="3">No vehicles found</td>
                         </tr>
                     @endif
+                    <tr>
+                        <td></td>
+                        <td>
+                            <a href="{{ route('dashboard.index', ['type' => 'days_in_yard']) }}" class="btn btn-primary">View All</a>
+                        </td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
     <div class="col-12 col-lg-6 d-flex">
         <div class="card flex-fill">
             <div class="card-header">
@@ -60,6 +68,14 @@
                             <td colspan="3">No vehicles found</td>
                         </tr>
                     @endif
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <a href="{{ route('dashboard.index', ['type' => 'sold']) }}" class="btn btn-primary">View All</a>
+                        </td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
         </div>

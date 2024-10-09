@@ -82,7 +82,11 @@
         </script>
     @endif
 
-
+    @if(Request::has('type'))
+    <script>
+        $('[data-target="#modal-vehicle-detail"]').css('color', '#495057');
+    </script>
+    @endif
 
 </body>
 

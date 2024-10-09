@@ -259,21 +259,30 @@ class Vehicle extends Model
 
 
         static::created(function () {
-            Cache::forget('vehicles_with_days_in_yard');
-            Cache::forget('vehicles_sold');
-            Cache::forget('last_30_inserted');
+            Cache::forget('vehicles_with_days_in_yard_15');
+            Cache::forget('vehicles_with_days_in_yard_300');
+            Cache::forget('vehicles_sold_15');
+            Cache::forget('vehicles_sold_300');
+            Cache::forget('last_30_inserted_15');
+            Cache::forget('last_30_inserted_300');
         });
 
         static::updated(function () {
-            Cache::forget('vehicles_with_days_in_yard');
-            Cache::forget('vehicles_sold');
-            Cache::forget('last_30_updated');
+            Cache::forget('vehicles_with_days_in_yard_15');
+            Cache::forget('vehicles_with_days_in_yard_300');
+            Cache::forget('vehicles_sold_15');
+            Cache::forget('vehicles_sold_300');
+            Cache::forget('last_30_updated_15');
+            Cache::forget('last_30_updated_300');
         });
 
         static::deleted(function ($vehicle) {
-            Cache::forget('vehicles_with_days_in_yard');
-            Cache::forget('vehicles_sold');
-            Cache::forget('last_30_updated');
+            Cache::forget('vehicles_with_days_in_yard_15');
+            Cache::forget('vehicles_with_days_in_yard_300');
+            Cache::forget('vehicles_sold_15');
+            Cache::forget('vehicles_sold_300');
+            Cache::forget('last_30_updated_15');
+            Cache::forget('last_30_updated_300');
 
             //delete all vehicle metas
             $vehicle->metas()->forceDelete();
