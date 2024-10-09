@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
@@ -44,9 +45,21 @@ class DashboardController extends Controller
             return Vehicle::latest()->take(30)->get();
         });
 
-
         $last_30_updated = Cache::remember('last_30_updated', 3600, function () {
-            return Vehicle::latest('updated_at')->take(30)->get();
+            $last_30_updated = \DB::select("
+            SELECT v.* FROM `vehicles` v
+            LEFT JOIN `vehicle_metas` vm ON v.id = vm.vehicle_id AND vm.meta_key = 'status'
+            WHERE (vm.meta_value IS NULL OR vm.meta_value != 'SOLD')
+            ORDER BY v.updated_at DESC
+            LIMIT 30;
+                ");
+
+            foreach ($last_30_updated as $vehicle) {
+                $vehicle->updated_at = Carbon::parse($vehicle->updated_at)->format('Y-m-d H:i:s');
+                $vehicle->human_readable_format = Carbon::parse($vehicle->updated_at)->diffForHumans();
+            }
+
+            return collect($last_30_updated);
         });
 
 

@@ -26,8 +26,8 @@
                                 @endif
                             </td>
                             <td data-toggle="tooltip" data-placement="top"
-                                title="{{ $vehicle->updated_at->format('Y-m-d H:i:s') }}">
-                                {{ $vehicle->updated_at->diffForHumans() }}
+                                title="{{ $vehicle->updated_at }}">
+                                {{ $vehicle->human_readable_format }}
                             </td>
                         </tr>
                     @endforeach
