@@ -31,17 +31,18 @@ class DashboardController extends Controller
                     $last_30_updated = $this->getLastUpdated($limit);
                     return view('pages.dashboard.all_vehicles.updated', compact('last_30_updated'));
 
+                case 'notes':
+                    $vehicles_with_notes = $this->getVehiclesWithNotes($limit);
+                    return view('pages.dashboard.all_vehicles.notes', compact('vehicles_with_notes'));
+
                 default:
                     abort(404, "Section not found.");
             }
         }
 
-        // $vehiclesWithRecentNotes = Vehicle::join('vehicle_notes', 'vehicles.id', '=', 'vehicle_notes.vehicle_id')
-        //     ->orderBy('vehicle_notes.updated_at', 'desc') // Order by most recently updated notes
-        //     ->take(3) // Limit to the last 30 vehicles
-        //     ->select('vehicles.id', 'vehicles.vin', 'vehicles.description', 'vehicle_notes.updated_at as note_updated_at', 'vehicle_notes.note as note_content')
-        //     ->get();
-
+        $vehiclesWithRecentNotes = Vehicle::join('vehicle_notes', 'vehicles.id', '=', 'vehicle_notes.vehicle_id')
+            ->orderBy('vehicle_notes.updated_at', 'desc') // Order by most recently updated notes
+            ->count();
 
         // If no 'section' parameter, run all queries with default limits
         $vehicles_with_days_in_yard = $this->getVehiclesWithDaysInYard(10);
@@ -111,6 +112,17 @@ class DashboardController extends Controller
             ->orderBy('vehicle_metas.id', 'DESC')
             ->limit($limit)
             ->get();
+        });
+    }
+
+    private function getVehiclesWithNotes($limit)
+    {
+        return Cache::remember('vehicles_with_notes_' . $limit, 300, function () use ($limit) {
+            return Vehicle::join('vehicle_notes', 'vehicles.id', '=', 'vehicle_notes.vehicle_id')
+                ->orderBy('vehicle_notes.updated_at', 'desc')
+                ->take($limit)
+                ->select('vehicles.id', 'vehicles.vin', 'vehicles.description', 'vehicle_notes.updated_at as note_updated_at', 'vehicle_notes.note as note_content')
+                ->get();
         });
     }
 }
