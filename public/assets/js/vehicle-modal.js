@@ -114,7 +114,8 @@ $(document).ready(function () {
                     );
 
                     $('#modal-vehicle-create').modal('hide');
-                    window.location.href = '/dashboard';
+                    $('#modal-vehicle-detail').modal('hide');
+                    // window.location.href = '/dashboard';
                 } else {
                     Swal.fire(
                         'Error!',

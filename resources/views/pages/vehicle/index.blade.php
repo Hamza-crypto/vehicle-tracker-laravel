@@ -375,62 +375,62 @@
             @endif
 
             //Submit form
-            $('.vehicle-detail-form').on('submit', function(e) {
+            // $('.vehicle-detail-form').on('submit', function(e) {
 
-                e.preventDefault();
-                var form = $(this);
-                var url = form.attr('action');
-                var method = form.attr('method');
-                var data = form.serialize();
-                $.ajax({
-                    url: url,
-                    type: method,
-                    data: data,
-                    success: function(response) {
+            //     e.preventDefault();
+            //     var form = $(this);
+            //     var url = form.attr('action');
+            //     var method = form.attr('method');
+            //     var data = form.serialize();
+            //     $.ajax({
+            //         url: url,
+            //         type: method,
+            //         data: data,
+            //         success: function(response) {
 
-                        if (response.status == 'success') {
-                            Swal.fire(
-                                'Success!',
-                                response.message,
-                                'success'
-                            );
+            //             if (response.status == 'success') {
+            //                 Swal.fire(
+            //                     'Success!',
+            //                     response.message,
+            //                     'success'
+            //                 );
 
-                            $('#modal-vehicle-detail').modal('hide');
+            //                 $('#modal-vehicle-detail').modal('hide');
 
-                            if (urlParams.has('create') && urlParams.get('create') === 'new') {
-                                $('#modal-vehicle-create').modal('hide');
-                                window.location.href = '/vehicles';
-                            }
-                        } else {
-                            Swal.fire(
-                                'Error!',
-                                response.message, 'error'
-                            );
-                            console.log(response.message);
-
-
-                        }
+            //                 if (urlParams.has('create') && urlParams.get('create') === 'new') {
+            //                     $('#modal-vehicle-create').modal('hide');
+            //                     window.location.href = '/vehicles';
+            //                 }
+            //             } else {
+            //                 Swal.fire(
+            //                     'Error!',
+            //                     response.message, 'error'
+            //                 );
+            //                 console.log(response.message);
 
 
-                    },
-                    error: function(error) {
-
-                        const errors = error.responseJSON.errors;
-                        var errorString = '';
-                        $.each(errors, function(key, value) {
-                            errorString += '<li>' + value + '</li>';
-                        });
+            //             }
 
 
-                        Swal.fire(
-                            'Error!',
-                            errorString,
-                            'error'
-                        );
+            //         },
+            //         error: function(error) {
 
-                    }
-                });
-            });
+            //             const errors = error.responseJSON.errors;
+            //             var errorString = '';
+            //             $.each(errors, function(key, value) {
+            //                 errorString += '<li>' + value + '</li>';
+            //             });
+
+
+            //             Swal.fire(
+            //                 'Error!',
+            //                 errorString,
+            //                 'error'
+            //             );
+
+            //         }
+            //     });
+            // });
 
 
         });

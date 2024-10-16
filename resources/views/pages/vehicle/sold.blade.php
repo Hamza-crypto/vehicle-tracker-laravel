@@ -341,49 +341,49 @@
             @endif
 
             //Submit form
-            $('.vehicle-detail-form').on('submit', function(e) {
-                e.preventDefault();
-                var form = $(this);
-                var url = form.attr('action');
-                var method = form.attr('method');
-                var data = form.serialize();
-                $.ajax({
-                    url: url,
-                    type: method,
-                    data: data,
-                    success: function(response) {
-                        console.log(response);
-                        $('#modal-vehicle-create').modal('hide');
+            // $('.vehicle-detail-form').on('submit', function(e) {
+            //     e.preventDefault();
+            //     var form = $(this);
+            //     var url = form.attr('action');
+            //     var method = form.attr('method');
+            //     var data = form.serialize();
+            //     $.ajax({
+            //         url: url,
+            //         type: method,
+            //         data: data,
+            //         success: function(response) {
+            //             console.log(response);
+            //             $('#modal-vehicle-create').modal('hide');
 
-                        Swal.fire(
-                            'Success!',
-                            response.message,
-                            'success'
-                        );
+            //             Swal.fire(
+            //                 'Success!',
+            //                 response.message,
+            //                 'success'
+            //             );
 
-                        //Hide model after pressing the save btn
-                        // $('#modal-vehicle-detail').modal('hide');
-                        // window.location.href = '/vehicles';
+            //             //Hide model after pressing the save btn
+            //             // $('#modal-vehicle-detail').modal('hide');
+            //             // window.location.href = '/vehicles';
 
-                    },
-                    error: function(error) {
+            //         },
+            //         error: function(error) {
 
-                        const errors = error.responseJSON.errors;
-                        var errorString = '';
-                        $.each(errors, function(key, value) {
-                            errorString += '<li>' + value + '</li>';
-                        });
+            //             const errors = error.responseJSON.errors;
+            //             var errorString = '';
+            //             $.each(errors, function(key, value) {
+            //                 errorString += '<li>' + value + '</li>';
+            //             });
 
 
-                        Swal.fire(
-                            'Error!',
-                            errorString,
-                            'error'
-                        );
+            //             Swal.fire(
+            //                 'Error!',
+            //                 errorString,
+            //                 'error'
+            //             );
 
-                    }
-                });
-            });
+            //         }
+            //     });
+            // });
 
 
 
