@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Artisan;
 
 class VehicleNote extends Model
 {
@@ -19,15 +19,15 @@ class VehicleNote extends Model
     protected static function booted()
     {
         static::created(function () {
-            Cache::forget('vehicles_with_notes_300');
+            Artisan::call('cache:clear');
         });
 
         static::updated(function () {
-            Cache::forget('vehicles_with_notes_300');
+            Artisan::call('cache:clear');
         });
 
         static::deleted(function () {
-            Cache::forget('vehicles_with_notes_300');
+            Artisan::call('cache:clear');
         });
     }
 }

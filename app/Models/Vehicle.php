@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class Vehicle extends Model
@@ -259,32 +260,15 @@ class Vehicle extends Model
 
 
         static::created(function () {
-            Cache::forget('vehicles_with_days_in_yard_15');
-            Cache::forget('vehicles_with_days_in_yard_300');
-            Cache::forget('vehicles_sold_15');
-            Cache::forget('vehicles_sold_300');
-            Cache::forget('last_30_inserted_15');
-            Cache::forget('last_30_inserted_300');
+            Artisan::call('cache:clear');
         });
 
         static::updated(function () {
-            Cache::forget('vehicles_with_days_in_yard_15');
-            Cache::forget('vehicles_with_days_in_yard_300');
-            Cache::forget('vehicles_sold_15');
-            Cache::forget('vehicles_sold_300');
-            Cache::forget('last_30_updated_15');
-            Cache::forget('last_30_updated_300');
+            Artisan::call('cache:clear');
         });
 
         static::deleted(function ($vehicle) {
-            Cache::forget('vehicles_with_days_in_yard_15');
-            Cache::forget('vehicles_with_days_in_yard_300');
-            Cache::forget('vehicles_sold_15');
-            Cache::forget('vehicles_sold_300');
-            Cache::forget('last_30_updated_15');
-            Cache::forget('last_30_updated_300');
-
-            //delete all vehicle metas
+            Artisan::call('cache:clear');
             $vehicle->metas()->forceDelete();
         });
     }

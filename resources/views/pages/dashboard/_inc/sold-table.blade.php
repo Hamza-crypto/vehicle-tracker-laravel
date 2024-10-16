@@ -31,7 +31,7 @@
                     @endif
                     <tr>
                         <td colspan="3">
-                            <a href="{{ route('dashboard.index', ['type' => 'inserted']) }}" class="btn btn-primary">View All</a>
+                            <a href="{{ route('dashboard.index', ['type' => 'days_in_yard']) }}" class="btn btn-primary">View All</a>
                         </td>
                     </tr>
                 </tbody>
@@ -68,7 +68,7 @@
                     @endif
                     <tr>
                         <td colspan="3">
-                            <a href="{{ route('dashboard.index', ['type' => 'inserted']) }}" class="btn btn-primary">View All</a>
+                            <a href="{{ route('dashboard.index', ['type' => 'sold']) }}" class="btn btn-primary">View All</a>
                         </td>
                     </tr>
                 </tbody>

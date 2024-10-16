@@ -119,9 +119,17 @@ class DashboardController extends Controller
     {
         return Cache::remember('vehicles_with_notes_' . $limit, 300, function () use ($limit) {
             return Vehicle::join('vehicle_notes', 'vehicles.id', '=', 'vehicle_notes.vehicle_id')
+            ->leftJoin('vehicle_metas as status_meta', function ($join) {
+                $join->on('vehicles.id', '=', 'status_meta.vehicle_id')
+                     ->where('status_meta.meta_key', '=', 'status');
+            })
+            ->select('vehicles.id', 'vehicles.vin', 'vehicles.description', 'vehicle_notes.updated_at as note_updated_at', 'vehicle_notes.note as note_content')
+            ->where(function ($query) {
+                $query->whereNull('status_meta.meta_value')
+                      ->orWhere('status_meta.meta_value', '!=', 'SOLD');
+            })
                 ->orderBy('vehicle_notes.updated_at', 'desc')
                 ->take($limit)
-                ->select('vehicles.id', 'vehicles.vin', 'vehicles.description', 'vehicle_notes.updated_at as note_updated_at', 'vehicle_notes.note as note_content')
                 ->get();
         });
     }

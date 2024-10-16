@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Artisan;
 
 class VehicleMetas extends Model
 {
@@ -24,24 +24,21 @@ class VehicleMetas extends Model
     protected static function booted()
     {
         static::created(function ($meta) {
-            Cache::forget('vehicles_with_days_in_yard');
-            Cache::forget('vehicles_sold');
+            Artisan::call('cache:clear');
 
             $meta->vehicle->touch();
 
         });
 
         static::updated(function ($meta) {
-            Cache::forget('vehicles_with_days_in_yard');
-            Cache::forget('vehicles_sold');
+            Artisan::call('cache:clear');
 
             $meta->vehicle->touch();
 
         });
 
         static::deleted(function () {
-            Cache::forget('vehicles_with_days_in_yard');
-            Cache::forget('vehicles_sold');
+            Artisan::call('cache:clear');
         });
     }
 }
