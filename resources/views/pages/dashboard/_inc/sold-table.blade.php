@@ -30,11 +30,9 @@
                         </tr>
                     @endif
                     <tr>
-                        <td></td>
-                        <td>
-                            <a href="{{ route('dashboard.index', ['type' => 'days_in_yard']) }}" class="btn btn-primary">View All</a>
+                        <td colspan="3">
+                            <a href="{{ route('dashboard.index', ['type' => 'inserted']) }}" class="btn btn-primary">View All</a>
                         </td>
-                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -68,13 +66,10 @@
                             <td colspan="3">No vehicles found</td>
                         </tr>
                     @endif
-
                     <tr>
-                        <td></td>
-                        <td>
-                            <a href="{{ route('dashboard.index', ['type' => 'sold']) }}" class="btn btn-primary">View All</a>
+                        <td colspan="3">
+                            <a href="{{ route('dashboard.index', ['type' => 'inserted']) }}" class="btn btn-primary">View All</a>
                         </td>
-                        <td></td>
                     </tr>
                 </tbody>
             </table>

@@ -88,6 +88,7 @@
     </script>
     @endif
 
+    <script src="{{ asset('/assets/js/vehicle-modal.js') }}"></script>
 </body>
 
 </html>

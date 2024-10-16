@@ -39,11 +39,9 @@
                     @endif
 
                     <tr>
-                        <td></td>
-                        <td>
+                        <td colspan="3">
                             <a href="{{ route('dashboard.index', ['type' => 'inserted']) }}" class="btn btn-primary">View All</a>
                         </td>
-                        <td></td>
                     </tr>
                 </tbody>
             </table>

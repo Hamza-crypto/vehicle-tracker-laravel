@@ -21,6 +21,8 @@
                     @foreach ($last_30_updated as $vehicle)
                         <tr id="{{ $vehicle->id }}">
                             <td>{{$vehicle->description }}</td>
+                            <td><a href="#" data-toggle="modal"
+                                data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
                             <td>
                                 @if ($vehicle->auction_lot)
                                     <a href="https://www.copart.com/lot/{{ $vehicle->auction_lot }}"

@@ -21,7 +21,8 @@
                     @if (count($vehicles_with_days_in_yard))
                         @foreach ($vehicles_with_days_in_yard as $vehicle)
                             <tr id="{{ $vehicle->id }}">
-                                <td>{{ $vehicle->description }}</td>
+                                <td><a href="#" data-toggle="modal"
+                                    data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
                                 <td><a href="https://www.copart.com/lot/{{ $vehicle->auction_lot }}"
                                         target="_blank">{{ $vehicle->vin }}</a></td>
                                 <td>{{ $vehicle->meta_value }}</td>

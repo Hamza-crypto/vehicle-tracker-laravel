@@ -29,7 +29,8 @@
                         @foreach ($vehicles_with_notes as $vehicle)
                             <tr id="{{ $vehicle->id }}">
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $vehicle->description }}</td>
+                                <td><a href="#" data-toggle="modal"
+                                    data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
                                 <td>{{ $vehicle->vin }}</td>
                                 <td>
                                     {{ $vehicle->note_content }}

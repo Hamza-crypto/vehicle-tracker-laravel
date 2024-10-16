@@ -37,11 +37,9 @@
                     </tr>
                 @endif
                 <tr>
-                    <td></td>
-                    <td>
-                        <a href="{{ route('dashboard.index', ['type' => 'updated']) }}" class="btn btn-primary">View All</a>
+                    <td colspan="3">
+                        <a href="{{ route('dashboard.index', ['type' => 'inserted']) }}" class="btn btn-primary">View All</a>
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
         </table>

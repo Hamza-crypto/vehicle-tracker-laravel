@@ -20,7 +20,8 @@
                     @if (count($vehicles_sold))
                         @foreach ($vehicles_sold as $vehicle)
                             <tr id="{{ $vehicle->id }}">
-                                <td>{{ $vehicle->description }}</td>
+                                <td><a href="#" data-toggle="modal"
+                                    data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
                                 <td><a href="https://www.copart.com/lot/{{ $vehicle->auction_lot }}"
                                         target="_blank">{{ $vehicle->vin }}</a></td>
                             </tr>
