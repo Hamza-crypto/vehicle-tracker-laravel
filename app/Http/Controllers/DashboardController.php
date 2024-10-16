@@ -109,7 +109,7 @@ class DashboardController extends Controller
             ->select(['vehicles.id','vin', 'description', 'auction_lot'])
             ->where('meta_key', 'status')
             ->where('meta_value', 'SOLD')
-            ->orderBy('vehicle_metas.id', 'DESC')
+            ->orderBy('vehicle_metas.updated_at', 'DESC')
             ->limit($limit)
             ->get();
         });

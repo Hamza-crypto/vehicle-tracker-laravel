@@ -12,6 +12,7 @@
             <table class="vehicles-table table table-sm table-striped table-hover my-0">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Year Make Model</th>
                         <th>VIN</th>
                     </tr>
@@ -20,6 +21,7 @@
                     @if (count($vehicles_sold))
                         @foreach ($vehicles_sold as $vehicle)
                             <tr id="{{ $vehicle->id }}">
+                                <td>{{ $loop->iteration }}</td>
                                 <td><a href="#" data-toggle="modal"
                                     data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
                                 <td><a href="https://www.copart.com/lot/{{ $vehicle->auction_lot }}"

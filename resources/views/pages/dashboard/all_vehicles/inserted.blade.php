@@ -12,6 +12,7 @@
             <table class="vehicles-table table table-sm table-striped my-0">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Year Make Model</th>
                         <th>VIN</th>
                         <th>Days in Yard</th>
@@ -21,6 +22,7 @@
                     @if (count($last_30_inserted))
                         @foreach ($last_30_inserted as $vehicle)
                             <tr id="{{ $vehicle->id }}">
+                                <td>{{ $loop->iteration }}</td>
                                 <td><a href="#" data-toggle="modal"
                                     data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
                                 <td>
