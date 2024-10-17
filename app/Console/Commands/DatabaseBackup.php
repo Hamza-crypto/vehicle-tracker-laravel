@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -21,6 +22,7 @@ class DatabaseBackup extends Command
 
     public function handle()
     {
+        Artisan::call('optimize:clear');
         $backupDir = storage_path('app/backups');  // Directory to store backups
         $date = Carbon::now()->format('Y-m-d_H-i-s');
         $dbBackupFile = $backupDir . "/db_backup_{$date}.sql";
@@ -60,10 +62,16 @@ class DatabaseBackup extends Command
             'telescope_monitoring'
         ];
 
-        // Generate the --ignore-table options for excluded tables
+        // Generate the --ignore-table options for excluded tables' data
         $ignoreTablesCommand = '';
         foreach ($excludeTables as $table) {
             $ignoreTablesCommand .= " --ignore-table={$dbName}.{$table}";
+        }
+
+        // Generate a command to back up the structure of excluded tables
+        $structureCommand = '';
+        foreach ($excludeTables as $table) {
+            $structureCommand .= " --no-data --tables {$dbName}.{$table}";
         }
 
         $command = [
@@ -74,6 +82,7 @@ class DatabaseBackup extends Command
             $ignoreTablesCommand,
             $dbName,
             '--result-file=' . $backupFile,
+            $structureCommand,
         ];
 
         $process = new Process($command);
