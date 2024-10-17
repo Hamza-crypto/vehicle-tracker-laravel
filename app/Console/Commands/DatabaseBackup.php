@@ -53,11 +53,25 @@ class DatabaseBackup extends Command
         $dbUser = env('DB_USERNAME', 'forge');
         $dbPass = env('DB_PASSWORD', '');
 
+        // Tables to exclude from the backup
+        $excludeTables = [
+            'telescope_entries',
+            'telescope_entries_tags	',
+            'telescope_monitoring'
+        ];
+
+        // Generate the --ignore-table options for excluded tables
+        $ignoreTablesCommand = '';
+        foreach ($excludeTables as $table) {
+            $ignoreTablesCommand .= " --ignore-table={$dbName}.{$table}";
+        }
+
         $command = [
             'mysqldump',
             '--user=' . $dbUser,
             '--password=' . $dbPass,
             '--host=' . $dbHost,
+            $ignoreTablesCommand,
             $dbName,
             '--result-file=' . $backupFile,
         ];
@@ -82,6 +96,7 @@ class DatabaseBackup extends Command
             'tar',
             '--exclude=vendor',          // Exclude vendor folder
             '--exclude=node_modules',    // Exclude node_modules folder
+            '--exclude=storage/app/backups', // Exclude backups directory
             '-czf',                      // Create compressed .tar.gz archive
             $backupFile,                 // Output file
             '-C',                        // Change directory to project root
