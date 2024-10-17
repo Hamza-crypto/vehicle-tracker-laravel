@@ -35,6 +35,11 @@ Route::get('/clear_cache', function () {
     dd('Cache Cleared');
 });
 
+Route::get('backup', function () {
+    \Illuminate\Support\Facades\Artisan::call('backup:full');
+    dd('Backup created.');
+});
+
 Route::get('/phpinfo', function () {
     echo phpinfo();
 });
