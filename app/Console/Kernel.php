@@ -8,18 +8,15 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    protected $commands = [
-        Commands\GuruRefreshToken::class,
-        Commands\GuruFetchNewJobs::class
-    ];
 
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('guru:token-refresh')
-            ->hourly();
+        $schedule->command('backup:full')->daily();
+        $schedule->command('telescope:prune --hours=240')->daily();
 
-        $schedule->command('guru:fetch-new-jobs')
-            ->everyFiveMinutes();
+        $schedule->command('inspire')->everyMinute();
+
+
     }
 
     protected function commands()
