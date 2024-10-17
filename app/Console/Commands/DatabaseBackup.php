@@ -25,9 +25,9 @@ class DatabaseBackup extends Command
         Artisan::call('optimize:clear');
         $backupDir = storage_path('app/backups');  // Directory to store backups
         $date = Carbon::now()->format('Y-m-d_H-i-s');
-        $dbBackupFile = $backupDir . "/db_backup_{$date}.sql";
-        $projectBackupFile = $backupDir . "/project_backup_{$date}.tar.gz";
-        $zipBackupFile = $backupDir . "/backup_{$date}.zip"; // Single zip file name
+        $dbBackupFile = "{$backupDir}/db_backup_{$date}.sql";
+        $projectBackupFile = "{$backupDir}/project_backup_{$date}.tar.gz";
+        $zipBackupFile = "{$backupDir}/backup_{$date}.zip"; // Single zip file name
 
         // Ensure the backup directory exists
         if (!is_dir($backupDir)) {
@@ -69,28 +69,23 @@ class DatabaseBackup extends Command
         $dbPass = env('DB_PASSWORD', '');
 
         // Generate the --ignore-table options for excluded tables' data
-        $ignoreDataTablesCommand = '';
+        $ignoreTablesCommand = [];
         foreach ($excludeTables as $table) {
-            $ignoreDataTablesCommand .= " --ignore-table={$dbName}.{$table}";
-        }
-
-        // Generate a command to back up the structure of excluded tables
-        $structureCommand = '';
-        foreach ($excludeTables as $table) {
-            $structureCommand .= " --no-data --tables {$dbName}.{$table}";
+            $ignoreTablesCommand[] = "--ignore-table={$dbName}.{$table}";
         }
 
         // Complete mysqldump command
-        $command = [
-            'mysqldump',
-            '--user=' . $dbUser,
-            '--password=' . $dbPass,
-            '--host=' . $dbHost,
-            $ignoreDataTablesCommand,
-            $dbName,
-            '--result-file=' . $backupFile,
-            $structureCommand,  // Ensure structure command is included
-        ];
+        $command = array_merge(
+            [
+                'mysqldump',
+                '--user=' . $dbUser,
+                '--password=' . $dbPass,
+                '--host=' . $dbHost,
+                $dbName,
+                '--result-file=' . $backupFile,
+            ],
+            $ignoreTablesCommand
+        );
 
         $process = new Process($command);
 
@@ -146,6 +141,9 @@ class DatabaseBackup extends Command
 
         try {
             $process->mustRun();
+            // Optionally delete individual files after zipping
+            unlink($dbBackupFile);
+            unlink($projectBackupFile);
             return true;
         } catch (ProcessFailedException $exception) {
             $this->error('Error creating ZIP backup: ' . $exception->getMessage());
@@ -172,5 +170,3 @@ class DatabaseBackup extends Command
         }
     }
 }
-
-//
