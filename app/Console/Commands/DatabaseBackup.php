@@ -23,44 +23,37 @@ class DatabaseBackup extends Command
     public function handle()
     {
         Artisan::call('optimize:clear');
-        $backupDir = storage_path('app/backups');  // Directory to store backups
+        $backupDir = storage_path('app/backups');
         $date = Carbon::now()->format('Y-m-d_H-i-s');
         $dbBackupFile = "{$backupDir}/db_backup_{$date}.sql";
         $projectBackupFile = "{$backupDir}/project_backup_{$date}.tar.gz";
-        $zipBackupFile = "{$backupDir}/backup_{$date}.zip"; // Single zip file name
+        $zipBackupFile = "{$backupDir}/backup_{$date}.zip";
 
-        // Ensure the backup directory exists
         if (!is_dir($backupDir)) {
             mkdir($backupDir, 0755, true);
         }
 
-        // Define excluded tables
         $excludeTables = [
             'telescope_entries',
             'telescope_entries_tags',
             'telescope_monitoring',
         ];
 
-        // 1. Backup the database using mysqldump
         if ($this->backupDatabase($dbBackupFile, $excludeTables)) {
             $this->info("Database backup created successfully: {$dbBackupFile}");
         }
 
-        // 2. Backup the project directory excluding vendor, node_modules, and backups
         if ($this->backupProject($projectBackupFile)) {
             $this->info("Project backup created successfully: {$projectBackupFile}");
         }
 
-        // 3. Create a single ZIP file containing both backups
         if ($this->zipBackups($zipBackupFile, $dbBackupFile, $projectBackupFile)) {
             $this->info("Backups zipped successfully: {$zipBackupFile}");
         }
 
-        // 4. Clean up old backups
         $this->deleteOldBackups($backupDir);
     }
 
-    // Backup the database using mysqldump
     private function backupDatabase($backupFile, array $excludeTables)
     {
         $dbHost = env('DB_HOST', 'localhost');
@@ -68,13 +61,11 @@ class DatabaseBackup extends Command
         $dbUser = env('DB_USERNAME', 'forge');
         $dbPass = env('DB_PASSWORD', '');
 
-        // Generate the --ignore-table options for excluded tables' data
         $ignoreTablesCommand = [];
         foreach ($excludeTables as $table) {
             $ignoreTablesCommand[] = "--ignore-table={$dbName}.{$table}";
         }
 
-        // Complete mysqldump command
         $command = array_merge(
             [
                 'mysqldump',
@@ -98,21 +89,20 @@ class DatabaseBackup extends Command
         }
     }
 
-    // Backup the project directory, excluding vendor, node_modules, and backups
     private function backupProject($backupFile)
     {
-        $projectRoot = base_path(); // Get the Laravel project's root directory
+        $projectRoot = base_path();
 
         $command = [
             'tar',
-            '--exclude=vendor',          // Exclude vendor folder
-            '--exclude=node_modules',    // Exclude node_modules folder
-            '--exclude=storage/app/backups', // Exclude backups directory
-            '-czf',                      // Create compressed .tar.gz archive
-            $backupFile,                 // Output file
-            '-C',                        // Change directory to project root
-            $projectRoot,                // The directory to back up
-            '.'                          // Include everything from the project root
+            '--exclude=vendor',
+            '--exclude=node_modules',
+            '--exclude=storage/app/backups',
+            '-czf',
+            $backupFile,
+            '-C',
+            $projectRoot,
+            '.'
         ];
 
         $process = new Process($command);
@@ -126,22 +116,20 @@ class DatabaseBackup extends Command
         }
     }
 
-    // Zip both backup files into a single ZIP file
     private function zipBackups($zipFile, $dbBackupFile, $projectBackupFile)
     {
         $command = [
             'zip',
-            '-j',                       // Junk the path, store just the names of the files
-            $zipFile,                  // Output zip file
-            $dbBackupFile,             // Database backup file
-            $projectBackupFile         // Project backup file
+            '-j',
+            $zipFile,
+            $dbBackupFile,
+            $projectBackupFile
         ];
 
         $process = new Process($command);
 
         try {
             $process->mustRun();
-            // Optionally delete individual files after zipping
             unlink($dbBackupFile);
             unlink($projectBackupFile);
             return true;
@@ -151,7 +139,6 @@ class DatabaseBackup extends Command
         }
     }
 
-    // Deletes backups older than 7 days
     private function deleteOldBackups($backupDir)
     {
         $files = collect(Storage::files('backups'))
@@ -160,7 +147,6 @@ class DatabaseBackup extends Command
             })
             ->values();
 
-        // Only keep the latest 7 files
         if ($files->count() > 7) {
             $oldBackups = $files->slice(7);
             foreach ($oldBackups as $oldBackup) {
