@@ -13,7 +13,7 @@ class DatabaseBackup extends Command
 {
     protected $signature = 'backup:full';
 
-    protected $description = 'Backup the database and project files, excluding vendor and node_modules, and store it in the backup directory. Keep only the last 7 backups.';
+    protected $description = 'Backup the database and project files, excluding vendor, node_modules, and the backups directory, and store it in the backup directory. Keep only the last 7 backups.';
 
     public function __construct()
     {
@@ -27,45 +27,51 @@ class DatabaseBackup extends Command
         $date = Carbon::now()->format('Y-m-d_H-i-s');
         $dbBackupFile = $backupDir . "/db_backup_{$date}.sql";
         $projectBackupFile = $backupDir . "/project_backup_{$date}.tar.gz";
+        $zipBackupFile = $backupDir . "/backup_{$date}.zip"; // Single zip file name
 
         // Ensure the backup directory exists
         if (!is_dir($backupDir)) {
             mkdir($backupDir, 0755, true);
         }
 
+        // Define excluded tables
+        $excludeTables = [
+            'telescope_entries',
+            'telescope_entries_tags',
+            'telescope_monitoring',
+        ];
+
         // 1. Backup the database using mysqldump
-        if ($this->backupDatabase($dbBackupFile)) {
+        if ($this->backupDatabase($dbBackupFile, $excludeTables)) {
             $this->info("Database backup created successfully: {$dbBackupFile}");
         }
 
-        // 2. Backup the project directory excluding vendor and node_modules
+        // 2. Backup the project directory excluding vendor, node_modules, and backups
         if ($this->backupProject($projectBackupFile)) {
             $this->info("Project backup created successfully: {$projectBackupFile}");
         }
 
-        // 3. Clean up old backups
+        // 3. Create a single ZIP file containing both backups
+        if ($this->zipBackups($zipBackupFile, $dbBackupFile, $projectBackupFile)) {
+            $this->info("Backups zipped successfully: {$zipBackupFile}");
+        }
+
+        // 4. Clean up old backups
         $this->deleteOldBackups($backupDir);
     }
 
     // Backup the database using mysqldump
-    private function backupDatabase($backupFile)
+    private function backupDatabase($backupFile, array $excludeTables)
     {
         $dbHost = env('DB_HOST', 'localhost');
         $dbName = env('DB_DATABASE', 'forge');
         $dbUser = env('DB_USERNAME', 'forge');
         $dbPass = env('DB_PASSWORD', '');
 
-        // Tables to exclude from the backup
-        $excludeTables = [
-            'telescope_entries',
-            'telescope_entries_tags	',
-            'telescope_monitoring'
-        ];
-
         // Generate the --ignore-table options for excluded tables' data
-        $ignoreTablesCommand = '';
+        $ignoreDataTablesCommand = '';
         foreach ($excludeTables as $table) {
-            $ignoreTablesCommand .= " --ignore-table={$dbName}.{$table}";
+            $ignoreDataTablesCommand .= " --ignore-table={$dbName}.{$table}";
         }
 
         // Generate a command to back up the structure of excluded tables
@@ -74,15 +80,16 @@ class DatabaseBackup extends Command
             $structureCommand .= " --no-data --tables {$dbName}.{$table}";
         }
 
+        // Complete mysqldump command
         $command = [
             'mysqldump',
             '--user=' . $dbUser,
             '--password=' . $dbPass,
             '--host=' . $dbHost,
-            $ignoreTablesCommand,
+            $ignoreDataTablesCommand,
             $dbName,
             '--result-file=' . $backupFile,
-            $structureCommand,
+            $structureCommand,  // Ensure structure command is included
         ];
 
         $process = new Process($command);
@@ -96,7 +103,7 @@ class DatabaseBackup extends Command
         }
     }
 
-    // Backup the project directory, excluding vendor and node_modules
+    // Backup the project directory, excluding vendor, node_modules, and backups
     private function backupProject($backupFile)
     {
         $projectRoot = base_path(); // Get the Laravel project's root directory
@@ -120,6 +127,28 @@ class DatabaseBackup extends Command
             return true;
         } catch (ProcessFailedException $exception) {
             $this->error('Error creating project backup: ' . $exception->getMessage());
+            return false;
+        }
+    }
+
+    // Zip both backup files into a single ZIP file
+    private function zipBackups($zipFile, $dbBackupFile, $projectBackupFile)
+    {
+        $command = [
+            'zip',
+            '-j',                       // Junk the path, store just the names of the files
+            $zipFile,                  // Output zip file
+            $dbBackupFile,             // Database backup file
+            $projectBackupFile         // Project backup file
+        ];
+
+        $process = new Process($command);
+
+        try {
+            $process->mustRun();
+            return true;
+        } catch (ProcessFailedException $exception) {
+            $this->error('Error creating ZIP backup: ' . $exception->getMessage());
             return false;
         }
     }
