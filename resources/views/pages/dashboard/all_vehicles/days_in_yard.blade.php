@@ -25,7 +25,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td><a href="#" data-toggle="modal"
                                     data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
-                                <td><a href="https://www.copart.com/lot/{{ $vehicle->auction_lot }}"
+                                <td><a href="https://seller.copart.com/lotdisplay/{{ $vehicle->auction_lot }}"
                                         target="_blank">{{ $vehicle->vin }}</a></td>
                                 <td>{{ $vehicle->meta_value }}</td>
                             </tr>

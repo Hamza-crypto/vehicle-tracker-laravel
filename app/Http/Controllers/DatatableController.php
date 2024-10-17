@@ -90,7 +90,7 @@ class DatatableController extends Controller
                 $vehicle->purchase_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->purchase_lot, $vehicle->purchase_lot);
             }
             //Auction lot will always redirect to Copart
-            $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
+            $vehicle->auction_lot = sprintf("<a href=' https://seller.copart.com/lotdisplay/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
 
             $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$' . $vehicle->invoice_amount : '';
             $vehicle->date_paid = sprintf('<span> %s</span>', $vehicle->date_paid);
@@ -222,7 +222,7 @@ class DatatableController extends Controller
 
             $vehicle->description = sprintf("<a data-toggle='modal' data-target='#modal-vehicle-detail' data-id='%s'>%s</a>", $vehicle->id, $vehicle->description);
 
-            $vehicle->auction_lot = sprintf("<a href='https://www.copart.com/lot/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
+            $vehicle->auction_lot = sprintf("<a href='https://seller.copart.com/lotdisplay/%s' target='_blank'>%s</a>", $vehicle->auction_lot, $vehicle->auction_lot);
 
             $vehicle->invoice_amount = $vehicle->invoice_amount != null ? '$' . $vehicle->invoice_amount : '';
 

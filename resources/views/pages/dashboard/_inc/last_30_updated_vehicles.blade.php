@@ -19,7 +19,7 @@
                                     data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
                             <td>
                                 @if ($vehicle->auction_lot)
-                                    <a href="https://www.copart.com/lot/{{ $vehicle->auction_lot }}"
+                                    <a href="https://seller.copart.com/lotdisplay/{{ $vehicle->auction_lot }}"
                                         target="_blank">{{ $vehicle->vin }}</a>
                                 @else
                                     {{ $vehicle->vin }}
