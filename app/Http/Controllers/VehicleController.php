@@ -310,6 +310,9 @@ class VehicleController extends Controller
 
             $vin = $row[$positions[$requiredColumns['vin']]];
             $vin = preg_replace('/\s+/', '', trim($vin));
+            if (empty($vin)) {
+                continue;
+            }
 
             /*
              * Check if auction date is past date
