@@ -13,10 +13,6 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('backup:full')->daily();
         $schedule->command('telescope:prune --hours=240')->daily();
-
-        $schedule->command('inspire')->everyMinute();
-
-
     }
 
     protected function commands()
