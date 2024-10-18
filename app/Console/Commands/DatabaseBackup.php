@@ -26,8 +26,6 @@ class DatabaseBackup extends Command
         $backupDir = storage_path('app/backups');
         $date = Carbon::now()->format('Y-m-d_H-i-s');
         $dbBackupFile = "{$backupDir}/db_backup_{$date}.sql";
-        $projectBackupFile = "{$backupDir}/project_backup_{$date}.tar.gz";
-        $zipBackupFile = "{$backupDir}/backup_{$date}.zip";
 
         if (!is_dir($backupDir)) {
             mkdir($backupDir, 0755, true);
@@ -41,14 +39,6 @@ class DatabaseBackup extends Command
 
         if ($this->backupDatabase($dbBackupFile, $excludeTables)) {
             $this->info("Database backup created successfully: {$dbBackupFile}");
-        }
-
-        if ($this->backupProject($projectBackupFile)) {
-            $this->info("Project backup created successfully: {$projectBackupFile}");
-        }
-
-        if ($this->zipBackups($zipBackupFile, $dbBackupFile, $projectBackupFile)) {
-            $this->info("Backups zipped successfully: {$zipBackupFile}");
         }
 
         $this->deleteOldBackups($backupDir);
