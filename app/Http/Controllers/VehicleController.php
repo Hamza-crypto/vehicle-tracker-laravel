@@ -646,8 +646,7 @@ class VehicleController extends Controller
         $vehicles = Vehicle::whereIn('id', $ids)->get();
 
         foreach ($vehicles as $vehicle) {
-            $vehicle->metas()->delete();
-            $vehicle->delete();
+            $vehicle->forceDelete();
         }
 
         return response()->json(['message' => count($vehicles) . ' vehicles have been deleted.']);
