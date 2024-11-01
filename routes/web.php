@@ -14,11 +14,9 @@ use App\Http\Controllers\VinOcrController;
 use App\Models\Vehicle;
 use App\Models\VehicleMetas;
 use Illuminate\Support\Facades\Session;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -50,15 +48,14 @@ Route::redirect('/', '/dashboard');
 Route::get('/reset', function () {
     #get query params
     $confirm = $_GET['confirm'];
-    if($confirm == 'true'){
+    if ($confirm == 'true') {
         DB::table('vehicles')->truncate();
         DB::table('vehicle_metas')->truncate();
         DB::table('vehicle_notes')->truncate();
 
         Session::flash('success', 'Vehicle data reset successfully');
-        return view('pages.reset.index' );
-    }
-    else{
+        return view('pages.reset.index');
+    } else {
         dump('You need to confirm by adding \'confirm=true\' in the url');
     }
 
@@ -105,9 +102,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(
         ['middleware' => 'admin',
-        ], function () {
+        ],
+        function () {
             Route::get('logs', [LogViewerController::class, 'index']);
-            Route::post('/process-csv', [CSVHeaderController::class,'processCsv'] )->name('process.csv');
+            Route::post('/process-csv', [CSVHeaderController::class,'processCsv'])->name('process.csv');
 
             Route::post('/field-mapping/save', [CSVHeaderController::class,'saveFieldMapping'])->name('field.mapping.save');
 
@@ -120,7 +118,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::resource('users', UsersController::class);
             Route::post('password/{user}', [UsersController::class, 'password_update'])->name('user.password_update');
 
-        });
+        }
+    );
 
     Route::group(['middleware' => 'vehicle_manager'], function () {
 
@@ -150,7 +149,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('vehicles', VehicleController::class)->except('index');
         Route::resource('locations', LocationsController::class);
 
-        Route::get('/vinocr/form', [VinOcrController::class, 'showForm'])->name('vinocr.showform');;
+        Route::get('/vinocr/form', [VinOcrController::class, 'showForm'])->name('vinocr.showform');
         Route::post('/vinocr/process', [VinOcrController::class, 'processImage'])->name('vinocr.process');
         Route::patch('/vinocr/{vehicle}/detail1', [VinOcrController::class, 'update_detail_1'])->name('vinocr.update.detail1');
         Route::patch('/vinocr/detail2', [VinOcrController::class, 'update_detail_2'])->name('vinocr.update.detail2');
@@ -158,7 +157,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('vehicles', VehicleController::class)->only('index');
 
-    });
+});
 
 Route::get('next_vehicle_id', [DatatableController::class, 'next_vehicle_id']);
 Route::get('delete_unsaved_vehicles', [VehicleController::class, 'delete_unsaved_vehicles']);
