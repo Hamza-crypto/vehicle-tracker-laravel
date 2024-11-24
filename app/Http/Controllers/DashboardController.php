@@ -32,7 +32,7 @@ class DashboardController extends Controller
                     return view('pages.dashboard.all_vehicles.updated', compact('last_30_updated'));
 
                 case 'notes':
-                    $vehicles_with_notes = $this->getVehiclesWithNotes(10);
+                    $vehicles_with_notes = $this->getVehiclesWithNotes($limit);
                     return view('pages.dashboard.all_vehicles.notes', compact('vehicles_with_notes'));
 
                 default:
