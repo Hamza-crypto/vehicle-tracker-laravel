@@ -32,7 +32,7 @@ class DashboardController extends Controller
                     return view('pages.dashboard.all_vehicles.updated', compact('last_30_updated'));
 
                 case 'notes':
-                    $vehicles_with_notes = $this->getVehiclesWithNotes($limit);
+                    $vehicles_with_notes = $this->getVehiclesWithNotes(10);
                     return view('pages.dashboard.all_vehicles.notes', compact('vehicles_with_notes'));
 
                 default:
@@ -123,7 +123,7 @@ class DashboardController extends Controller
                 $join->on('vehicles.id', '=', 'status_meta.vehicle_id')
                      ->where('status_meta.meta_key', '=', 'status');
             })
-            ->select('vehicles.id', 'vehicles.vin', 'vehicles.description', 'vehicle_notes.updated_at as note_updated_at', 'vehicle_notes.note as note_content')
+            ->select('vehicles.id', 'vehicles.vin', 'vehicles.auction_lot', 'vehicles.description', 'vehicle_notes.updated_at as note_updated_at', 'vehicle_notes.note as note_content')
             ->where(function ($query) {
                 $query->whereNull('status_meta.meta_value')
                       ->orWhere('status_meta.meta_value', '!=', 'SOLD');
