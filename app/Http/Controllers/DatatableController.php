@@ -33,7 +33,7 @@ class DatatableController extends Controller
         $start = $request->length == -1 ? 0 : $request->start;
         $limit = $request->length == -1 ? $totalData : $request->length;
 
-        if($user_role == 'admin') {
+        if ($user_role == 'admin') {
             $dbColumns = [
             0 => 'id',
             3 => 'left_location',
@@ -187,7 +187,7 @@ class DatatableController extends Controller
         if (in_array($orderDbColumn, ['sale_date'])) {
 
             $sortedIds = $this->getVehicleIdsSortedByMeta($orderDbColumn, $orderDirection, $vehiclesQuery, 'date', $start, $limit);
-            if(!empty($sortedIds)) {
+            if (!empty($sortedIds)) {
                 $vehiclesQuery = $vehiclesQuery->whereIn('id', $sortedIds);
                 $vehiclesQuery->orderByRaw('FIELD(id, ' . implode(',', $sortedIds) . ')');
             }
@@ -570,7 +570,7 @@ class DatatableController extends Controller
             if (in_array($string, $date_ranges)) {
                 $html .= ' daterange';
                 //if date is empty, then datapicker gives NAN for all values in datepicker widget
-                if(is_null($values)) {
+                if (is_null($values)) {
                     $values = now()->format('Y-m-d');
                 }
 
@@ -603,7 +603,20 @@ class DatatableController extends Controller
         $html .= '<td>' . strtoupper($key) . '</td>';
         $html .= '<td>';
 
-        $dropdowns = ['status', 'primary_damage', 'keys',  'drivability_rating'];
+        if ($key == 'keys') {
+            $html .= '<select class="form-control"';
+            $html .= ' name="' . $key . '"';
+            $html .= ' value="' . $vehicle_metas . '"';
+            $html .= '>';
+
+            $html .= '<option value="-100">Select Key</option>';
+            $html .= '<option value="YES" ' . ($vehicle_metas === 'YES' ? 'selected' : '') . '>YES</option>';
+            $html .= '<option value="NO" ' . ($vehicle_metas === 'NO' ? 'selected' : '') . '>NO</option>';
+            $html .= '</select>';
+            return $html; // Return early to avoid processing extra_data
+        }
+
+        $dropdowns = ['status', 'primary_damage',  'drivability_rating'];
 
         if (in_array($key, $dropdowns)) {
 
@@ -620,8 +633,6 @@ class DatatableController extends Controller
                 $html .= '<option value="-100">Select Damage</option>';
             } elseif ($key == 'drivability_rating') {
                 $html .= '<option value="-100">Select Engine</option>';
-            } elseif ($key == 'keys') {
-                $html .= '<option value="-100">Select Key</option>';
             }
             foreach ($extra_data[$key] as $location) {
                 $html .= '<option value="' . $location . '"';
@@ -698,14 +709,14 @@ class DatatableController extends Controller
         $show_blank_note = true;
         foreach ($notes as $note) {
             $html = $this->singleNoteRow($html, $note);
-            if(Auth::id() == $note->user_id) {
+            if (Auth::id() == $note->user_id) {
                 $show_blank_note = false;
             }
         }
 
         //if user role is not 'viewer', then show blank note row
-        if($show_blank_note) {
-            if(Auth::user()->role != 'viewer') {
+        if ($show_blank_note) {
+            if (Auth::user()->role != 'viewer') {
                 $html = $this->blankSingleNoteRow($html);
             }
         }
@@ -731,7 +742,7 @@ class DatatableController extends Controller
         $html .= '<textarea class="form-control form-control-lg" name="notes[]"';
 
         //readonly
-        if(Auth::id() != $note->user_id) {
+        if (Auth::id() != $note->user_id) {
             $html .= ' disabled';
         }
 

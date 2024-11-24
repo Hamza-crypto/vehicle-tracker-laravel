@@ -42,7 +42,8 @@ class Vehicle extends Model
         'In Transit',
         'Title Rejected',
         'Intake',
-        'SOLD'
+        'SOLD',
+        'PARTS CAR'
     ];
 
     public static function getStatuses()
