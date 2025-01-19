@@ -387,13 +387,16 @@ class VehicleController extends Controller
         $metas = [];
         $now = now();
         foreach ($necessary_meta_fields as $key => $value) {
-            $metas[] = [
-                'vehicle_id' => $vehicle_id,
-                'meta_key' => $key,
-                'meta_value' => trim($value),
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
+            $trimmedValue = trim($value);
+            if (!empty($trimmedValue)) { 
+                $metas[] = [
+                    'vehicle_id' => $vehicle_id,
+                    'meta_key' => $key,
+                    'meta_value' => $trimmedValue,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
 
         }
         DB::table('vehicle_metas')->insert($metas);

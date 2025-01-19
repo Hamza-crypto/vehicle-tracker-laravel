@@ -319,7 +319,13 @@ class DatatableController extends Controller
         $values = array_values($vehicleArray);
         $count = count($array_keys);
 
-        $locations = Vehicle::select('location')->distinct()->orderBy('location', 'asc')->get()->pluck('location');
+        $locations = Vehicle::select('location')
+            ->whereNotNull('location')
+            ->where('location', '!=', '')
+            ->distinct()
+            ->orderBy('location', 'asc')
+            ->get()
+            ->pluck('location');
         // $statuses = VehicleMetas::select('meta_value')
         //     ->where('meta_key', 'status')
         //    // ->where('meta_value', '!=', 'Sold') //excluding sold status
@@ -554,6 +560,8 @@ class DatatableController extends Controller
             $html .= ' value="' . $values . '"';
             $html .= '>';
 
+            $html .= '<option value="" disabled selected>Select Location</option>';
+
             foreach ($extra_data[$string] as $location) {
                 $html .= '<option value="' . $location . '"';
                 if ($location == $values) {
@@ -681,6 +689,12 @@ class DatatableController extends Controller
 
     public function next_vehicle_id()
     {
+        $vehicle = Vehicle::where('vin', '')->first();
+
+        if ($vehicle) {
+            return $vehicle->id;
+        }
+
         $vehicle = new Vehicle();
         $vehicle->vin = '';
         $vehicle->save();
