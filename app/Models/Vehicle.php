@@ -126,7 +126,7 @@ class Vehicle extends Model
                 })
                 ->orWhereHas('metas', function ($subQuery) {
                     $subQuery->where('meta_key', 'status')
-                             ->where('meta_value', self::STATUSES[4]);
+                             ->whereIn('meta_value', [self::STATUSES[4], '']);
                 });
             });
     }
