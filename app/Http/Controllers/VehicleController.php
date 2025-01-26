@@ -586,6 +586,7 @@ class VehicleController extends Controller
             $vehicle->vin = $request->vin;
             $vehicle->purchase_lot = $request->purchase_lot;
             $vehicle->auction_lot = $request->auction_lot;
+            $vehicle->source = $request->source;
             $vehicle->location = $request->location;
             $vehicle->description = $request->description;
             $vehicle->left_location = $request->left_location;
