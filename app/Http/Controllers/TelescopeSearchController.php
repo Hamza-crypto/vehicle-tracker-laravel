@@ -25,7 +25,7 @@ class TelescopeSearchController extends Controller
             $query->WhereRaw("JSON_EXTRACT(`content`, '$.uri') = ?", [$request->uri]);
         }
 
-        $results = $query->paginate(5);
+        $results = $query->paginate(50);
 
         return view('telescope.search', compact('results'));
     }
