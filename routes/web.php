@@ -178,3 +178,5 @@ Route::get('export_run_list', [RunListController::class, 'export_run_list'])->na
 
 
 Route::get('duplicate/vehicles', [VehicleController::class, 'duplicate_vehicles']);
+
+Route::get('/debug', [App\Http\Controllers\TelescopeSearchController::class, 'index'])->middleware('admin');
