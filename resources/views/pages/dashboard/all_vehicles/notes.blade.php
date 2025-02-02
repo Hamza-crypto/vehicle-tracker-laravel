@@ -27,24 +27,24 @@
                         @if (count($vehicles_with_notes))
 
                             @foreach ($vehicles_with_notes as $vehicle)
-                                <tr id="{{ $vehicle->id }}">
+                                <tr id="{{ $vehicle->vehicle_id }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td><a href="#" data-toggle="modal"
                                             data-target="#modal-vehicle-detail">{{ $vehicle->description }}</a></td>
                                     <td>
                                         @if ($vehicle->auction_lot)
                                             <a href="https://seller.copart.com/lotdisplay/{{ $vehicle->auction_lot }}"
-                                                target="_blank">{{ $vehicle->vin }}</a>
+                                                target="_blank">{{ $vehicle->vehicle_id }}</a>
                                         @else
-                                            {{ $vehicle->vin }}
+                                            {{ $vehicle->vehicle_id }}
                                         @endif
                                     </td>
                                     <td>
-                                        {{ $vehicle->note_content }}
+                                        {{ $vehicle->note }}
                                     </td>
                                     <td data-toggle="tooltip" data-placement="top"
-                                        title="{{ Carbon::parse($vehicle->note_updated_at) }}">
-                                        {{ Carbon::parse($vehicle->note_updated_at)->diffForHumans() }}</td>
+                                        title="{{ Carbon::parse($vehicle->updated_at) }}">
+                                        {{ Carbon::parse($vehicle->updated_at)->diffForHumans() }}</td>
 
                                 </tr>
                             @endforeach

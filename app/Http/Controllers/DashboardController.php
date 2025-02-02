@@ -87,18 +87,18 @@ class DashboardController extends Controller
                 $join->on('vehicles.ID', '=', 'days_in_yard_meta.vehicle_id')
                     ->where('days_in_yard_meta.meta_key', '=', 'days_in_yard');
             })
-                    ->leftJoin('vehicle_metas as status_meta', function ($join) {
-                        $join->on('vehicles.ID', '=', 'status_meta.vehicle_id')
-                            ->where('status_meta.meta_key', '=', 'status');
-                    })
-                    ->select(['vehicles.id', 'vin', 'auction_lot', 'description', 'days_in_yard_meta.meta_value'])
-                    ->where(function ($query) {
-                        $query->whereNull('status_meta.meta_value')
-                            ->orWhere('status_meta.meta_value', '!=', 'SOLD');
-                    })
-                    ->orderByRaw('CAST(days_in_yard_meta.meta_value AS UNSIGNED) DESC')
-                    ->limit($limit)
-                    ->get();
+                ->leftJoin('vehicle_metas as status_meta', function ($join) {
+                    $join->on('vehicles.ID', '=', 'status_meta.vehicle_id')
+                        ->where('status_meta.meta_key', '=', 'status');
+                })
+                ->select(['vehicles.id', 'vin', 'auction_lot', 'description', 'days_in_yard_meta.meta_value'])
+                ->where(function ($query) {
+                    $query->whereNull('status_meta.meta_value')
+                        ->orWhere('status_meta.meta_value', '!=', 'SOLD');
+                })
+                ->orderByRaw('CAST(days_in_yard_meta.meta_value AS UNSIGNED) DESC')
+                ->limit($limit)
+                ->get();
         });
     }
 
@@ -106,31 +106,34 @@ class DashboardController extends Controller
     {
         return Cache::remember('vehicles_sold_' . $limit, 1440, function () use ($limit) {
             return Vehicle::join('vehicle_metas', 'vehicles.ID', '=', 'vehicle_metas.vehicle_id')
-            ->select(['vehicles.id','vin', 'description', 'auction_lot'])
-            ->where('meta_key', 'status')
-            ->where('meta_value', 'SOLD')
-            ->orderBy('vehicle_metas.updated_at', 'DESC')
-            ->limit($limit)
-            ->get();
+                ->select(['vehicles.id', 'vin', 'description', 'auction_lot'])
+                ->where('meta_key', 'status')
+                ->where('meta_value', 'SOLD')
+                ->orderBy('vehicle_metas.updated_at', 'DESC')
+                ->limit($limit)
+                ->get();
         });
     }
 
-    private function getVehiclesWithNotes($limit)
+    public function getVehiclesWithNotes($limit) 
     {
-        return Cache::remember('vehicles_with_notes_' . $limit, 300, function () use ($limit) {
-            return Vehicle::join('vehicle_notes', 'vehicles.id', '=', 'vehicle_notes.vehicle_id')
-            ->leftJoin('vehicle_metas as status_meta', function ($join) {
-                $join->on('vehicles.id', '=', 'status_meta.vehicle_id')
-                     ->where('status_meta.meta_key', '=', 'status');
-            })
-            ->select('vehicles.id', 'vehicles.vin', 'vehicles.auction_lot', 'vehicles.description', 'vehicle_notes.updated_at as note_updated_at', 'vehicle_notes.note as note_content')
-            ->where(function ($query) {
-                $query->whereNull('status_meta.meta_value')
-                      ->orWhere('status_meta.meta_value', '!=', 'SOLD');
-            })
-                ->orderBy('vehicle_notes.updated_at', 'desc')
-                ->take($limit)
-                ->get();
+        return Cache::remember("vehicles_with_notes_{$limit}", 300, function () use ($limit) {
+            $query = "
+                SELECT n.*, v.description, v.auction_lot
+                FROM vehicle_notes n
+                JOIN (
+                    SELECT vehicle_id, MAX(created_at) AS latest_note_time
+                    FROM vehicle_notes
+                    GROUP BY vehicle_id
+                ) latest_notes
+                ON n.vehicle_id = latest_notes.vehicle_id 
+                AND n.created_at = latest_notes.latest_note_time
+                JOIN vehicles v ON n.vehicle_id = v.id
+                ORDER BY n.updated_at DESC
+                LIMIT $limit
+            ";
+
+            return \DB::select($query);
         });
     }
 }
