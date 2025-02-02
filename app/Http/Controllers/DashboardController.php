@@ -115,25 +115,29 @@ class DashboardController extends Controller
         });
     }
 
-    public function getVehiclesWithNotes($limit) 
+    public function getVehiclesWithNotes($limit = 10)
     {
-        return Cache::remember("vehicles_with_notes_{$limit}", 300, function () use ($limit) {
+        return Cache::remember("vehicles_with_latest_notes_{$limit}", 300, function () use ($limit) {
             $query = "
-                SELECT n.*, v.description, v.auction_lot
-                FROM vehicle_notes n
-                JOIN (
-                    SELECT vehicle_id, MAX(created_at) AS latest_note_time
+                 SELECT 
+                    vn.*, 
+                    v.description, 
+                    v.vin,
+                    v.auction_lot
+                FROM vehicles v
+                INNER JOIN vehicle_notes vn ON v.id = vn.vehicle_id
+                INNER JOIN (
+                    SELECT 
+                        vehicle_id, 
+                        MAX(updated_at) AS latest_updated_at 
                     FROM vehicle_notes
                     GROUP BY vehicle_id
-                ) latest_notes
-                ON n.vehicle_id = latest_notes.vehicle_id 
-                AND n.created_at = latest_notes.latest_note_time
-                JOIN vehicles v ON n.vehicle_id = v.id
-                ORDER BY n.updated_at DESC
-                LIMIT $limit
+                ) AS latest_notes ON vn.vehicle_id = latest_notes.vehicle_id AND vn.updated_at = latest_notes.latest_updated_at
+                ORDER BY vn.updated_at DESC
+                LIMIT :limit
             ";
 
-            return \DB::select($query);
+            return  \DB::select($query, ['limit' => $limit]);
         });
     }
 }
