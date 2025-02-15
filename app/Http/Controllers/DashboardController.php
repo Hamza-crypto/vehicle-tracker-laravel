@@ -133,6 +133,13 @@ class DashboardController extends Controller
                     FROM vehicle_notes
                     GROUP BY vehicle_id
                 ) AS latest_notes ON vn.vehicle_id = latest_notes.vehicle_id AND vn.updated_at = latest_notes.latest_updated_at
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM vehicle_metas vm
+                    WHERE v.id = vm.vehicle_id
+                    AND vm.meta_key = 'status'
+                    AND vm.meta_value = 'SOLD'
+                )
                 ORDER BY vn.updated_at DESC
                 LIMIT :limit
             ";
