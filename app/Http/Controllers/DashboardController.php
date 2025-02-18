@@ -40,9 +40,7 @@ class DashboardController extends Controller
             }
         }
 
-        $vehiclesWithRecentNotes = Vehicle::join('vehicle_notes', 'vehicles.id', '=', 'vehicle_notes.vehicle_id')
-            ->orderBy('vehicle_notes.updated_at', 'desc') // Order by most recently updated notes
-            ->count();
+        $vehiclesWithRecentNotes = count($this->getVehiclesWithNotes(500));
 
         // If no 'section' parameter, run all queries with default limits
         $vehicles_with_days_in_yard = $this->getVehiclesWithDaysInYard(10);
