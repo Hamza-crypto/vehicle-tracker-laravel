@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
+use Illuminate\Support\Facades\Http;
 
 /*
 |--------------------------------------------------------------------------
@@ -180,3 +181,8 @@ Route::get('export_run_list', [RunListController::class, 'export_run_list'])->na
 Route::get('duplicate/vehicles', [VehicleController::class, 'duplicate_vehicles']);
 
 Route::get('/debug', [App\Http\Controllers\TelescopeSearchController::class, 'index'])->middleware('admin');
+
+Route::get('/fetch-copart-lot/{lotNumber}', function ($lotNumber) {
+    $response = Http::get("https://www.copart.com/public/data/lotdetails/solr/{$lotNumber}");
+    return response()->json($response->json());
+});
