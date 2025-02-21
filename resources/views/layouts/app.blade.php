@@ -90,8 +90,8 @@
             let saleType = hcrValue ? "Insurance Sale" : "Dealer Sale";
 
             Swal.fire({
-                title: "Lot Information",
-                text: `The lot is a ${saleType}`,
+                title: saleType,
+                text: ``,
                 icon: hcrValue ? "success" : "info"
             });
         } else {
