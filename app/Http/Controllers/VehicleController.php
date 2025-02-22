@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
+use Campo\UserAgent;
+use Illuminate\Support\Facades\Log;
 
 class VehicleController extends Controller
 {
@@ -901,22 +903,56 @@ class VehicleController extends Controller
     public function check_status($lotNumber)
     {
         $url = 'https://www.copart.com/public/data/lotdetails/solr/' . $lotNumber;
+        $maxAttempts = 10; // Maximum number of attempts
+        $attempt = 0;
 
-        try {
-            $response = Http::withHeaders([
-                'User-Agent' => \Campo\UserAgent::random(),
-                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                'Accept-Encoding' => 'gzip, deflate, br, zstd', 
-                'Accept-Language' => 'en-US,en;q=0.9,ur;q=0.8,la;q=0.7,de;q=0.6',
-                'Cache-Control' => 'no-cache',
-            ])->get($url);
+        while ($attempt < $maxAttempts) {
+            $attempt++;
 
-            if ($response->successful()) {
-                echo $response->body(); 
+            try {
+                $response = Http::withHeaders([
+                    'User-Agent' => UserAgent::random(),
+                    'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                    'Accept-Encoding' => 'gzip, deflate, br, zstd',
+                    'Accept-Language' => 'en-US,en;q=0.9,ur;q=0.8,la;q=0.7,de;q=0.6',
+                    'Cache-Control' => 'no-cache',
+                ])->get($url);
+
+                if ($response->successful()) {
+                    $contentType = $response->header('Content-Type');
+
+                    if (strpos($contentType, 'application/json') !== false) {
+                        $jsonData = $response->json();
+
+                        if (isset($jsonData['returnCode']) && $jsonData['returnCode'] === 1) {
+                            Log::info("Successfully fetched lot details for lot number: " . $lotNumber . " on attempt " . $attempt);
+                            return response()->json($jsonData); // Return the JSON response
+                        } else {
+                            Log::warning("Invalid JSON response (returnCode !== 1) for lot number: " . $lotNumber . " on attempt " . $attempt);
+                            Log::debug("Response body: " . $response->body()); // Log the body for debugging
+                        }
+                    } else {
+                        Log::warning("Unexpected Content-Type: " . $contentType . " for lot number: " . $lotNumber . " on attempt " . $attempt);
+                        Log::debug("Response body: " . $response->body()); // Log the body for debugging
+                    }
+                } else {
+                    Log::error("Failed to fetch lot details for lot number: " . $lotNumber . " with status code: " . $response->status() . " on attempt " . $attempt);
+                }
+
+                // Add a delay between requests (important to avoid rate limiting)
+                $delay = rand(2, 5); // Random delay between 2 and 5 seconds
+                Log::info("Waiting " . $delay . " seconds before next attempt.");
+                sleep($delay);
+
+            } catch (\Exception $e) {
+                Log::error("Exception while fetching lot details for lot number: " . $lotNumber . " on attempt " . $attempt . ": " . $e->getMessage());
+                // You might want to break out of the loop if a critical error occurs
+                // break; // Uncomment if necessary
             }
-
-        } catch (\Exception $e) {
-            echo "Exception: " . $e->getMessage() . "\n";
         }
+
+        // If the loop completes without a valid response
+        Log::error("Failed to get a valid response after " . $maxAttempts . " attempts for lot number: " . $lotNumber);
+        return response()->json(['error' => 'Could not retrieve valid lot details after multiple attempts.'], 500);
     }
 }
