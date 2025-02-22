@@ -942,7 +942,7 @@ class VehicleController extends Controller
                 // Add a delay between requests (important to avoid rate limiting)
                 $delay = rand(2, 5); // Random delay between 2 and 5 seconds
                 Log::info("Waiting " . $delay . " seconds before next attempt.");
-                sleep($delay);
+                // sleep($delay);
 
             } catch (\Exception $e) {
                 Log::error("Exception while fetching lot details for lot number: " . $lotNumber . " on attempt " . $attempt . ": " . $e->getMessage());
