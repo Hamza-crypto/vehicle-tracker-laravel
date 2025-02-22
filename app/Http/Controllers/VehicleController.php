@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Http;
 
 class VehicleController extends Controller
 {
@@ -215,7 +216,7 @@ class VehicleController extends Controller
                 $vehicle->source = 'iaai';
                 $vehicle->location = $row[$positions[$requiredColumns['location']]];
 
-                if($row[$positions[$requiredColumns['year']]] == $row[$positions[$requiredColumns['make']]] && $row[$positions[$requiredColumns['make']]] == $row[$positions[$requiredColumns['model']]]) {
+                if ($row[$positions[$requiredColumns['year']]] == $row[$positions[$requiredColumns['make']]] && $row[$positions[$requiredColumns['make']]] == $row[$positions[$requiredColumns['model']]]) {
                     $vehicle->description = sprintf("%s", $row[$positions[$requiredColumns['year']]]);
                     //dd($row[$positions[$requiredColumns['year']]], $row[$positions[$requiredColumns['make']]], $row[$positions[$requiredColumns['model']]]);
                 } else {
@@ -298,12 +299,13 @@ class VehicleController extends Controller
             }
 
 
-            if($start_row == 0 &&  $end_row == 0) {
+            if ($start_row == 0 && $end_row == 0) {
 
             } else {
                 if ($index < $start_row) {
                     continue; // Skip rows before the start row
-                }if ($index >= $end_row + 1) {
+                }
+                if ($index >= $end_row + 1) {
                     break; // Stop processing after the end row
                 }
             }
@@ -344,7 +346,7 @@ class VehicleController extends Controller
                 $vehicle = Vehicle::where('vin', $vin)->first();
                 // dd($vehicle);
 
-                if(!$vehicle) {
+                if (!$vehicle) {
                     continue;
                 }
                 //delete old vehicle metas
@@ -394,7 +396,7 @@ class VehicleController extends Controller
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
-            
+
 
         }
         DB::table('vehicle_metas')->insert($metas);
@@ -477,12 +479,13 @@ class VehicleController extends Controller
                 continue;
             }
 
-            if($start_row == 0 &&  $end_row == 0) {
+            if ($start_row == 0 && $end_row == 0) {
 
             } else {
                 if ($index < $start_row) {
                     continue; // Skip rows before the start row
-                }if ($index >= $end_row + 1) {
+                }
+                if ($index >= $end_row + 1) {
                     break; // Stop processing after the end row
                 }
             }
@@ -885,13 +888,35 @@ class VehicleController extends Controller
     {
         $duplicateVins = \DB::select("SELECT vin, COUNT(*) AS count FROM vehicles GROUP BY vin HAVING COUNT > 1");
 
-        foreach($duplicateVins as $duplicateVin) {
-            echo $duplicateVin->vin      . "</br>";
+        foreach ($duplicateVins as $duplicateVin) {
+            echo $duplicateVin->vin . "</br>";
         }
 
-        if(count($duplicateVins) == 0) {
+        if (count($duplicateVins) == 0) {
             echo "No duplicate vehicles found";
         }
 
+    }
+
+    public function check_status($lotNumber)
+    {
+        $url = 'https://www.copart.com/public/data/lotdetails/solr/' . $lotNumber;
+
+        try {
+            $response = Http::withHeaders([
+                'User-Agent' => \Campo\UserAgent::random(),
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-Encoding' => 'gzip, deflate, br, zstd', 
+                'Accept-Language' => 'en-US,en;q=0.9,ur;q=0.8,la;q=0.7,de;q=0.6',
+                'Cache-Control' => 'no-cache',
+            ])->get($url);
+
+            if ($response->successful()) {
+                echo $response->body(); 
+            }
+
+        } catch (\Exception $e) {
+            echo "Exception: " . $e->getMessage() . "\n";
+        }
     }
 }

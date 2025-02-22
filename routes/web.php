@@ -182,25 +182,4 @@ Route::get('duplicate/vehicles', [VehicleController::class, 'duplicate_vehicles'
 
 Route::get('/debug', [App\Http\Controllers\TelescopeSearchController::class, 'index'])->middleware('admin');
 
-Route::get('/fetch-copart-lot/{lotNumber}', function ($lotNumber) {
-
-    $url = 'https://www.copart.com/public/data/lotdetails/solr/' . $lotNumber;
-
-    $opts = array(
-      'http'=>array(
-        'method'=>"GET",
-        'header'=>"Accept-language: en\r\n" .
-                  "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36\r\n"
-      )
-    );
-    
-    $context = stream_context_create($opts);
-    
-    $content = @file_get_contents($url, false, $context); 
-    
-    if ($content === FALSE) {
-      echo "Error: Could not retrieve content from $url\n";
-    } else {
-        return $content;
-    }
-});
+Route::get('/fetch-copart-lot/{lotNumber}', [VehicleController::class, 'check_status']);
