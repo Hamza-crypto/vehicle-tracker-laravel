@@ -155,7 +155,7 @@
                 
                 <li class="sidebar-item"> 
                     <a class="sidebar-link check-status-btn" href="javascript:void(0);" id="checkLotLink">
-                        <i class="align-middle" data-feather="copy"></i>
+                        <i class="align-middle" data-feather="bar-chart-2"></i>
                         <span class="align-middle">Check Status</span>
                     </a>
                 </li>
