@@ -903,7 +903,7 @@ class VehicleController extends Controller
     public function check_status($lotNumber)
     {
         $url = 'https://www.copart.com/public/data/lotdetails/solr/' . $lotNumber;
-        $maxAttempts = 10; // Maximum number of attempts
+        $maxAttempts = 50; // Maximum number of attempts
         $attempt = 0;
 
         while ($attempt < $maxAttempts) {
