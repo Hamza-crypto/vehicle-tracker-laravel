@@ -374,9 +374,58 @@
     </div>
 
     <div class="col-12 col-sm-6 col-xxl d-flex">
+        <div class="card flex-fill">
+            <div class="card-body py-4">
+                <div class="d-flex align-items-center mb-3">
+                    <input id="lotNumberInput" class="form-control form-control-lg mr-2" type="text" placeholder="Enter LOT #" style="width: 70%;">
+                    <button id="checkLotButton" class="btn btn-primary form-control-lg" style="width: 30%;">Check Lot #</button>
+                </div>
+                <h4 id="lot_status" class="text-center"></h4>
+            </div>
+        </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xxl d-flex">
+        <div class="card flex-fill">
+            <div class="card-body py-4">
+                <div class="media">
+                    <div class="media-body">
+                        <h3 class="mb-2"> {{ \App\Models\Vehicle::countVehicles('PARTS CAR') }} "Parts Vehicle Inventory"</h3>
+                        <p class="mb-2"><a href="{{ route('vehicles.index', ['status' => 'PARTS CAR']) }}" target="_blank">View Details</a></p>
+                    </div>
+                    <div class="d-inline-block ml-3">
+                        <div class="stat">
+								<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+								 width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000"
+								 preserveAspectRatio="xMidYMid meet">
+
+								<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+								fill="#000000" stroke="none">
+								<path d="M430 4425 c0 -748 0 -743 -51 -779 -20 -13 -53 -16 -201 -16 l-178 0
+								0 -216 0 -216 212 4 c190 3 220 6 277 26 155 55 276 174 334 329 21 55 22 76
+								27 463 l5 405 147 -185 c81 -102 412 -520 737 -930 l590 -745 -907 -5 -907 -5
+								-65 -23 c-172 -62 -303 -173 -378 -322 -71 -141 -72 -151 -72 -792 l0 -568
+								215 0 215 0 0 -103 c0 -336 211 -617 540 -718 98 -31 290 -33 390 -5 212 58
+								392 207 485 400 52 109 69 185 69 313 l1 113 645 0 645 0 0 -113 c1 -129 18
+								-204 70 -313 93 -193 274 -342 485 -400 100 -28 292 -26 390 5 206 63 372 202
+								462 383 56 113 69 170 75 311 l6 127 214 0 214 0 -3 1042 -3 1043 -28 100
+								c-114 419 -439 716 -865 790 -66 12 -186 15 -553 15 l-469 0 0 -640 0 -640
+								-164 2 -163 3 -1010 1275 -1009 1275 -212 3 -212 2 0 -695z m3832 -1047 c193
+								-74 338 -222 400 -408 18 -54 22 -95 26 -237 l4 -173 -531 0 -531 0 0 426 0
+								425 283 -3 c275 -3 284 -4 349 -30z m-1062 -1673 l0 -425 -1385 0 -1385 0 0
+								345 c0 380 1 384 61 444 64 64 -27 60 1402 61 l1307 0 0 -425z m1490 0 l0
+								-425 -530 0 -530 0 0 425 0 425 530 0 530 0 0 -425z m-3204 -891 c11 -58 -1
+								-156 -26 -204 -30 -61 -85 -116 -145 -148 -43 -23 -62 -27 -140 -27 -105 0
+								-162 22 -228 88 -74 74 -111 204 -84 300 l7 27 305 0 304 0 7 -36z m2771 9
+								c27 -95 -11 -227 -84 -300 -66 -66 -123 -88 -228 -88 -102 0 -150 19 -218 84
+								-75 70 -112 191 -93 295 l7 36 304 0 305 0 7 -27z"/>
+								</g>
+								</svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>

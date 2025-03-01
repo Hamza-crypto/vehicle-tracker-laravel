@@ -23,3 +23,43 @@
     @include('pages.dashboard._inc.last_30_new_vehicles')
 
 @endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+
+    $("#checkLotButton").click(function() {
+        const lotNumber = $("#lotNumberInput").val();
+        fetchCopartLot(lotNumber);
+    });
+
+    function fetchCopartLot(lotNumber) {
+        console.log('fetchCopartLot called');
+    $.ajax({
+        url: `/fetch-copart-lot/${lotNumber}`,
+        method: "GET",
+        dataType: "json",
+        success: function(response) {
+            if (response.data && response.data.lotDetails) {
+                let hcrValue = response.data.lotDetails.hcr;
+                let saleType = hcrValue ? "Insurance Sale" : "Dealer Sale";
+                let textColor = hcrValue ? "green" : "red"; 
+                let resultHTML = `<span style="color: ${textColor};">${saleType}</span>`;
+                $("#lot_status").html(resultHTML); 
+
+            } else {
+                showError();
+            }
+        },
+        error: function() {
+            showError();
+        }
+    });
+}
+
+    function showError() {
+    $("#lot_status").html("<span style='color: #e73939;'>Error fetching lot details.</span>"); 
+}
+});
+</script>
+@endsection

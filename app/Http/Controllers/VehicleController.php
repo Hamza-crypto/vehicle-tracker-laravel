@@ -903,56 +903,36 @@ class VehicleController extends Controller
     public function check_status($lotNumber)
     {
         $url = 'https://www.copart.com/public/data/lotdetails/solr/' . $lotNumber;
-        $maxAttempts = 50; // Maximum number of attempts
-        $attempt = 0;
 
-        while ($attempt < $maxAttempts) {
-            $attempt++;
+        try {
+            $response = Http::withHeaders([
+                'User-Agent' => UserAgent::random(),
+                'Accept' => 'application/json',
+                'Accept-Encoding' => 'gzip, deflate, br, zstd',
+                'Accept-Language' => 'en-US,en;q=0.9',
+                'Cache-Control' => 'no-cache',
+            ])->get($url);
 
-            try {
-                $response = Http::withHeaders([
-                    'User-Agent' => UserAgent::random(),
-                    'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                    'Accept-Encoding' => 'gzip, deflate, br, zstd',
-                    'Accept-Language' => 'en-US,en;q=0.9,ur;q=0.8,la;q=0.7,de;q=0.6',
-                    'Cache-Control' => 'no-cache',
-                ])->get($url);
+            if ($response->successful()) {
+                $jsonData = $response->json();
 
-                if ($response->successful()) {
-                    $contentType = $response->header('Content-Type');
-
-                    if (strpos($contentType, 'application/json') !== false) {
-                        $jsonData = $response->json();
-
-                        if (isset($jsonData['returnCode']) && $jsonData['returnCode'] === 1) {
-                            Log::info("Successfully fetched lot details for lot number: " . $lotNumber . " on attempt " . $attempt);
-                            return response()->json($jsonData); // Return the JSON response
-                        } else {
-                            Log::warning("Invalid JSON response (returnCode !== 1) for lot number: " . $lotNumber . " on attempt " . $attempt);
-                            Log::debug("Response body: " . $response->body()); // Log the body for debugging
-                        }
-                    } else {
-                        Log::warning("Unexpected Content-Type: " . $contentType . " for lot number: " . $lotNumber . " on attempt " . $attempt);
-                        Log::debug("Response body: " . $response->body()); // Log the body for debugging
-                    }
+                if (isset($jsonData['returnCode']) && $jsonData['returnCode'] === 1) {
+                    Log::info("Successfully fetched lot details for lot number: " . $lotNumber);
+                    return response()->json($jsonData); // Return the JSON response
                 } else {
-                    Log::error("Failed to fetch lot details for lot number: " . $lotNumber . " with status code: " . $response->status() . " on attempt " . $attempt);
+                    Log::warning("Invalid returnCode received for lot number: " . $lotNumber . ". returnCode: " . ($jsonData['returnCode'] ?? 'null'));
+                    Log::debug("Response body: " . $response->body());
+                    return response()->json(['error' => 'Invalid data from Copart API.'], 500);  //Return Error to UI
                 }
-
-                // Add a delay between requests (important to avoid rate limiting)
-                $delay = rand(2, 5); // Random delay between 2 and 5 seconds
-                Log::info("Waiting " . $delay . " seconds before next attempt.");
-                // sleep($delay);
-
-            } catch (\Exception $e) {
-                Log::error("Exception while fetching lot details for lot number: " . $lotNumber . " on attempt " . $attempt . ": " . $e->getMessage());
-                // You might want to break out of the loop if a critical error occurs
-                // break; // Uncomment if necessary
+            } else {
+                Log::error("HTTP error ({$response->status()}) while fetching lot details for lot number: " . $lotNumber);
+                Log::debug("Response body: " . $response->body());
+                return response()->json(['error' => 'Could not retrieve lot details from Copart API. HTTP Status: ' . $response->status()], 500); //Return Error to UI
             }
-        }
 
-        // If the loop completes without a valid response
-        Log::error("Failed to get a valid response after " . $maxAttempts . " attempts for lot number: " . $lotNumber);
-        return response()->json(['error' => 'Could not retrieve valid lot details after multiple attempts.'], 500);
+        } catch (\Exception $e) {
+            Log::error("Exception while fetching lot details for lot number: " . $lotNumber . ": " . $e->getMessage());
+            return response()->json(['error' => 'An unexpected error occurred: ' . $e->getMessage()], 500); //Return Error to UI
+        }
     }
 }

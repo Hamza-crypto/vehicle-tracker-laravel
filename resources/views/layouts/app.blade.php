@@ -56,58 +56,6 @@
         $(".select2").each(function() {
             $(this).select2();
         });
-
-        
-        $(document).ready(function() {
-            $("#checkLotLink").on("click", function(event) {
-                event.preventDefault(); // Prevent default link behavior
-
-                Swal.fire({
-                    title: "Enter Lot Number",
-                    input: "text",
-                    inputPlaceholder: "Enter Copart Lot Number",
-                    showCancelButton: true,
-                    confirmButtonText: "Check",
-                    preConfirm: (lotNumber) => {
-                        if (!lotNumber.trim()) {
-                            Swal.showValidationMessage("Please enter a valid lot number.");
-                            return false;
-                        }
-                        return fetchCopartLot(lotNumber);
-                    }
-                });
-            });
-        });
-
-        function fetchCopartLot(lotNumber) {
-            $.ajax({
-    url: `/fetch-copart-lot/${lotNumber}`,  // Your Laravel backend
-    method: "GET",
-    dataType: "json",
-    success: function(response) {
-        if (response.data && response.data.lotDetails) {
-            let hcrValue = response.data.lotDetails.hcr;
-            let saleType = hcrValue ? "Insurance Sale" : "Dealer Sale";
-
-            Swal.fire({
-                title: saleType,
-                text: ``,
-                icon: hcrValue ? "success" : "info"
-            });
-        } else {
-            showError();
-        }
-    },
-    error: function() {
-        showError();
-    }
-});
-        }
-
-        function showError() {
-            Swal.fire("Error", "Invalid Lot Number or No Data Found", "error");
-        }
-
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
