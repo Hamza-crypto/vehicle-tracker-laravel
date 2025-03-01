@@ -183,3 +183,5 @@ Route::get('duplicate/vehicles', [VehicleController::class, 'duplicate_vehicles'
 Route::get('/debug', [App\Http\Controllers\TelescopeSearchController::class, 'index'])->middleware('admin');
 
 Route::get('/fetch-copart-lot/{lotNumber}', [VehicleController::class, 'check_status']);
+
+Route::view('/iframe', 'iframe');
